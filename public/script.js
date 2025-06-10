@@ -555,7 +555,10 @@ document.addEventListener('DOMContentLoaded', function () {
         return `
             <div class="bg-brand-surface rounded-xl md:rounded-2xl shadow-sm p-4 md:p-5">
                 <!-- Exercise Name at Top -->
-                <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary mb-4">${exercise.name}</h3>
+                <div class="mb-4">
+                    <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary mb-3">${exercise.name}</h3>
+                    <div class="h-px bg-gray-200 w-full"></div>
+                </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                     <!-- Video Section -->
