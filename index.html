@@ -83,55 +83,86 @@
                 </div>
             </header>
             <main class="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-                    <!-- Stat Blocks -->
-                    <div class="bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 flex flex-col justify-between h-40 md:h-48">
-                        <div>
-                            <div class="flex items-center justify-between">
-                                <h3 class="font-semibold text-brand-text-primary">Calories</h3>
-                                <i data-lucide="flame" class="text-rose-500 w-5 h-5"></i>
+                <!-- Workout Selection -->
+                <div class="mb-6 md:mb-8">
+                    <h2 class="text-xl md:text-2xl font-bold text-brand-text-primary mb-4">Today's Workout Options</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
+                        <!-- Workout Option 1 -->
+                        <div class="workout-option bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-brand-lime" data-workout="strength">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold text-brand-text-primary">Strength Training</h3>
+                                <i data-lucide="dumbbell" class="text-blue-500 w-6 h-6"></i>
+                            </div>
+                            <p class="text-sm text-brand-text-secondary mb-3">Upper body focus with compound movements</p>
+                            <div class="flex items-center text-xs text-brand-text-secondary">
+                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                <span>45-60 min</span>
+                                <span class="mx-2">•</span>
+                                <span>5 exercises</span>
                             </div>
                         </div>
-                        <div>
-                            <p class="text-3xl md:text-4xl font-bold text-brand-text-primary">1,200</p>
-                            <p class="text-sm text-brand-text-secondary">kcal burned</p>
+                        
+                        <!-- Workout Option 2 -->
+                        <div class="workout-option bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-brand-lime" data-workout="cardio">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold text-brand-text-primary">HIIT Cardio</h3>
+                                <i data-lucide="zap" class="text-red-500 w-6 h-6"></i>
+                            </div>
+                            <p class="text-sm text-brand-text-secondary mb-3">High intensity interval training</p>
+                            <div class="flex items-center text-xs text-brand-text-secondary">
+                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                <span>30-40 min</span>
+                                <span class="mx-2">•</span>
+                                <span>6 exercises</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Workout Option 3 -->
+                        <div class="workout-option bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-brand-lime" data-workout="functional">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold text-brand-text-primary">Functional</h3>
+                                <i data-lucide="activity" class="text-green-500 w-6 h-6"></i>
+                            </div>
+                            <p class="text-sm text-brand-text-secondary mb-3">Bodyweight and functional movements</p>
+                            <div class="flex items-center text-xs text-brand-text-secondary">
+                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                <span>35-50 min</span>
+                                <span class="mx-2">•</span>
+                                <span>4 exercises</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Workout Option 4 -->
+                        <div class="workout-option bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-brand-lime" data-workout="flexibility">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold text-brand-text-primary">Flexibility</h3>
+                                <i data-lucide="heart" class="text-purple-500 w-6 h-6"></i>
+                            </div>
+                            <p class="text-sm text-brand-text-secondary mb-3">Yoga and stretching routine</p>
+                            <div class="flex items-center text-xs text-brand-text-secondary">
+                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                <span>25-35 min</span>
+                                <span class="mx-2">•</span>
+                                <span>4 exercises</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 flex flex-col justify-between h-40 md:h-48">
-                        <div>
-                            <div class="flex items-center justify-between">
-                                <h3 class="font-semibold text-brand-text-primary">Heart Rate</h3>
-                                <i data-lucide="heart-pulse" class="text-blue-500 w-5 h-5"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-3xl md:text-4xl font-bold text-brand-text-primary">78</p>
-                            <p class="text-sm text-brand-text-secondary">bpm</p>
-                        </div>
-                    </div>
-                    <div class="bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 flex flex-col justify-between h-40 md:h-48">
-                        <div>
-                            <div class="flex items-center justify-between">
-                                <h3 class="font-semibold text-brand-text-primary">Steps</h3>
-                                <i data-lucide="footprints" class="text-green-500 w-5 h-5"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-3xl md:text-4xl font-bold text-brand-text-primary">8,452</p>
-                            <p class="text-sm text-brand-text-secondary">today</p>
+                </div>
+
+                <!-- Exercise Details -->
+                <div id="exercise-details" class="hidden">
+                    <div class="bg-brand-surface rounded-2xl p-4 md:p-6 mb-6">
+                        <div class="flex items-center justify-between">
+                            <h2 id="workout-title" class="text-xl md:text-2xl font-bold text-brand-text-primary"></h2>
+                            <button id="back-to-options" class="flex items-center px-4 py-2 text-sm font-medium text-brand-text-secondary hover:text-brand-text-primary transition-colors">
+                                <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                                Back to Options
+                            </button>
                         </div>
                     </div>
-                    <div class="bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 flex flex-col justify-between h-40 md:h-48">
-                        <div>
-                            <div class="flex items-center justify-between">
-                                <h3 class="font-semibold text-brand-text-primary">Sleep</h3>
-                                <i data-lucide="moon" class="text-indigo-500 w-5 h-5"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-3xl md:text-4xl font-bold text-brand-text-primary">7<span class="text-xl md:text-2xl">h</span> 30<span class="text-xl md:text-2xl">m</span></p>
-                            <p class="text-sm text-brand-text-secondary">last night</p>
-                        </div>
+                    
+                    <div id="exercises-container" class="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+                        <!-- Exercises will be dynamically inserted here -->
                     </div>
                 </div>
             </main>
