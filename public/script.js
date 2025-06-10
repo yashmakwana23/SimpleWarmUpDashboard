@@ -1060,13 +1060,13 @@ document.addEventListener('DOMContentLoaded', function () {
             let validPosition = false;
             
             while (!validPosition && attempts < 50) {
-                x = 12 + Math.random() * 70; // 12% to 82% to avoid edges
-                y = 20 + Math.random() * 55; // 20% to 75% to avoid edges
+                x = 15 + Math.random() * 65; // 15% to 80% to avoid edges and title
+                y = 25 + Math.random() * 45; // 25% to 70% to avoid edges and keep cards visible
                 
                 // Check if position is too close to existing positions
                 validPosition = positions.every(pos => {
                     const distance = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
-                    return distance > 15; // Minimum distance of 15% to prevent overlap
+                    return distance > 12; // Slightly reduced minimum distance for better distribution
                 });
                 
                 attempts++;
@@ -1076,8 +1076,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!validPosition) {
                 const gridCol = index % 4;
                 const gridRow = Math.floor(index / 4);
-                x = 15 + gridCol * 20;
-                y = 25 + gridRow * 25;
+                x = 20 + gridCol * 18; // Adjusted to stay within bounds
+                y = 30 + gridRow * 20; // Adjusted to stay within bounds
+                
+                // Ensure grid positions don't exceed bounds
+                if (y > 65) {
+                    y = 30 + (gridRow % 2) * 20; // Wrap to first two rows
+                }
             }
             
             positions.push({ x, y });
