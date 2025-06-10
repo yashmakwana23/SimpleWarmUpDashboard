@@ -88,62 +88,275 @@
                     <h2 class="text-xl md:text-2xl font-bold text-brand-text-primary mb-4">Today's Workout Options</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
                         <!-- Workout Option 1 -->
-                        <div class="workout-option bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-brand-lime" data-workout="strength">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-semibold text-brand-text-primary">Strength Training</h3>
-                                <i data-lucide="dumbbell" class="text-blue-500 w-6 h-6"></i>
+                        <div class="workout-card">
+                            <div class="workout-option bg-brand-surface rounded-3xl md:rounded-[3rem] shadow-lg p-6 md:p-8 cursor-pointer hover:shadow-xl transition-all duration-300 border-3 border-transparent hover:border-brand-lime transform hover:scale-105" data-workout="strength">
+                                <div class="flex items-center justify-between mb-4">
+                                    <a href="#" class="font-semibold text-brand-text-primary hover:text-blue-600 transition-colors">Strength Training</a>
+                                    <i data-lucide="dumbbell" class="text-blue-500 w-6 h-6"></i>
+                                </div>
+                                <p class="text-sm text-brand-text-secondary mb-3">Upper body focus with compound movements</p>
+                                <div class="flex items-center text-xs text-brand-text-secondary">
+                                    <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                    <span>45-60 min</span>
+                                    <span class="mx-2">•</span>
+                                    <span>5 exercises</span>
+                                </div>
                             </div>
-                            <p class="text-sm text-brand-text-secondary mb-3">Upper body focus with compound movements</p>
-                            <div class="flex items-center text-xs text-brand-text-secondary">
-                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
-                                <span>45-60 min</span>
-                                <span class="mx-2">•</span>
-                                <span>5 exercises</span>
+                            <!-- Desktop Only: Sequential Card Flow -->
+                            <div class="hidden lg:block mt-4">
+                                <div class="relative w-full h-[30rem] overflow-hidden">
+                                    <!-- Responsive SVG container -->
+                                    <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+                                        <!-- Curved flowing path connecting card centers -->
+                                        <path d="M 50 10 
+                                                 Q 50 15 65 20
+                                                 Q 80 25 65 30
+                                                 Q 50 35 35 40
+                                                 Q 20 45 35 50
+                                                 Q 50 55 65 60
+                                                 Q 80 65 65 70
+                                                 Q 50 75 50 80" 
+                                              stroke="#93C5FD" 
+                                              stroke-width="0.3" 
+                                              fill="none" 
+                                              opacity="0.8" 
+                                              stroke-dasharray="1,0.5"/>
+                                    </svg>
+                                    
+                                    <!-- Exercise cards with responsive positioning -->
+                                    <div class="relative z-10 h-full flex flex-col justify-between py-2">
+                                        <!-- Exercise 1 (right side) -->
+                                        <div class="flex justify-end pr-4">
+                                            <div class="bg-blue-50 hover:bg-blue-100 rounded-xl px-4 py-2 shadow-md border-2 border-blue-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                                                <a href="https://www.youtube.com/watch?v=rT7DgCr-3pg" target="_blank" class="block">
+                                                    <div class="text-base font-semibold text-blue-700 hover:text-blue-900 whitespace-nowrap">Bench Press</div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Exercise 2 (left side) -->
+                                        <div class="flex justify-start pl-4">
+                                            <div class="bg-blue-50 hover:bg-blue-100 rounded-xl px-4 py-2 shadow-md border-2 border-blue-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                                                <a href="https://www.youtube.com/watch?v=op9kVnSso6Q" target="_blank" class="block">
+                                                    <div class="text-base font-semibold text-blue-700 hover:text-blue-900 whitespace-nowrap">Deadlift</div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Exercise 3 (right side) -->
+                                        <div class="flex justify-end pr-4">
+                                            <div class="bg-blue-50 hover:bg-blue-100 rounded-xl px-4 py-2 shadow-md border-2 border-blue-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                                                <a href="https://www.youtube.com/watch?v=eGo4IYlbE5g" target="_blank" class="block">
+                                                    <div class="text-base font-semibold text-blue-700 hover:text-blue-900 whitespace-nowrap">Pull-ups</div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Exercise 4 (left side) -->
+                                        <div class="flex justify-start pl-4">
+                                            <div class="bg-blue-50 hover:bg-blue-100 rounded-xl px-4 py-2 shadow-md border-2 border-blue-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                                                <a href="https://www.youtube.com/watch?v=qEwKCR5JCog" target="_blank" class="block">
+                                                    <div class="text-base font-semibold text-blue-700 hover:text-blue-900 whitespace-nowrap">Overhead Press</div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Exercise 5 (center) -->
+                                        <div class="flex justify-center">
+                                            <div class="bg-blue-50 hover:bg-blue-100 rounded-xl px-4 py-2 shadow-md border-2 border-blue-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                                                <a href="https://www.youtube.com/watch?v=FWJR5Ve8bnQ" target="_blank" class="block">
+                                                    <div class="text-base font-semibold text-blue-700 hover:text-blue-900 whitespace-nowrap">Barbell Rows</div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
                         <!-- Workout Option 2 -->
-                        <div class="workout-option bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-brand-lime" data-workout="cardio">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-semibold text-brand-text-primary">HIIT Cardio</h3>
-                                <i data-lucide="zap" class="text-red-500 w-6 h-6"></i>
+                        <div class="workout-card">
+                            <div class="workout-option bg-brand-surface rounded-3xl md:rounded-[3rem] shadow-lg p-6 md:p-8 cursor-pointer hover:shadow-xl transition-all duration-300 border-3 border-transparent hover:border-brand-lime transform hover:scale-105" data-workout="cardio">
+                                <div class="flex items-center justify-between mb-4">
+                                    <a href="#" class="font-semibold text-brand-text-primary hover:text-red-600 transition-colors">HIIT Cardio</a>
+                                    <i data-lucide="zap" class="text-red-500 w-6 h-6"></i>
+                                </div>
+                                <p class="text-sm text-brand-text-secondary mb-3">High intensity interval training</p>
+                                <div class="flex items-center text-xs text-brand-text-secondary">
+                                    <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                    <span>30-40 min</span>
+                                    <span class="mx-2">•</span>
+                                    <span>4 exercises</span>
+                                </div>
                             </div>
-                            <p class="text-sm text-brand-text-secondary mb-3">High intensity interval training</p>
-                            <div class="flex items-center text-xs text-brand-text-secondary">
-                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
-                                <span>30-40 min</span>
-                                <span class="mx-2">•</span>
-                                <span>6 exercises</span>
+                            <!-- Desktop Only: Flowing Path Hierarchy -->
+                            <div class="hidden lg:block mt-6 h-80">
+                                <svg width="100%" height="100%" viewBox="0 0 400 320" class="overflow-visible">
+                                    <!-- Flowing curved path connecting all exercises -->
+                                    <path d="M 200 40 C 200 40 280 60 320 100 C 350 130 320 140 280 160 C 200 190 120 190 80 160 C 40 130 40 170 80 200 C 140 240 200 240 280 260 C 320 270 280 280 200 280" 
+                                          stroke="#FCA5A5" stroke-width="3" fill="none" opacity="0.8"/>
+                                    
+                                    <!-- Exercise cards positioned along the flowing path -->
+                                    <g>
+                                        <!-- Exercise 1 (right side) -->
+                                        <foreignObject x="240" y="80" width="120" height="40">
+                                            <div class="bg-red-100 rounded-xl p-3 text-center shadow-md border-2 border-red-200">
+                                                <a href="https://www.youtube.com/watch?v=auBLPXO8Fww" target="_blank" class="text-sm font-medium text-red-700 hover:text-red-900">Burpees</a>
+                                            </div>
+                                        </foreignObject>
+                                        
+                                        <!-- Exercise 2 (left side) -->
+                                        <foreignObject x="40" y="140" width="120" height="40">
+                                            <div class="bg-red-100 rounded-xl p-3 text-center shadow-md border-2 border-red-200">
+                                                <a href="https://www.youtube.com/watch?v=A-cFYWvaHr0" target="_blank" class="text-sm font-medium text-red-700 hover:text-red-900">Jump Squats</a>
+                                            </div>
+                                        </foreignObject>
+                                        
+                                        <!-- Exercise 3 (right side) -->
+                                        <foreignObject x="240" y="200" width="120" height="40">
+                                            <div class="bg-red-100 rounded-xl p-3 text-center shadow-md border-2 border-red-200">
+                                                <a href="https://www.youtube.com/watch?v=8opcQdC-V-U" target="_blank" class="text-sm font-medium text-red-700 hover:text-red-900">High Knees</a>
+                                            </div>
+                                        </foreignObject>
+                                        
+                                        <!-- Exercise 4 (center bottom) -->
+                                        <foreignObject x="140" y="260" width="120" height="40">
+                                            <div class="bg-red-100 rounded-xl p-3 text-center shadow-md border-2 border-red-200">
+                                                <a href="https://www.youtube.com/watch?v=kLh-uczlPLg" target="_blank" class="text-sm font-medium text-red-700 hover:text-red-900">Mt. Climbers</a>
+                                            </div>
+                                        </foreignObject>
+                                    </g>
+                                </svg>
                             </div>
                         </div>
                         
                         <!-- Workout Option 3 -->
-                        <div class="workout-option bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-brand-lime" data-workout="functional">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-semibold text-brand-text-primary">Functional</h3>
-                                <i data-lucide="activity" class="text-green-500 w-6 h-6"></i>
+                        <div class="workout-card">
+                            <div class="workout-option bg-brand-surface rounded-3xl md:rounded-[3rem] shadow-lg p-6 md:p-8 cursor-pointer hover:shadow-xl transition-all duration-300 border-3 border-transparent hover:border-brand-lime transform hover:scale-105" data-workout="functional">
+                                <div class="flex items-center justify-between mb-4">
+                                    <a href="#" class="font-semibold text-brand-text-primary hover:text-green-600 transition-colors">Functional</a>
+                                    <i data-lucide="activity" class="text-green-500 w-6 h-6"></i>
+                                </div>
+                                <p class="text-sm text-brand-text-secondary mb-3">Bodyweight and functional movements</p>
+                                <div class="flex items-center text-xs text-brand-text-secondary">
+                                    <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                    <span>35-50 min</span>
+                                    <span class="mx-2">•</span>
+                                    <span>4 exercises</span>
+                                </div>
                             </div>
-                            <p class="text-sm text-brand-text-secondary mb-3">Bodyweight and functional movements</p>
-                            <div class="flex items-center text-xs text-brand-text-secondary">
-                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
-                                <span>35-50 min</span>
-                                <span class="mx-2">•</span>
-                                <span>4 exercises</span>
+                            <!-- Desktop Only: Tree Branch Hierarchy -->
+                            <div class="hidden lg:block mt-6 h-80">
+                                <svg width="100%" height="100%" viewBox="0 0 400 320" class="overflow-visible">
+                                    <!-- Main trunk -->
+                                    <path d="M 200 20 L 200 100" stroke="#86EFAC" stroke-width="4" fill="none"/>
+                                    
+                                    <!-- Branch lines extending to exercises -->
+                                    <g>
+                                        <!-- Branch to Exercise 1 (top-left) -->
+                                        <path d="M 200 70 Q 150 85 80 100" stroke="#86EFAC" stroke-width="2" fill="none"/>
+                                        
+                                        <!-- Branch to Exercise 2 (top-right) -->
+                                        <path d="M 200 85 Q 250 100 320 115" stroke="#86EFAC" stroke-width="2" fill="none"/>
+                                        
+                                        <!-- Branch to Exercise 3 (bottom-left) -->
+                                        <path d="M 200 100 Q 120 140 40 180" stroke="#86EFAC" stroke-width="2" fill="none"/>
+                                        
+                                        <!-- Branch to Exercise 4 (bottom-right) -->
+                                        <path d="M 200 100 Q 280 140 360 180" stroke="#86EFAC" stroke-width="2" fill="none"/>
+                                    </g>
+                                    
+                                    <!-- Exercise cards positioned at branch ends -->
+                                    <g>
+                                        <!-- Exercise 1 -->
+                                        <foreignObject x="20" y="85" width="120" height="40">
+                                            <div class="bg-green-100 rounded-xl p-3 text-center shadow-md border-2 border-green-200">
+                                                <a href="https://www.youtube.com/watch?v=aclHkVaku9U" target="_blank" class="text-sm font-medium text-green-700 hover:text-green-900">Squats</a>
+                                            </div>
+                                        </foreignObject>
+                                        
+                                        <!-- Exercise 2 -->
+                                        <foreignObject x="260" y="100" width="120" height="40">
+                                            <div class="bg-green-100 rounded-xl p-3 text-center shadow-md border-2 border-green-200">
+                                                <a href="https://www.youtube.com/watch?v=IODxDxX7oi4" target="_blank" class="text-sm font-medium text-green-700 hover:text-green-900">Push-ups</a>
+                                            </div>
+                                        </foreignObject>
+                                        
+                                        <!-- Exercise 3 -->
+                                        <foreignObject x="0" y="165" width="120" height="40">
+                                            <div class="bg-green-100 rounded-xl p-3 text-center shadow-md border-2 border-green-200">
+                                                <a href="https://www.youtube.com/watch?v=3XDriUn0udo" target="_blank" class="text-sm font-medium text-green-700 hover:text-green-900">Lunges</a>
+                                            </div>
+                                        </foreignObject>
+                                        
+                                        <!-- Exercise 4 -->
+                                        <foreignObject x="280" y="165" width="120" height="40">
+                                            <div class="bg-green-100 rounded-xl p-3 text-center shadow-md border-2 border-green-200">
+                                                <a href="https://www.youtube.com/watch?v=pSHjTRCQxIw" target="_blank" class="text-sm font-medium text-green-700 hover:text-green-900">Plank</a>
+                                            </div>
+                                        </foreignObject>
+                                    </g>
+                                </svg>
                             </div>
                         </div>
                         
                         <!-- Workout Option 4 -->
-                        <div class="workout-option bg-brand-surface rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-brand-lime" data-workout="flexibility">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-semibold text-brand-text-primary">Flexibility</h3>
-                                <i data-lucide="heart" class="text-purple-500 w-6 h-6"></i>
+                        <div class="workout-card">
+                            <div class="workout-option bg-brand-surface rounded-3xl md:rounded-[3rem] shadow-lg p-6 md:p-8 cursor-pointer hover:shadow-xl transition-all duration-300 border-3 border-transparent hover:border-brand-lime transform hover:scale-105" data-workout="flexibility">
+                                <div class="flex items-center justify-between mb-4">
+                                    <a href="#" class="font-semibold text-brand-text-primary hover:text-purple-600 transition-colors">Flexibility</a>
+                                    <i data-lucide="heart" class="text-purple-500 w-6 h-6"></i>
+                                </div>
+                                <p class="text-sm text-brand-text-secondary mb-3">Yoga and stretching routine</p>
+                                <div class="flex items-center text-xs text-brand-text-secondary">
+                                    <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                    <span>25-35 min</span>
+                                    <span class="mx-2">•</span>
+                                    <span>3 exercises</span>
+                                </div>
                             </div>
-                            <p class="text-sm text-brand-text-secondary mb-3">Yoga and stretching routine</p>
-                            <div class="flex items-center text-xs text-brand-text-secondary">
-                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
-                                <span>25-35 min</span>
-                                <span class="mx-2">•</span>
-                                <span>4 exercises</span>
+                            <!-- Desktop Only: Tree Branch Hierarchy -->
+                            <div class="hidden lg:block mt-6 h-64">
+                                <svg width="100%" height="100%" viewBox="0 0 400 240" class="overflow-visible">
+                                    <!-- Main trunk -->
+                                    <path d="M 200 20 L 200 80" stroke="#C4B5FD" stroke-width="4" fill="none"/>
+                                    
+                                    <!-- Branch lines extending to exercises -->
+                                    <g>
+                                        <!-- Branch to Exercise 1 (left) -->
+                                        <path d="M 200 60 Q 120 75 40 90" stroke="#C4B5FD" stroke-width="2" fill="none"/>
+                                        
+                                        <!-- Branch to Exercise 2 (right) -->
+                                        <path d="M 200 70 Q 280 85 360 100" stroke="#C4B5FD" stroke-width="2" fill="none"/>
+                                        
+                                        <!-- Branch to Exercise 3 (bottom-center) -->
+                                        <path d="M 200 80 Q 200 120 200 160" stroke="#C4B5FD" stroke-width="2" fill="none"/>
+                                    </g>
+                                    
+                                    <!-- Exercise cards positioned at branch ends -->
+                                    <g>
+                                        <!-- Exercise 1 -->
+                                        <foreignObject x="0" y="75" width="120" height="40">
+                                            <div class="bg-purple-100 rounded-xl p-3 text-center shadow-md border-2 border-purple-200">
+                                                <a href="https://www.youtube.com/watch?v=VpOOcr1KcyU" target="_blank" class="text-sm font-medium text-purple-700 hover:text-purple-900">Downward Dog</a>
+                                            </div>
+                                        </foreignObject>
+                                        
+                                        <!-- Exercise 2 -->
+                                        <foreignObject x="280" y="85" width="120" height="40">
+                                            <div class="bg-purple-100 rounded-xl p-3 text-center shadow-md border-2 border-purple-200">
+                                                <a href="https://www.youtube.com/watch?v=K9bK0BwKFjs" target="_blank" class="text-sm font-medium text-purple-700 hover:text-purple-900">Cat-Cow</a>
+                                            </div>
+                                        </foreignObject>
+                                        
+                                        <!-- Exercise 3 -->
+                                        <foreignObject x="140" y="145" width="120" height="40">
+                                            <div class="bg-purple-100 rounded-xl p-3 text-center shadow-md border-2 border-purple-200">
+                                                <a href="https://www.youtube.com/watch?v=DqYOIcweZY8" target="_blank" class="text-sm font-medium text-purple-700 hover:text-purple-900">Warrior Pose</a>
+                                            </div>
+                                        </foreignObject>
+                                    </g>
+                                </svg>
                             </div>
                         </div>
                     </div>
