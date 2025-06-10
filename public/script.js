@@ -429,7 +429,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const workoutTitle = document.getElementById('workout-title');
     const exercisesContainer = document.getElementById('exercises-container');
     const backToOptionsBtn = document.getElementById('back-to-options');
-    const workoutSelectionDiv = exerciseDetails?.previousElementSibling;
+    
+    // Get the correct workout selection and playground sections
+    const workoutSelectionSection = document.querySelector('main > div:first-child'); // First div in main containing workout options
+    
+    // Find playground section by going up from exercise-playground element
+    const exercisePlayground = document.getElementById('exercise-playground');
+    const playgroundSection = exercisePlayground?.closest('main > div'); // Find the closest main > div ancestor
 
     // Exercise data
     const workoutData = {
@@ -630,7 +636,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to show workout exercises
     function showWorkoutExercises(workoutType) {
         const workout = workoutData[workoutType];
-        if (!workout || !workoutTitle || !exercisesContainer || !exerciseDetails || !workoutSelectionDiv) return;
+        
+        if (!workout || !workoutTitle || !exercisesContainer || !exerciseDetails) return;
 
         // Update title
         workoutTitle.textContent = workout.title;
@@ -640,8 +647,15 @@ document.addEventListener('DOMContentLoaded', function () {
             .map((exercise, index) => createExerciseCard(exercise, index))
             .join('');
         
-        // Show exercise details and hide workout selection
-        workoutSelectionDiv.classList.add('hidden');
+        // Hide workout selection and playground sections, show exercise details
+        if (workoutSelectionSection) {
+            workoutSelectionSection.classList.add('hidden');
+        }
+        if (playgroundSection) {
+            playgroundSection.classList.add('hidden');
+            // Remove any responsive classes that might interfere
+            playgroundSection.classList.remove('lg:block');
+        }
         exerciseDetails.classList.remove('hidden');
         
         // Re-initialize Lucide icons for new content
@@ -652,10 +666,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to go back to workout options
     function showWorkoutOptions() {
-        if (!exerciseDetails || !workoutSelectionDiv) return;
+        if (!exerciseDetails) return;
         
+        // Hide exercise details, show workout selection and playground
         exerciseDetails.classList.add('hidden');
-        workoutSelectionDiv.classList.remove('hidden');
+        if (workoutSelectionSection) {
+            workoutSelectionSection.classList.remove('hidden');
+        }
+        if (playgroundSection) {
+            playgroundSection.classList.remove('hidden');
+            // Restore responsive class
+            playgroundSection.classList.add('lg:block');
+        }
     }
 
     // Event listeners for workout options
