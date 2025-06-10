@@ -146,7 +146,88 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // --- Content Management ---
+    function showDashboard() {
+        // Hide assessments content
+        const assessmentsContent = document.getElementById('assessments-content');
+        if (assessmentsContent) {
+            assessmentsContent.classList.add('hidden');
+        }
+        
+        // Show dashboard content
+        const workoutOptions = document.querySelector('.workout-cards-grid').parentElement;
+        const exercisePlayground = document.getElementById('exercise-playground').parentElement;
+        if (workoutOptions) workoutOptions.classList.remove('hidden');
+        if (exercisePlayground) exercisePlayground.classList.remove('hidden');
+        
+        // Update navigation active states
+        updateNavigation('dashboard');
+    }
+    
+    function showAssessments() {
+        // Hide dashboard content
+        const workoutOptions = document.querySelector('.workout-cards-grid').parentElement;
+        const exercisePlayground = document.getElementById('exercise-playground').parentElement;
+        const exerciseDetails = document.getElementById('exercise-details');
+        if (workoutOptions) workoutOptions.classList.add('hidden');
+        if (exercisePlayground) exercisePlayground.classList.add('hidden');
+        if (exerciseDetails) exerciseDetails.classList.add('hidden');
+        
+        // Show assessments content
+        const assessmentsContent = document.getElementById('assessments-content');
+        if (assessmentsContent) {
+            assessmentsContent.classList.remove('hidden');
+        }
+        
+        // Update navigation active states
+        updateNavigation('assessments');
+    }
+    
+    function updateNavigation(activeTab) {
+        // Remove active state from all nav items
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.classList.remove('bg-brand-lime');
+            item.classList.add('text-brand-text-secondary', 'hover:bg-gray-100');
+            item.classList.remove('text-brand-text-primary');
+        });
+        
+        // Add active state to selected nav item
+        const activeNav = document.getElementById(`${activeTab}-nav`);
+        if (activeNav) {
+            activeNav.classList.add('bg-brand-lime');
+            activeNav.classList.remove('text-brand-text-secondary', 'hover:bg-gray-100');
+            activeNav.classList.add('text-brand-text-primary');
+        }
+    }
+
     // --- Event Listeners ---
+    
+    // Navigation
+    const dashboardNav = document.getElementById('dashboard-nav');
+    const assessmentsNav = document.getElementById('assessments-nav');
+    
+    if (dashboardNav) {
+        dashboardNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            showDashboard();
+            // Close left sidebar on mobile after navigation
+            if (window.innerWidth < 768 && isLeftSidebarOpen) {
+                closeLeftSidebar();
+            }
+        });
+    }
+    
+    if (assessmentsNav) {
+        assessmentsNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            showAssessments();
+            // Close left sidebar on mobile after navigation
+            if (window.innerWidth < 768 && isLeftSidebarOpen) {
+                closeLeftSidebar();
+            }
+        });
+    }
     
     // Desktop calendar button
     if (calendarToggleBtn) {
