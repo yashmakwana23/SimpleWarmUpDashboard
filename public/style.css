@@ -70,4 +70,283 @@ details summary::-webkit-details-marker {
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* Workout Cards Equal Height */
+.workout-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    align-items: stretch; /* This ensures all grid items stretch to same height */
+}
+
+.workout-option {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Take full height of grid item */
+    min-height: 180px; /* Ensure minimum height for consistency */
+}
+
+.workout-option > * {
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.workout-option > *:nth-child(2) {
+    flex-grow: 1; /* Description grows to fill space */
+}
+
+/* Workout Card Container */
+.workout-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Exercise visualization container improvements */
+.exercise-visualization {
+    margin-top: 1rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 2px solid #e2e8f0;
+    padding: 1rem;
+    min-height: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Exercise tag styles for better visual appeal */
+.exercise-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    margin: 0.25rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.exercise-tag:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Exercise tag color schemes */
+.exercise-tag.strength {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1d4ed8;
+    border: 1px solid #3b82f6;
+}
+
+.exercise-tag.cardio {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #dc2626;
+    border: 1px solid #ef4444;
+}
+
+.exercise-tag.functional {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #059669;
+    border: 1px solid #10b981;
+}
+
+.exercise-tag.flexibility {
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+    color: #7c3aed;
+    border: 1px solid #8b5cf6;
+}
+
+/* Icon positioning in exercise tags */
+.exercise-tag i {
+    margin-right: 0.375rem;
+    width: 14px;
+    height: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .exercise-visualization {
+        display: none; /* Hide on tablets and mobile for cleaner look */
+    }
+    
+    .workout-cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    
+    .workout-option {
+        min-height: 160px;
+    }
+}
+
+@media (max-width: 768px) {
+    .workout-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .workout-option {
+        min-height: 140px;
+    }
+}
+
+/* Exercise Playground Animations */
+.floating-exercise {
+    position: absolute;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    z-index: 10;
+}
+
+.floating-exercise:hover {
+    transform: scale(1.1) translateY(-2px) !important;
+    z-index: 20;
+}
+
+.exercise-bubble {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    animation: float 8s ease-in-out infinite;
+    animation-delay: var(--delay);
+    opacity: 0.85;
+    min-width: max-content;
+}
+
+.exercise-bubble.strength {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.7) 0%, rgba(37, 99, 235, 0.7) 100%);
+    color: white;
+    box-shadow: 0 2px 12px rgba(59, 130, 246, 0.2);
+}
+
+.exercise-bubble.cardio {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.7) 0%, rgba(220, 38, 38, 0.7) 100%);
+    color: white;
+    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.2);
+}
+
+.exercise-bubble.functional {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.7) 0%, rgba(5, 150, 105, 0.7) 100%);
+    color: white;
+    box-shadow: 0 2px 12px rgba(16, 185, 129, 0.2);
+}
+
+.exercise-bubble.flexibility {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.7) 0%, rgba(124, 58, 237, 0.7) 100%);
+    color: white;
+    box-shadow: 0 2px 12px rgba(139, 92, 246, 0.2);
+}
+
+.exercise-bubble i {
+    margin-right: 0.5rem;
+    width: 16px;
+    height: 16px;
+}
+
+/* Floating animation keyframes */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotate(1deg);
+    }
+    50% {
+        transform: translateY(-5px) rotate(-1deg);
+    }
+    75% {
+        transform: translateY(-12px) rotate(0.5deg);
+    }
+}
+
+/* Random movement animations */
+@keyframes float-left {
+    0%, 100% {
+        transform: translateX(0px) translateY(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateX(-15px) translateY(-8px) rotate(1deg);
+    }
+    50% {
+        transform: translateX(-8px) translateY(-15px) rotate(-0.5deg);
+    }
+    75% {
+        transform: translateX(-12px) translateY(-5px) rotate(0.8deg);
+    }
+}
+
+@keyframes float-right {
+    0%, 100% {
+        transform: translateX(0px) translateY(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateX(12px) translateY(-10px) rotate(-1deg);
+    }
+    50% {
+        transform: translateX(8px) translateY(-6px) rotate(1.2deg);
+    }
+    75% {
+        transform: translateX(15px) translateY(-12px) rotate(-0.7deg);
+    }
+}
+
+@keyframes float-center {
+    0%, 100% {
+        transform: translateX(0px) translateY(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateX(5px) translateY(-15px) rotate(0.5deg);
+    }
+    50% {
+        transform: translateX(-5px) translateY(-8px) rotate(-1deg);
+    }
+    75% {
+        transform: translateX(8px) translateY(-18px) rotate(0.3deg);
+    }
+}
+
+/* Apply different animations randomly */
+.floating-exercise:nth-child(3n) .exercise-bubble {
+    animation: float-left 8s ease-in-out infinite;
+}
+
+.floating-exercise:nth-child(3n+1) .exercise-bubble {
+    animation: float-right 7s ease-in-out infinite;
+}
+
+.floating-exercise:nth-child(3n+2) .exercise-bubble {
+    animation: float-center 9s ease-in-out infinite;
+}
+
+/* Benefit tooltip styling */
+#benefit-tooltip {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.4;
+    letter-spacing: 0.025em;
+}
+
+/* Playground background pattern */
+#exercise-playground::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, rgba(239, 68, 68, 0.1) 0%, transparent 50%),
+                      radial-gradient(circle at 60% 40%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+    pointer-events: none;
 } 

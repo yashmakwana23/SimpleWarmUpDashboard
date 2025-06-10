@@ -666,6 +666,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Initialize all workout visualizations on page load
+    function initializeAllWorkoutVisualizations() {
+        console.log('Initializing workout visualizations...');
+        Object.keys(visualizationData).forEach(workoutType => {
+            console.log(`Generating visualization for: ${workoutType}`);
+            generateWorkoutVisualization(workoutType);
+        });
+    }
+
     // Event listener for back button
     if (backToOptionsBtn) {
         backToOptionsBtn.addEventListener('click', showWorkoutOptions);
@@ -724,4 +733,387 @@ document.addEventListener('DOMContentLoaded', function () {
         progressBar.classList.add('bg-brand-lime');
         progressBar.classList.remove('bg-green-500');
     };
+
+    // --- Dynamic Workout Visualization ---
+    
+    // Sample workout data for visualization (this would come from backend)
+    const visualizationData = {
+        strength: [
+            { name: 'Bench Press', url: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
+            { name: 'Deadlift', url: 'https://www.youtube.com/watch?v=op9kVnSso6Q' },
+            { name: 'Pull-ups', url: 'https://www.youtube.com/watch?v=eGo4IYlbE5g' },
+            { name: 'Overhead Press', url: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
+            { name: 'Barbell Rows', url: 'https://www.youtube.com/watch?v=FWJR5Ve8bnQ' }
+        ],
+        cardio: [
+            { name: 'Burpees', url: 'https://www.youtube.com/watch?v=auBLPXO8Fww' },
+            { name: 'Jump Squats', url: 'https://www.youtube.com/watch?v=A-cFYWvaHr0' },
+            { name: 'High Knees', url: 'https://www.youtube.com/watch?v=8opcQdC-V-U' },
+            { name: 'Mt. Climbers', url: 'https://www.youtube.com/watch?v=kLh-uczlPLg' }
+        ],
+        functional: [
+            { name: 'Squats', url: 'https://www.youtube.com/watch?v=aclHkVaku9U' },
+            { name: 'Push-ups', url: 'https://www.youtube.com/watch?v=IODxDxX7oi4' },
+            { name: 'Lunges', url: 'https://www.youtube.com/watch?v=3XDriUn0udo' },
+            { name: 'Plank', url: 'https://www.youtube.com/watch?v=pSHjTRCQxIw' }
+        ],
+        flexibility: [
+            { name: 'Downward Dog', url: 'https://www.youtube.com/watch?v=VpOOcr1KcyU' },
+            { name: 'Cat-Cow', url: 'https://www.youtube.com/watch?v=K9bK0BwKFjs' },
+            { name: 'Warrior Pose', url: 'https://www.youtube.com/watch?v=DqYOIcweZY8' }
+        ]
+    };
+
+    function generateWorkoutVisualization(workoutType) {
+        // This function is no longer needed for individual workout cards
+        // The playground will be generated separately
+    }
+
+    function createDashedPath(totalCards) {
+        // Create a straight vertical line path from top to bottom
+        const centerX = 50;
+        const startY = 10;
+        const endY = 90;
+        
+        // Simple straight line path
+        return `M ${centerX} ${startY} L ${centerX} ${endY}`;
+    }
+
+    function getFlowPosition(totalCards, index) {
+        // Position cards in a single straight line down the center
+        const progress = index / (totalCards - 1);
+        const startY = 15;
+        const endY = 85;
+        const y = startY + (endY - startY) * progress;
+        
+        // All cards in center line
+        const centerX = 50;
+        
+        return { x: centerX, y };
+    }
+
+    function getColorHex(colorName) {
+        const colorMap = {
+            blue: '#3B82F6',
+            red: '#EF4444', 
+            green: '#10B981',
+            purple: '#8B5CF6'
+        };
+        return colorMap[colorName] || '#3B82F6';
+    }
+
+    function showExercisePopup(exercise, index, workoutType) {
+        // Create popup overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+        overlay.id = 'exercise-popup-overlay';
+        
+        // Color scheme
+        const colorScheme = {
+            strength: 'blue',
+            cardio: 'red',
+            functional: 'green',
+            flexibility: 'purple'
+        };
+        const color = colorScheme[workoutType] || 'blue';
+        
+        // Get video ID from URL
+        const videoId = exercise.url.includes('youtube.com') ? 
+            exercise.url.split('v=')[1]?.split('&')[0] || 
+            exercise.url.split('youtu.be/')[1]?.split('?')[0] : '';
+        
+        overlay.innerHTML = `
+            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <!-- Header -->
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-800">${exercise.name}</h3>
+                    <button id="close-popup" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Video Section -->
+                    <div class="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                        <iframe 
+                            src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1" 
+                            title="${exercise.name}" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen
+                            class="w-full h-full">
+                        </iframe>
+                    </div>
+                    
+                    <!-- Input Section -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Weight (lbs)</label>
+                            <input type="number" 
+                                   id="popup-weight-${index}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${color}-500 focus:border-${color}-500" 
+                                   placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Sets</label>
+                            <input type="number" 
+                                   id="popup-sets-${index}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${color}-500 focus:border-${color}-500" 
+                                   placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Reps</label>
+                            <input type="number" 
+                                   id="popup-reps-${index}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${color}-500 focus:border-${color}-500" 
+                                   placeholder="0">
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Section -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">Progress</span>
+                            <span class="text-sm text-gray-600" id="popup-progress-text-${index}">0/0 sets completed</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-${color}-500 h-3 rounded-full transition-all duration-300" id="popup-progress-bar-${index}" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3">
+                        <button id="complete-set-btn-${index}" class="flex-1 bg-${color}-500 hover:bg-${color}-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200">
+                            Complete Set
+                        </button>
+                        <button id="reset-exercise-btn-${index}" class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
+        
+        // Add event listeners
+        document.getElementById('close-popup').addEventListener('click', closeExercisePopup);
+        document.getElementById(`complete-set-btn-${index}`).addEventListener('click', () => markPopupSetComplete(index));
+        document.getElementById(`reset-exercise-btn-${index}`).addEventListener('click', () => resetPopupExercise(index));
+        
+        // Close on overlay click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeExercisePopup();
+            }
+        });
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeExercisePopup() {
+        const overlay = document.getElementById('exercise-popup-overlay');
+        if (overlay) {
+            overlay.remove();
+            document.body.style.overflow = '';
+        }
+    }
+
+    function markPopupSetComplete(exerciseIndex) {
+        const setsInput = document.getElementById(`popup-sets-${exerciseIndex}`);
+        const progressText = document.getElementById(`popup-progress-text-${exerciseIndex}`);
+        const progressBar = document.getElementById(`popup-progress-bar-${exerciseIndex}`);
+        
+        if (!setsInput || !progressText || !progressBar) return;
+        
+        const totalSets = parseInt(setsInput.value) || 0;
+        if (totalSets === 0) {
+            alert('Please enter the number of sets first!');
+            return;
+        }
+        
+        const currentProgress = progressText.textContent.match(/(\d+)\/\d+/);
+        const completedSets = currentProgress ? parseInt(currentProgress[1]) : 0;
+        
+        if (completedSets < totalSets) {
+            const newCompletedSets = completedSets + 1;
+            const progressPercentage = (newCompletedSets / totalSets) * 100;
+            
+            progressText.textContent = `${newCompletedSets}/${totalSets} sets completed`;
+            progressBar.style.width = `${progressPercentage}%`;
+            
+            if (newCompletedSets === totalSets) {
+                progressBar.classList.remove('bg-blue-500', 'bg-red-500', 'bg-green-500', 'bg-purple-500');
+                progressBar.classList.add('bg-green-500');
+                
+                setTimeout(() => {
+                    if (confirm('🎉 Exercise completed! Well done!')) {
+                        closeExercisePopup();
+                    }
+                }, 100);
+            }
+        } else {
+            alert('All sets completed for this exercise!');
+        }
+    }
+
+    function resetPopupExercise(exerciseIndex) {
+        const progressText = document.getElementById(`popup-progress-text-${exerciseIndex}`);
+        const progressBar = document.getElementById(`popup-progress-bar-${exerciseIndex}`);
+        const weightInput = document.getElementById(`popup-weight-${exerciseIndex}`);
+        const setsInput = document.getElementById(`popup-sets-${exerciseIndex}`);
+        const repsInput = document.getElementById(`popup-reps-${exerciseIndex}`);
+        
+        if (progressText) progressText.textContent = '0/0 sets completed';
+        if (progressBar) progressBar.style.width = '0%';
+        if (weightInput) weightInput.value = '';
+        if (setsInput) setsInput.value = '';
+        if (repsInput) repsInput.value = '';
+    }
+
+    // --- Exercise Playground ---
+    
+    // Enhanced exercise data with benefits
+    const exerciseData = {
+        strength: [
+            { name: 'Bench Press', icon: 'dumbbell', benefits: 'Builds chest, shoulders & tricep strength. Improves pushing power.', url: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
+            { name: 'Deadlift', icon: 'dumbbell', benefits: 'Full-body strength. Builds back, glutes & hamstrings. Improves posture.', url: 'https://www.youtube.com/watch?v=op9kVnSso6Q' },
+            { name: 'Pull-ups', icon: 'arrow-up', benefits: 'Upper body strength. Targets lats, biceps & rear delts. Builds V-taper.', url: 'https://www.youtube.com/watch?v=eGo4IYlbE5g' },
+            { name: 'Overhead Press', icon: 'arrow-up', benefits: 'Shoulder strength & stability. Improves core strength & posture.', url: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
+            { name: 'Barbell Rows', icon: 'dumbbell', benefits: 'Back thickness. Improves pulling strength & counteracts bench press.', url: 'https://www.youtube.com/watch?v=FWJR5Ve8bnQ' }
+        ],
+        cardio: [
+            { name: 'Burpees', icon: 'zap', benefits: 'Full-body cardio. Burns calories fast. Improves endurance & strength.', url: 'https://www.youtube.com/watch?v=auBLPXO8Fww' },
+            { name: 'Jump Squats', icon: 'arrow-up', benefits: 'Explosive leg power. Burns fat. Improves athletic performance.', url: 'https://www.youtube.com/watch?v=A-cFYWvaHr0' },
+            { name: 'High Knees', icon: 'activity', benefits: 'Heart rate booster. Improves coordination & leg speed.', url: 'https://www.youtube.com/watch?v=8opcQdC-V-U' },
+            { name: 'Mt. Climbers', icon: 'mountain', benefits: 'Core & cardio combo. Improves agility & burns belly fat.', url: 'https://www.youtube.com/watch?v=kLh-uczlPLg' }
+        ],
+        functional: [
+            { name: 'Squats', icon: 'arrow-down', benefits: 'Daily movement pattern. Builds leg & glute strength. Improves mobility.', url: 'https://www.youtube.com/watch?v=aclHkVaku9U' },
+            { name: 'Push-ups', icon: 'arrow-down', benefits: 'Upper body endurance. Can be done anywhere. Builds functional strength.', url: 'https://www.youtube.com/watch?v=IODxDxX7oi4' },
+            { name: 'Lunges', icon: 'move', benefits: 'Single-leg stability. Improves balance & corrects imbalances.', url: 'https://www.youtube.com/watch?v=3XDriUn0udo' },
+            { name: 'Plank', icon: 'minus', benefits: 'Core stability. Improves posture & reduces back pain.', url: 'https://www.youtube.com/watch?v=pSHjTRCQxIw' }
+        ],
+        flexibility: [
+            { name: 'Downward Dog', icon: 'triangle', benefits: 'Full-body stretch. Relieves tension. Improves circulation.', url: 'https://www.youtube.com/watch?v=VpOOcr1KcyU' },
+            { name: 'Cat-Cow', icon: 'move', benefits: 'Spine mobility. Relieves back tension. Improves posture.', url: 'https://www.youtube.com/watch?v=K9bK0BwKFjs' },
+            { name: 'Warrior Pose', icon: 'user', benefits: 'Hip flexibility. Builds leg strength. Improves balance & focus.', url: 'https://www.youtube.com/watch?v=DqYOIcweZY8' }
+        ]
+    };
+
+    function createExercisePlayground() {
+        const playground = document.getElementById('floating-exercises');
+        const tooltip = document.getElementById('benefit-tooltip');
+        const tooltipContent = document.getElementById('tooltip-content');
+        
+        if (!playground || !tooltip || !tooltipContent) return;
+
+        // Clear existing content
+        playground.innerHTML = '';
+
+        // Collect all exercises
+        const allExercises = [];
+        Object.keys(exerciseData).forEach(workoutType => {
+            exerciseData[workoutType].forEach(exercise => {
+                allExercises.push({ ...exercise, type: workoutType });
+            });
+        });
+
+        // Shuffle exercises for random distribution
+        const shuffledExercises = allExercises.sort(() => Math.random() - 0.5);
+
+        // Create floating exercise bubbles with better spacing
+        const positions = [];
+        
+        shuffledExercises.forEach((exercise, index) => {
+            const floatingDiv = document.createElement('div');
+            floatingDiv.className = 'floating-exercise';
+            
+            // Generate non-overlapping positions
+            let x, y, attempts = 0;
+            let validPosition = false;
+            
+            while (!validPosition && attempts < 50) {
+                x = 12 + Math.random() * 70; // 12% to 82% to avoid edges
+                y = 20 + Math.random() * 55; // 20% to 75% to avoid edges
+                
+                // Check if position is too close to existing positions
+                validPosition = positions.every(pos => {
+                    const distance = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
+                    return distance > 15; // Minimum distance of 15% to prevent overlap
+                });
+                
+                attempts++;
+            }
+            
+            // Fallback to grid-based positioning if random fails
+            if (!validPosition) {
+                const gridCol = index % 4;
+                const gridRow = Math.floor(index / 4);
+                x = 15 + gridCol * 20;
+                y = 25 + gridRow * 25;
+            }
+            
+            positions.push({ x, y });
+            
+            floatingDiv.style.left = `${x}%`;
+            floatingDiv.style.top = `${y}%`;
+            floatingDiv.style.setProperty('--delay', `${Math.random() * 4}s`);
+            
+            floatingDiv.innerHTML = `
+                <div class="exercise-bubble ${exercise.type}">
+                    <i data-lucide="${exercise.icon}"></i>
+                    ${exercise.name}
+                </div>
+            `;
+
+            // Hover events for tooltip
+            floatingDiv.addEventListener('mouseenter', (e) => {
+                tooltipContent.textContent = exercise.benefits;
+                tooltip.style.opacity = '1';
+                
+                // Position tooltip
+                const rect = floatingDiv.getBoundingClientRect();
+                const playgroundRect = playground.getBoundingClientRect();
+                
+                const tooltipX = rect.left - playgroundRect.left + (rect.width / 2);
+                const tooltipY = rect.top - playgroundRect.top - 10;
+                
+                tooltip.style.left = `${tooltipX}px`;
+                tooltip.style.top = `${tooltipY}px`;
+                tooltip.style.transform = 'translate(-50%, -100%)';
+            });
+
+            floatingDiv.addEventListener('mouseleave', () => {
+                tooltip.style.opacity = '0';
+            });
+
+            // Click event for exercise popup
+            floatingDiv.addEventListener('click', () => {
+                const exerciseIndex = exerciseData[exercise.type].findIndex(ex => ex.name === exercise.name);
+                showExercisePopup(exercise, exerciseIndex, exercise.type);
+            });
+
+            playground.appendChild(floatingDiv);
+        });
+
+        // Initialize lucide icons for new elements
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    // Initialize everything
+    setCurrentDate();
+    generateCalendar();
+    createExercisePlayground();
+    
+    // Initialize all workout visualizations with a small delay to ensure DOM is ready
+    setTimeout(() => {
+        initializeAllWorkoutVisualizations();
+    }, 100);
 });
