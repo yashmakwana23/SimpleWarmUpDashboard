@@ -977,31 +977,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Exercise Playground ---
     
-    // Enhanced exercise data with benefits
+    // Enhanced exercise data with benefits - using consistent icons with workout plan options
     const exerciseData = {
         strength: [
             { name: 'Bench Press', icon: 'dumbbell', benefits: 'Builds chest, shoulders & tricep strength. Improves pushing power.', url: 'https://www.youtube.com/watch?v=rT7DgCr-3pg' },
             { name: 'Deadlift', icon: 'dumbbell', benefits: 'Full-body strength. Builds back, glutes & hamstrings. Improves posture.', url: 'https://www.youtube.com/watch?v=op9kVnSso6Q' },
-            { name: 'Pull-ups', icon: 'arrow-up', benefits: 'Upper body strength. Targets lats, biceps & rear delts. Builds V-taper.', url: 'https://www.youtube.com/watch?v=eGo4IYlbE5g' },
-            { name: 'Overhead Press', icon: 'arrow-up', benefits: 'Shoulder strength & stability. Improves core strength & posture.', url: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
+            { name: 'Pull-ups', icon: 'dumbbell', benefits: 'Upper body strength. Targets lats, biceps & rear delts. Builds V-taper.', url: 'https://www.youtube.com/watch?v=eGo4IYlbE5g' },
+            { name: 'Overhead Press', icon: 'dumbbell', benefits: 'Shoulder strength & stability. Improves core strength & posture.', url: 'https://www.youtube.com/watch?v=qEwKCR5JCog' },
             { name: 'Barbell Rows', icon: 'dumbbell', benefits: 'Back thickness. Improves pulling strength & counteracts bench press.', url: 'https://www.youtube.com/watch?v=FWJR5Ve8bnQ' }
         ],
         cardio: [
             { name: 'Burpees', icon: 'zap', benefits: 'Full-body cardio. Burns calories fast. Improves endurance & strength.', url: 'https://www.youtube.com/watch?v=auBLPXO8Fww' },
-            { name: 'Jump Squats', icon: 'arrow-up', benefits: 'Explosive leg power. Burns fat. Improves athletic performance.', url: 'https://www.youtube.com/watch?v=A-cFYWvaHr0' },
-            { name: 'High Knees', icon: 'activity', benefits: 'Heart rate booster. Improves coordination & leg speed.', url: 'https://www.youtube.com/watch?v=8opcQdC-V-U' },
-            { name: 'Mt. Climbers', icon: 'mountain', benefits: 'Core & cardio combo. Improves agility & burns belly fat.', url: 'https://www.youtube.com/watch?v=kLh-uczlPLg' }
+            { name: 'Jump Squats', icon: 'zap', benefits: 'Explosive leg power. Burns fat. Improves athletic performance.', url: 'https://www.youtube.com/watch?v=A-cFYWvaHr0' },
+            { name: 'High Knees', icon: 'zap', benefits: 'Heart rate booster. Improves coordination & leg speed.', url: 'https://www.youtube.com/watch?v=8opcQdC-V-U' },
+            { name: 'Mt. Climbers', icon: 'zap', benefits: 'Core & cardio combo. Improves agility & burns belly fat.', url: 'https://www.youtube.com/watch?v=kLh-uczlPLg' }
         ],
         functional: [
-            { name: 'Squats', icon: 'arrow-down', benefits: 'Daily movement pattern. Builds leg & glute strength. Improves mobility.', url: 'https://www.youtube.com/watch?v=aclHkVaku9U' },
-            { name: 'Push-ups', icon: 'arrow-down', benefits: 'Upper body endurance. Can be done anywhere. Builds functional strength.', url: 'https://www.youtube.com/watch?v=IODxDxX7oi4' },
-            { name: 'Lunges', icon: 'move', benefits: 'Single-leg stability. Improves balance & corrects imbalances.', url: 'https://www.youtube.com/watch?v=3XDriUn0udo' },
-            { name: 'Plank', icon: 'minus', benefits: 'Core stability. Improves posture & reduces back pain.', url: 'https://www.youtube.com/watch?v=pSHjTRCQxIw' }
+            { name: 'Squats', icon: 'activity', benefits: 'Daily movement pattern. Builds leg & glute strength. Improves mobility.', url: 'https://www.youtube.com/watch?v=aclHkVaku9U' },
+            { name: 'Push-ups', icon: 'activity', benefits: 'Upper body endurance. Can be done anywhere. Builds functional strength.', url: 'https://www.youtube.com/watch?v=IODxDxX7oi4' },
+            { name: 'Lunges', icon: 'activity', benefits: 'Single-leg stability. Improves balance & corrects imbalances.', url: 'https://www.youtube.com/watch?v=3XDriUn0udo' },
+            { name: 'Plank', icon: 'activity', benefits: 'Core stability. Improves posture & reduces back pain.', url: 'https://www.youtube.com/watch?v=pSHjTRCQxIw' }
         ],
         flexibility: [
-            { name: 'Downward Dog', icon: 'triangle', benefits: 'Full-body stretch. Relieves tension. Improves circulation.', url: 'https://www.youtube.com/watch?v=VpOOcr1KcyU' },
-            { name: 'Cat-Cow', icon: 'move', benefits: 'Spine mobility. Relieves back tension. Improves posture.', url: 'https://www.youtube.com/watch?v=K9bK0BwKFjs' },
-            { name: 'Warrior Pose', icon: 'user', benefits: 'Hip flexibility. Builds leg strength. Improves balance & focus.', url: 'https://www.youtube.com/watch?v=DqYOIcweZY8' }
+            { name: 'Downward Dog', icon: 'heart', benefits: 'Full-body stretch. Relieves tension. Improves circulation.', url: 'https://www.youtube.com/watch?v=VpOOcr1KcyU' },
+            { name: 'Cat-Cow', icon: 'heart', benefits: 'Spine mobility. Relieves back tension. Improves posture.', url: 'https://www.youtube.com/watch?v=K9bK0BwKFjs' },
+            { name: 'Warrior Pose', icon: 'heart', benefits: 'Hip flexibility. Builds leg strength. Improves balance & focus.', url: 'https://www.youtube.com/watch?v=DqYOIcweZY8' }
         ]
     };
 
