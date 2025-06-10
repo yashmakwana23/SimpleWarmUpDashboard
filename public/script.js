@@ -1215,10 +1215,409 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // --- Assessment Data Management ---
+    
+    // Sample data - in a real app, this would come from a database
+    let goalsData = [
+        { id: 1, title: 'Lose 10 lbs', target: 'Dec 31, 2024', progress: 70, color: 'blue' },
+        { id: 2, title: 'Run 5K under 25 min', target: 'Current: 28:30 min', progress: 45, color: 'green' },
+        { id: 3, title: 'Workout 5x/week', target: '4/5 workouts this week', progress: 80, color: 'purple' }
+    ];
+    
+    let measurementsData = [
+        { id: 1, type: 'Weight', value: 165, unit: 'lbs', change: '-3', color: 'red', icon: 'scale' },
+        { id: 2, type: 'Body Fat', value: 15.2, unit: '%', change: '-1.5', color: 'teal', icon: 'percent' },
+        { id: 3, type: 'Muscle Mass', value: 125, unit: 'lbs', change: '+2', color: 'indigo', icon: 'zap' },
+        { id: 4, type: 'Chest', value: 42, unit: 'inches', change: '+0.5', color: 'blue', icon: 'maximize' }
+    ];
+    
+    let currentEditingGoal = null;
+    let currentEditingMeasurement = null;
+    
+    // --- Popup Management ---
+    
+    function showGoalPopup(goalId = null) {
+        const popup = document.getElementById('goal-popup');
+        const popupContent = document.getElementById('goal-popup-content');
+        const title = document.getElementById('goal-popup-title');
+        const form = document.getElementById('goal-form');
+        
+        if (!popup || !popupContent) return;
+        
+        currentEditingGoal = goalId;
+        
+        if (goalId) {
+            const goal = goalsData.find(g => g.id === goalId);
+            if (goal) {
+                title.textContent = 'Edit Goal';
+                document.getElementById('goal-title').value = goal.title;
+                document.getElementById('goal-target').value = goal.target;
+                document.getElementById('goal-progress').value = goal.progress;
+                selectGoalColor(goal.color);
+            }
+        } else {
+            title.textContent = 'Add New Goal';
+            form.reset();
+            selectGoalColor('blue'); // Default color
+        }
+        
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            popupContent.classList.remove('scale-95', 'opacity-0');
+            popupContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+    
+    function hideGoalPopup() {
+        const popup = document.getElementById('goal-popup');
+        const popupContent = document.getElementById('goal-popup-content');
+        
+        if (!popup || !popupContent) return;
+        
+        popupContent.classList.remove('scale-100', 'opacity-100');
+        popupContent.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            popup.classList.add('hidden');
+            currentEditingGoal = null;
+        }, 300);
+    }
+    
+    function showMeasurementPopup(measurementId = null) {
+        const popup = document.getElementById('measurement-popup');
+        const popupContent = document.getElementById('measurement-popup-content');
+        const title = document.getElementById('measurement-popup-title');
+        const form = document.getElementById('measurement-form');
+        const customContainer = document.getElementById('custom-type-container');
+        
+        if (!popup || !popupContent) return;
+        
+        currentEditingMeasurement = measurementId;
+        
+        if (measurementId) {
+            const measurement = measurementsData.find(m => m.id === measurementId);
+            if (measurement) {
+                title.textContent = 'Edit Measurement';
+                document.getElementById('measurement-type').value = measurement.type.toLowerCase().replace(' ', '-');
+                document.getElementById('measurement-value').value = measurement.value;
+                document.getElementById('measurement-unit').value = measurement.unit;
+                document.getElementById('measurement-date').value = new Date().toISOString().split('T')[0];
+            }
+        } else {
+            title.textContent = 'Add Measurement';
+            form.reset();
+            document.getElementById('measurement-date').value = new Date().toISOString().split('T')[0];
+            customContainer.classList.add('hidden');
+        }
+        
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            popupContent.classList.remove('scale-95', 'opacity-0');
+            popupContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+    
+    function hideMeasurementPopup() {
+        const popup = document.getElementById('measurement-popup');
+        const popupContent = document.getElementById('measurement-popup-content');
+        
+        if (!popup || !popupContent) return;
+        
+        popupContent.classList.remove('scale-100', 'opacity-100');
+        popupContent.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            popup.classList.add('hidden');
+            currentEditingMeasurement = null;
+        }, 300);
+    }
+    
+    // --- Goal Management ---
+    
+    function selectGoalColor(color) {
+        const colorBtns = document.querySelectorAll('.goal-color-btn');
+        colorBtns.forEach(btn => {
+            btn.classList.remove('border-gray-400');
+            btn.classList.add('border-transparent');
+        });
+        
+        const selectedBtn = document.querySelector(`[data-color="${color}"]`);
+        if (selectedBtn) {
+            selectedBtn.classList.remove('border-transparent');
+            selectedBtn.classList.add('border-gray-400');
+        }
+    }
+    
+    function saveGoal(formData) {
+        const goalData = {
+            title: formData.get('title'),
+            target: formData.get('target'),
+            progress: parseInt(formData.get('progress')) || 0,
+            color: document.querySelector('.goal-color-btn.border-gray-400')?.dataset.color || 'blue'
+        };
+        
+        if (currentEditingGoal) {
+            // Edit existing goal
+            const goalIndex = goalsData.findIndex(g => g.id === currentEditingGoal);
+            if (goalIndex !== -1) {
+                goalsData[goalIndex] = { ...goalsData[goalIndex], ...goalData };
+            }
+        } else {
+            // Add new goal
+            const newId = Math.max(...goalsData.map(g => g.id), 0) + 1;
+            goalsData.push({ id: newId, ...goalData });
+        }
+        
+        renderGoals();
+        hideGoalPopup();
+    }
+    
+    function deleteGoal(goalId) {
+        if (confirm('Are you sure you want to delete this goal?')) {
+            goalsData = goalsData.filter(g => g.id !== goalId);
+            renderGoals();
+        }
+    }
+    
+    function renderGoals() {
+        const container = document.getElementById('goals-container');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        goalsData.forEach(goal => {
+            const goalElement = document.createElement('div');
+            goalElement.className = `bg-gradient-to-r from-${goal.color}-50 to-${goal.color}-100 rounded-2xl p-4`;
+            goalElement.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-semibold text-brand-text-primary">${goal.title}</h4>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-medium text-${goal.color}-600 bg-${goal.color}-200 px-2 py-1 rounded-full">${goal.progress}%</span>
+                        <button onclick="showGoalPopup(${goal.id})" class="text-${goal.color}-600 hover:text-${goal.color}-800 transition-colors">
+                            <i data-lucide="edit-2" class="w-3 h-3"></i>
+                        </button>
+                        <button onclick="deleteGoal(${goal.id})" class="text-red-500 hover:text-red-700 transition-colors">
+                            <i data-lucide="trash-2" class="w-3 h-3"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-full h-2 mb-2">
+                    <div class="bg-${goal.color}-500 h-2 rounded-full" style="width: ${goal.progress}%"></div>
+                </div>
+                <p class="text-xs text-brand-text-secondary">${goal.target}</p>
+            `;
+            container.appendChild(goalElement);
+        });
+        
+        // Re-initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+    
+    // --- Measurement Management ---
+    
+    function saveMeasurement(formData) {
+        const measurementType = formData.get('type');
+        const customType = formData.get('customType');
+        const finalType = measurementType === 'custom' ? customType : measurementType;
+        
+        const measurementData = {
+            type: finalType.charAt(0).toUpperCase() + finalType.slice(1).replace('-', ' '),
+            value: parseFloat(formData.get('value')) || 0,
+            unit: formData.get('unit'),
+            date: formData.get('date'),
+            notes: formData.get('notes'),
+            color: getColorForMeasurementType(finalType),
+            icon: getIconForMeasurementType(finalType)
+        };
+        
+        if (currentEditingMeasurement) {
+            // Edit existing measurement
+            const measurementIndex = measurementsData.findIndex(m => m.id === currentEditingMeasurement);
+            if (measurementIndex !== -1) {
+                measurementsData[measurementIndex] = { ...measurementsData[measurementIndex], ...measurementData };
+            }
+        } else {
+            // Add new measurement
+            const newId = Math.max(...measurementsData.map(m => m.id), 0) + 1;
+            measurementsData.push({ id: newId, change: '+0', ...measurementData });
+        }
+        
+        renderMeasurements();
+        hideMeasurementPopup();
+    }
+    
+    function deleteMeasurement(measurementId) {
+        if (confirm('Are you sure you want to delete this measurement?')) {
+            measurementsData = measurementsData.filter(m => m.id !== measurementId);
+            renderMeasurements();
+        }
+    }
+    
+    function getColorForMeasurementType(type) {
+        const colorMap = {
+            'weight': 'red',
+            'body-fat': 'teal',
+            'muscle-mass': 'indigo',
+            'chest': 'blue',
+            'waist': 'yellow',
+            'hips': 'purple',
+            'bicep': 'green',
+            'thigh': 'orange'
+        };
+        return colorMap[type] || 'gray';
+    }
+    
+    function getIconForMeasurementType(type) {
+        const iconMap = {
+            'weight': 'scale',
+            'body-fat': 'percent',
+            'muscle-mass': 'zap',
+            'chest': 'maximize',
+            'waist': 'minimize',
+            'hips': 'circle',
+            'bicep': 'flexbox',
+            'thigh': 'move'
+        };
+        return iconMap[type] || 'ruler';
+    }
+    
+    function renderMeasurements() {
+        const container = document.getElementById('measurements-grid');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        measurementsData.forEach(measurement => {
+            const measurementElement = document.createElement('div');
+            measurementElement.className = `bg-gradient-to-br from-${measurement.color}-50 to-${measurement.color}-100 rounded-2xl p-4 text-center relative`;
+            measurementElement.innerHTML = `
+                <div class="absolute top-2 right-2 flex space-x-1">
+                    <button onclick="showMeasurementPopup(${measurement.id})" class="text-${measurement.color}-600 hover:text-${measurement.color}-800 transition-colors">
+                        <i data-lucide="edit-2" class="w-3 h-3"></i>
+                    </button>
+                    <button onclick="deleteMeasurement(${measurement.id})" class="text-red-500 hover:text-red-700 transition-colors">
+                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                    </button>
+                </div>
+                <div class="bg-${measurement.color}-200 p-2 rounded-full w-fit mx-auto mb-3">
+                    <i data-lucide="${measurement.icon}" class="w-4 h-4 text-${measurement.color}-600"></i>
+                </div>
+                <h4 class="font-semibold text-brand-text-primary text-sm">${measurement.type}</h4>
+                <p class="text-lg font-bold text-${measurement.color}-600">${measurement.value} ${measurement.unit}</p>
+                <p class="text-xs text-brand-text-secondary">${measurement.change} ${measurement.unit} this month</p>
+            `;
+            container.appendChild(measurementElement);
+        });
+        
+        // Re-initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+    
+    // --- Event Listeners for Popups ---
+    
+    // Goal popup events
+    const addGoalBtn = document.getElementById('add-goal-btn');
+    const closeGoalPopup = document.getElementById('close-goal-popup');
+    const cancelGoal = document.getElementById('cancel-goal');
+    const goalForm = document.getElementById('goal-form');
+    const goalPopup = document.getElementById('goal-popup');
+    
+    if (addGoalBtn) {
+        addGoalBtn.addEventListener('click', () => showGoalPopup());
+    }
+    
+    if (closeGoalPopup) {
+        closeGoalPopup.addEventListener('click', hideGoalPopup);
+    }
+    
+    if (cancelGoal) {
+        cancelGoal.addEventListener('click', hideGoalPopup);
+    }
+    
+    if (goalForm) {
+        goalForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(goalForm);
+            saveGoal(formData);
+        });
+    }
+    
+    if (goalPopup) {
+        goalPopup.addEventListener('click', (e) => {
+            if (e.target === goalPopup) hideGoalPopup();
+        });
+    }
+    
+    // Goal color selection
+    const colorBtns = document.querySelectorAll('.goal-color-btn');
+    colorBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            selectGoalColor(btn.dataset.color);
+        });
+    });
+    
+    // Measurement popup events
+    const addMeasurementBtn = document.getElementById('add-measurement-btn');
+    const closeMeasurementPopup = document.getElementById('close-measurement-popup');
+    const cancelMeasurement = document.getElementById('cancel-measurement');
+    const measurementForm = document.getElementById('measurement-form');
+    const measurementPopup = document.getElementById('measurement-popup');
+    const measurementTypeSelect = document.getElementById('measurement-type');
+    const customTypeContainer = document.getElementById('custom-type-container');
+    
+    if (addMeasurementBtn) {
+        addMeasurementBtn.addEventListener('click', () => showMeasurementPopup());
+    }
+    
+    if (closeMeasurementPopup) {
+        closeMeasurementPopup.addEventListener('click', hideMeasurementPopup);
+    }
+    
+    if (cancelMeasurement) {
+        cancelMeasurement.addEventListener('click', hideMeasurementPopup);
+    }
+    
+    if (measurementForm) {
+        measurementForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(measurementForm);
+            saveMeasurement(formData);
+        });
+    }
+    
+    if (measurementPopup) {
+        measurementPopup.addEventListener('click', (e) => {
+            if (e.target === measurementPopup) hideMeasurementPopup();
+        });
+    }
+    
+    if (measurementTypeSelect && customTypeContainer) {
+        measurementTypeSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'custom') {
+                customTypeContainer.classList.remove('hidden');
+            } else {
+                customTypeContainer.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Make functions available globally for onclick handlers
+    window.showGoalPopup = showGoalPopup;
+    window.deleteGoal = deleteGoal;
+    window.showMeasurementPopup = showMeasurementPopup;
+    window.deleteMeasurement = deleteMeasurement;
+
     // Initialize everything
     setCurrentDate();
     generateCalendar();
     createExercisePlayground();
+    renderGoals();
+    renderMeasurements();
     
     // Initialize all workout visualizations with a small delay to ensure DOM is ready
     setTimeout(() => {

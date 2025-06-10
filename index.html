@@ -215,47 +215,13 @@
                                             <p class="text-sm text-brand-text-secondary">Track your fitness objectives</p>
                                         </div>
                                     </div>
-                                    <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                                    <button id="add-goal-btn" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
                                         <i data-lucide="plus" class="w-5 h-5 text-brand-text-secondary"></i>
                                     </button>
                                 </div>
                                 
-                                <div class="space-y-4">
-                                    <!-- Goal Item 1 -->
-                                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-4">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <h4 class="font-semibold text-brand-text-primary">Lose 10 lbs</h4>
-                                            <span class="text-xs font-medium text-blue-600 bg-blue-200 px-2 py-1 rounded-full">70%</span>
-                                        </div>
-                                        <div class="bg-white rounded-full h-2 mb-2">
-                                            <div class="bg-blue-500 h-2 rounded-full" style="width: 70%"></div>
-                                        </div>
-                                        <p class="text-xs text-brand-text-secondary">Target: Dec 31, 2024</p>
-                                    </div>
-                                    
-                                    <!-- Goal Item 2 -->
-                                    <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-4">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <h4 class="font-semibold text-brand-text-primary">Run 5K under 25 min</h4>
-                                            <span class="text-xs font-medium text-green-600 bg-green-200 px-2 py-1 rounded-full">45%</span>
-                                        </div>
-                                        <div class="bg-white rounded-full h-2 mb-2">
-                                            <div class="bg-green-500 h-2 rounded-full" style="width: 45%"></div>
-                                        </div>
-                                        <p class="text-xs text-brand-text-secondary">Current: 28:30 min</p>
-                                    </div>
-                                    
-                                    <!-- Goal Item 3 -->
-                                    <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-4">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <h4 class="font-semibold text-brand-text-primary">Workout 5x/week</h4>
-                                            <span class="text-xs font-medium text-purple-600 bg-purple-200 px-2 py-1 rounded-full">80%</span>
-                                        </div>
-                                        <div class="bg-white rounded-full h-2 mb-2">
-                                            <div class="bg-purple-500 h-2 rounded-full" style="width: 80%"></div>
-                                        </div>
-                                        <p class="text-xs text-brand-text-secondary">4/5 workouts this week</p>
-                                    </div>
+                                <div id="goals-container" class="space-y-4">
+                                    <!-- Goals will be dynamically generated here -->
                                 </div>
                             </div>
                             
@@ -271,51 +237,13 @@
                                             <p class="text-sm text-brand-text-secondary">Monitor your physical progress</p>
                                         </div>
                                     </div>
-                                    <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                                        <i data-lucide="edit-3" class="w-5 h-5 text-brand-text-secondary"></i>
+                                    <button id="add-measurement-btn" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                                        <i data-lucide="plus" class="w-5 h-5 text-brand-text-secondary"></i>
                                     </button>
                                 </div>
                                 
-                                <div class="grid grid-cols-2 gap-4">
-                                    <!-- Weight -->
-                                    <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-4 text-center">
-                                        <div class="bg-red-200 p-2 rounded-full w-fit mx-auto mb-3">
-                                            <i data-lucide="scale" class="w-4 h-4 text-red-600"></i>
-                                        </div>
-                                        <h4 class="font-semibold text-brand-text-primary text-sm">Weight</h4>
-                                        <p class="text-lg font-bold text-red-600">165 lbs</p>
-                                        <p class="text-xs text-brand-text-secondary">-3 lbs this month</p>
-                                    </div>
-                                    
-                                    <!-- BMI -->
-                                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl p-4 text-center">
-                                        <div class="bg-yellow-200 p-2 rounded-full w-fit mx-auto mb-3">
-                                            <i data-lucide="activity" class="w-4 h-4 text-yellow-600"></i>
-                                        </div>
-                                        <h4 class="font-semibold text-brand-text-primary text-sm">BMI</h4>
-                                        <p class="text-lg font-bold text-yellow-600">23.4</p>
-                                        <p class="text-xs text-brand-text-secondary">Normal range</p>
-                                    </div>
-                                    
-                                    <!-- Body Fat -->
-                                    <div class="bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl p-4 text-center">
-                                        <div class="bg-teal-200 p-2 rounded-full w-fit mx-auto mb-3">
-                                            <i data-lucide="percent" class="w-4 h-4 text-teal-600"></i>
-                                        </div>
-                                        <h4 class="font-semibold text-brand-text-primary text-sm">Body Fat</h4>
-                                        <p class="text-lg font-bold text-teal-600">15.2%</p>
-                                        <p class="text-xs text-brand-text-secondary">-1.5% this month</p>
-                                    </div>
-                                    
-                                    <!-- Muscle Mass -->
-                                    <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl p-4 text-center">
-                                        <div class="bg-indigo-200 p-2 rounded-full w-fit mx-auto mb-3">
-                                            <i data-lucide="zap" class="w-4 h-4 text-indigo-600"></i>
-                                        </div>
-                                        <h4 class="font-semibold text-brand-text-primary text-sm">Muscle Mass</h4>
-                                        <p class="text-lg font-bold text-indigo-600">125 lbs</p>
-                                        <p class="text-xs text-brand-text-secondary">+2 lbs this month</p>
-                                    </div>
+                                <div id="measurements-grid" class="grid grid-cols-2 gap-4">
+                                    <!-- Measurements will be dynamically generated here -->
                                 </div>
                                 
                                 <!-- Recent Measurements -->
@@ -453,6 +381,120 @@
         </aside>
         <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden transition-opacity duration-300"></div>
     </div>
+
+    <!-- Goal Add/Edit Popup -->
+    <div id="goal-popup" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-brand-surface rounded-3xl p-6 md:p-8 w-full max-w-md transform transition-all duration-300 scale-95 opacity-0" id="goal-popup-content">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="goal-popup-title" class="text-xl font-bold text-brand-text-primary">Add New Goal</h3>
+                <button id="close-goal-popup" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <form id="goal-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-brand-text-primary mb-2">Goal Title</label>
+                    <input type="text" id="goal-title" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-lime focus:outline-none transition-colors" placeholder="e.g., Lose 10 lbs">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-brand-text-primary mb-2">Target Value</label>
+                    <input type="text" id="goal-target" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-lime focus:outline-none transition-colors" placeholder="e.g., 150 lbs">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-brand-text-primary mb-2">Current Progress (%)</label>
+                    <input type="number" id="goal-progress" min="0" max="100" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-lime focus:outline-none transition-colors" placeholder="0">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-brand-text-primary mb-2">Target Date</label>
+                    <input type="date" id="goal-date" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-lime focus:outline-none transition-colors">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-brand-text-primary mb-2">Color Theme</label>
+                    <div class="flex space-x-3">
+                        <button type="button" class="goal-color-btn w-8 h-8 rounded-full bg-blue-500 border-2 border-transparent focus:border-gray-400" data-color="blue"></button>
+                        <button type="button" class="goal-color-btn w-8 h-8 rounded-full bg-green-500 border-2 border-transparent focus:border-gray-400" data-color="green"></button>
+                        <button type="button" class="goal-color-btn w-8 h-8 rounded-full bg-purple-500 border-2 border-transparent focus:border-gray-400" data-color="purple"></button>
+                        <button type="button" class="goal-color-btn w-8 h-8 rounded-full bg-red-500 border-2 border-transparent focus:border-gray-400" data-color="red"></button>
+                        <button type="button" class="goal-color-btn w-8 h-8 rounded-full bg-yellow-500 border-2 border-transparent focus:border-gray-400" data-color="yellow"></button>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" id="cancel-goal" class="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-brand-text-secondary hover:bg-gray-50 transition-colors">Cancel</button>
+                    <button type="submit" class="flex-1 px-4 py-3 rounded-xl bg-brand-lime text-brand-text-primary font-semibold hover:bg-opacity-90 transition-colors">Save Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Measurement Add/Edit Popup -->
+    <div id="measurement-popup" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-brand-surface rounded-3xl p-6 md:p-8 w-full max-w-md transform transition-all duration-300 scale-95 opacity-0" id="measurement-popup-content">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="measurement-popup-title" class="text-xl font-bold text-brand-text-primary">Add Measurement</h3>
+                <button id="close-measurement-popup" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <form id="measurement-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-brand-text-primary mb-2">Measurement Type</label>
+                    <select id="measurement-type" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-lime focus:outline-none transition-colors">
+                        <option value="weight">Weight</option>
+                        <option value="body-fat">Body Fat %</option>
+                        <option value="muscle-mass">Muscle Mass</option>
+                        <option value="chest">Chest</option>
+                        <option value="waist">Waist</option>
+                        <option value="hips">Hips</option>
+                        <option value="bicep">Bicep</option>
+                        <option value="thigh">Thigh</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                
+                <div id="custom-type-container" class="hidden">
+                    <label class="block text-sm font-medium text-brand-text-primary mb-2">Custom Type Name</label>
+                    <input type="text" id="custom-measurement-type" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-lime focus:outline-none transition-colors" placeholder="e.g., Neck">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-brand-text-primary mb-2">Value</label>
+                    <div class="flex space-x-2">
+                        <input type="number" step="0.1" id="measurement-value" class="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-lime focus:outline-none transition-colors" placeholder="0.0">
+                        <select id="measurement-unit" class="px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-lime focus:outline-none transition-colors">
+                            <option value="lbs">lbs</option>
+                            <option value="kg">kg</option>
+                            <option value="inches">inches</option>
+                            <option value="cm">cm</option>
+                            <option value="%">%</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-brand-text-primary mb-2">Date</label>
+                    <input type="date" id="measurement-date" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-lime focus:outline-none transition-colors">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-brand-text-primary mb-2">Notes (Optional)</label>
+                    <textarea id="measurement-notes" rows="2" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-lime focus:outline-none transition-colors resize-none" placeholder="Add any notes..."></textarea>
+                </div>
+                
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" id="cancel-measurement" class="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-brand-text-secondary hover:bg-gray-50 transition-colors">Cancel</button>
+                    <button type="submit" class="flex-1 px-4 py-3 rounded-xl bg-brand-lime text-brand-text-primary font-semibold hover:bg-opacity-90 transition-colors">Save Measurement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="public/script.js"></script>
 </body>
 </html>
