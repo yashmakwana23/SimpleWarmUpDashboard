@@ -302,18 +302,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Set Current Date in Calendar Button ---
     function setCurrentDate() {
-        const currentDayEl = document.getElementById('current-day');
-        const currentDateEl = document.getElementById('current-date');
+        const currentFullDateEl = document.getElementById('current-full-date');
         
-        if (currentDayEl && currentDateEl) {
+        if (currentFullDateEl) {
             const today = new Date();
             
-            // Get day name (e.g., "Mon")
-            const dayOptions = { weekday: 'short' };
-            currentDayEl.textContent = today.toLocaleDateString('en-US', dayOptions);
+            // Get full date in format "Wednesday, 11 June 2025"
+            const options = { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            };
             
-            // Get date (e.g., "13")
-            currentDateEl.textContent = today.getDate();
+            currentFullDateEl.textContent = today.toLocaleDateString('en-US', options);
         }
     }
 
@@ -325,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         calendarGrid.innerHTML = '';
 
-        const today = new Date(2028, 7, 13); 
+        const today = new Date(); 
         const month = today.getMonth();
         const year = today.getFullYear();
 
@@ -344,20 +346,51 @@ document.addEventListener('DOMContentLoaded', function () {
             calendarGrid.appendChild(dayEl);
         });
 
+        // Sample data for workout states - only completed and missed
+        const currentDate = today.getDate();
+        const workoutData = {};
+        
+        // Add some sample completed and missed workouts for past dates
+        for (let i = 1; i < currentDate; i++) {
+            if (i % 3 === 0) {
+                workoutData[`${year}-${month + 1}-${i}`] = 'completed';
+            } else if (i % 5 === 0) {
+                workoutData[`${year}-${month + 1}-${i}`] = 'missed';
+            }
+        }
+
         for (let i = 0; i < 42; i++) {
             const dayCell = document.createElement('div');
-            dayCell.className = 'h-8 w-8 flex items-center justify-center rounded-full cursor-pointer text-sm';
+            dayCell.className = 'h-8 w-8 flex items-center justify-center rounded-full cursor-pointer text-sm relative';
             dayCell.textContent = dateIterator.getDate();
+
+            const dateKey = `${dateIterator.getFullYear()}-${dateIterator.getMonth() + 1}-${dateIterator.getDate()}`;
+            const workoutStatus = workoutData[dateKey];
 
             if (dateIterator.getMonth() !== month) {
                 dayCell.classList.add('text-gray-300');
             } else {
-                 dayCell.classList.add('text-brand-text-primary');
+                dayCell.classList.add('text-brand-text-primary');
             }
             
+            // Apply different styles based on workout status
             if (dateIterator.toDateString() === today.toDateString()) { 
                 dayCell.classList.add('bg-brand-lime', 'font-bold');
                 dayCell.classList.remove('text-brand-text-primary');
+            } else if (workoutStatus === 'completed') {
+                dayCell.classList.add('bg-green-100', 'text-green-700', 'font-semibold');
+                // Add completed indicator
+                const indicator = document.createElement('div');
+                indicator.className = 'absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center';
+                indicator.innerHTML = '<i data-lucide="check" class="w-2 h-2 text-white"></i>';
+                dayCell.appendChild(indicator);
+            } else if (workoutStatus === 'missed') {
+                dayCell.classList.add('bg-red-100', 'text-red-700', 'font-semibold');
+                // Add missed indicator  
+                const indicator = document.createElement('div');
+                indicator.className = 'absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center';
+                indicator.innerHTML = '<i data-lucide="x" class="w-2 h-2 text-white"></i>';
+                dayCell.appendChild(indicator);
             } else {
                 dayCell.classList.add('hover:bg-gray-100');
             }
