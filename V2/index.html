@@ -136,34 +136,11 @@
             <!-- Content Container -->
             <div class="flex-1 overflow-y-auto">
                 <!-- Today's Plan Content -->
-                <div id="today-content" class="tab-content p-6">
-                    <div class="max-w-7xl mx-auto">
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <!-- Today's Summary Card -->
-                            <div class="lg:col-span-2">
-                                <div class="bg-brand-surface rounded-2xl p-6 shadow-sm border border-gray-100">
-                                    <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Today's Overview</h2>
-                                    <div class="space-y-4">
-                                        <!-- Placeholder for today's content -->
-                                        <div class="h-32 bg-gray-50 rounded-xl flex items-center justify-center">
-                                            <p class="text-brand-text-secondary">Today's workout plan will be loaded here</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Quick Stats Card -->
-                            <div>
-                                <div class="bg-brand-surface rounded-2xl p-6 shadow-sm border border-gray-100">
-                                    <h3 class="text-lg font-semibold text-brand-text-primary mb-4">Quick Stats</h3>
-                                    <div class="space-y-3">
-                                        <!-- Placeholder for stats -->
-                                        <div class="h-20 bg-gray-50 rounded-lg flex items-center justify-center">
-                                            <p class="text-brand-text-secondary text-sm">Stats will be loaded here</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                <div id="today-content" class="tab-content p-4 md:p-6">
+                    <div class="w-full">
+                        <!-- Today's Workout Cards -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="today-workout-cards">
+                            <!-- Workout cards will be populated by JavaScript -->
                         </div>
                     </div>
                 </div>

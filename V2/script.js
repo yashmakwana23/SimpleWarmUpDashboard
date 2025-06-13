@@ -198,8 +198,393 @@ function loadTabContent(tabName) {
 // Today's Content Loader
 function loadTodayContent() {
     console.log('Loading today\'s content...');
-    // Placeholder for today's content
-    // This will be populated with actual content later
+    
+    // Sample workout data for today's plan
+    const todayWorkoutData = [
+        {
+            workoutType: "Upper Body Strength",
+            exercises: [
+                {
+                    name: "Push-ups",
+                    video: "https://www.youtube.com/embed/IODxDxX7oi4",
+                    targetSets: 3,
+                    targetReps: 12,
+                    weight: "Bodyweight"
+                },
+                {
+                    name: "Bench Press",
+                    video: "https://www.youtube.com/embed/rT7DgCr-3pg",
+                    targetSets: 4,
+                    targetReps: 8,
+                    weight: "135 lbs"
+                },
+                {
+                    name: "Pull-ups",
+                    video: "https://www.youtube.com/embed/eGo4IYlbE5g",
+                    targetSets: 3,
+                    targetReps: 8,
+                    weight: "Bodyweight"
+                }
+            ]
+        },
+        {
+            workoutType: "Core & Cardio",
+            exercises: [
+                {
+                    name: "Plank",
+                    video: "https://www.youtube.com/embed/pSHjTRCQxIw",
+                    targetSets: 3,
+                    targetReps: "45 sec",
+                    weight: "Bodyweight"
+                },
+                {
+                    name: "Mountain Climbers",
+                    video: "https://www.youtube.com/embed/kLh-uczlPLg",
+                    targetSets: 3,
+                    targetReps: 20,
+                    weight: "Bodyweight"
+                }
+            ]
+        }
+    ];
+
+    renderTodayWorkout(todayWorkoutData);
+}
+
+function renderTodayWorkout(workoutData) {
+    const container = document.getElementById('today-workout-cards');
+    if (!container) return;
+    
+    container.innerHTML = '';
+
+    workoutData.forEach((workout, workoutIndex) => {
+        const workoutCard = createWorkoutCard(workout, workoutIndex);
+        container.appendChild(workoutCard);
+    });
+
+    lucide.createIcons();
+}
+
+function createWorkoutCard(workout, workoutIndex) {
+    const card = document.createElement('div');
+    card.className = 'bg-brand-surface rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6';
+    
+    card.innerHTML = `
+        <!-- Workout Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-brand-lime rounded-lg flex items-center justify-center mr-3">
+                    <i data-lucide="dumbbell" class="w-5 h-5 text-brand-text-primary"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary">${workout.workoutType}</h3>
+                    <p class="text-sm text-brand-text-secondary">${workout.exercises.length} exercises</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div class="text-right">
+                    <p class="text-sm font-medium text-brand-text-primary" id="workout-progress-${workoutIndex}">0/${workout.exercises.length}</p>
+                    <p class="text-xs text-brand-text-secondary">Completed</p>
+                </div>
+                <div class="w-12 h-12 rounded-full border-4 border-gray-200 flex items-center justify-center" id="workout-circle-${workoutIndex}">
+                    <span class="text-sm font-bold text-brand-text-secondary" id="workout-percentage-${workoutIndex}">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise List -->
+        <div class="space-y-4" id="exercises-${workoutIndex}">
+            ${workout.exercises.map((exercise, exerciseIndex) => createExerciseRow(exercise, workoutIndex, exerciseIndex)).join('')}
+        </div>
+
+
+    `;
+
+    return card;
+}
+
+function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
+    const exerciseId = `exercise-${workoutIndex}-${exerciseIndex}`;
+    
+    return `
+        <div class="bg-gray-50 rounded-lg p-3 exercise-row" id="${exerciseId}">
+            <div class="flex items-center gap-3">
+                <!-- Small Video Thumbnail -->
+                <div class="flex-shrink-0">
+                    <div class="relative group cursor-pointer" onclick="openExerciseVideo('${exercise.video}', '${exercise.name}')">
+                        <div class="w-14 h-10 bg-gray-200 rounded-md overflow-hidden">
+                            <img 
+                                src="https://img.youtube.com/vi/${getYouTubeVideoId(exercise.video)}/maxresdefault.jpg" 
+                                alt="${exercise.name}"
+                                class="w-full h-full object-cover"
+                                onerror="this.src='https://img.youtube.com/vi/${getYouTubeVideoId(exercise.video)}/hqdefault.jpg'"
+                            >
+                        </div>
+                        <div class="absolute inset-0 bg-black bg-opacity-50 rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="play" class="w-3 h-3 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Layout: Stacked -->
+                <div class="flex-1 min-w-0 lg:hidden">
+                    <!-- Exercise Name & Target -->
+                    <div class="mb-3">
+                        <h4 class="font-semibold text-brand-text-primary text-sm">${exercise.name}</h4>
+                        <p class="text-xs text-brand-text-secondary">Target: ${exercise.targetSets} × ${exercise.targetReps} • ${exercise.weight}</p>
+                    </div>
+
+                    <!-- Input Fields -->
+                    <div class="grid grid-cols-3 gap-2 mb-3">
+                        <div>
+                            <label class="block text-xs font-medium text-brand-text-secondary mb-1">Weight</label>
+                            <input 
+                                type="text" 
+                                id="weight-${exerciseId}"
+                                placeholder="${exercise.weight}"
+                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-brand-text-secondary mb-1">Sets</label>
+                            <input 
+                                type="number" 
+                                id="sets-${exerciseId}"
+                                placeholder="${exercise.targetSets}"
+                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-brand-text-secondary mb-1">Reps</label>
+                            <input 
+                                type="text" 
+                                id="reps-${exerciseId}"
+                                placeholder="${exercise.targetReps}"
+                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-2">
+                        <button 
+                            onclick="openExerciseNotes('${exerciseId}')"
+                            class="flex items-center gap-1 px-3 py-1.5 text-xs text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
+                            title="Add Notes"
+                        >
+                            <i data-lucide="sticky-note" class="w-3 h-3"></i>
+                            <span>Notes</span>
+                        </button>
+                        <button 
+                            onclick="completeExercise('${exerciseId}', ${workoutIndex})"
+                            id="complete-btn-${exerciseId}"
+                            class="flex items-center gap-1 px-3 py-1.5 bg-brand-lime text-brand-text-primary rounded-md font-medium hover:bg-opacity-90 transition-colors text-xs"
+                        >
+                            <i data-lucide="check" class="w-3 h-3"></i>
+                            <span>Complete</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Desktop Layout: Single Row -->
+                <div class="hidden lg:flex lg:items-center lg:flex-1 lg:min-w-0 lg:gap-4">
+                    <!-- Exercise Name & Target Info -->
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-brand-text-primary text-sm truncate">${exercise.name}</h4>
+                        <p class="text-xs text-brand-text-secondary truncate">Target: ${exercise.targetSets} × ${exercise.targetReps} • ${exercise.weight}</p>
+                    </div>
+
+                    <!-- Input Fields (Inline) -->
+                    <div class="flex items-center gap-3">
+                        <div class="w-20">
+                            <label class="block text-xs font-medium text-brand-text-secondary mb-1 text-center">Weight</label>
+                            <input 
+                                type="text" 
+                                id="weight-${exerciseId}-desktop"
+                                placeholder="${exercise.weight}"
+                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
+                            >
+                        </div>
+                        <div class="w-16">
+                            <label class="block text-xs font-medium text-brand-text-secondary mb-1 text-center">Sets</label>
+                            <input 
+                                type="number" 
+                                id="sets-${exerciseId}-desktop"
+                                placeholder="${exercise.targetSets}"
+                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
+                            >
+                        </div>
+                        <div class="w-16">
+                            <label class="block text-xs font-medium text-brand-text-secondary mb-1 text-center">Reps</label>
+                            <input 
+                                type="text" 
+                                id="reps-${exerciseId}-desktop"
+                                placeholder="${exercise.targetReps}"
+                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons (Icons Only) -->
+                    <div class="flex items-center gap-2">
+                        <button 
+                            onclick="openExerciseNotes('${exerciseId}')"
+                            class="p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
+                            title="Add Notes"
+                        >
+                            <i data-lucide="sticky-note" class="w-4 h-4"></i>
+                        </button>
+                        <button 
+                            onclick="completeExercise('${exerciseId}', ${workoutIndex})"
+                            id="complete-btn-${exerciseId}-desktop"
+                            class="p-2 bg-brand-lime text-brand-text-primary rounded-md hover:bg-opacity-90 transition-colors"
+                            title="Complete Exercise"
+                        >
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercise Notes (Hidden by default) -->
+            <div id="notes-${exerciseId}" class="hidden mt-3 pt-3 border-t border-gray-200">
+                <label class="block text-sm font-medium text-brand-text-secondary mb-2">Exercise Notes</label>
+                <textarea 
+                    placeholder="Add notes about this exercise..."
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-lime focus:border-transparent text-sm resize-none h-16"
+                ></textarea>
+                <button 
+                    onclick="closeExerciseNotes('${exerciseId}')"
+                    class="mt-2 text-sm text-brand-text-secondary hover:text-brand-text-primary"
+                >
+                    Close Notes
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function getYouTubeVideoId(url) {
+    const match = url.match(/embed\/([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : '';
+}
+
+function openExerciseVideo(videoUrl, exerciseName) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75';
+    modal.innerHTML = `
+        <div class="bg-brand-surface rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-brand-text-primary">${exerciseName}</h3>
+                <button onclick="this.closest('.fixed').remove()" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="aspect-video">
+                    <iframe 
+                        src="${videoUrl}?autoplay=1&rel=0&modestbranding=1" 
+                        title="${exerciseName}" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen
+                        class="w-full h-full rounded-lg">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    lucide.createIcons();
+}
+
+function openExerciseNotes(exerciseId) {
+    const notesDiv = document.getElementById(`notes-${exerciseId}`);
+    if (notesDiv) {
+        notesDiv.classList.remove('hidden');
+    }
+}
+
+function closeExerciseNotes(exerciseId) {
+    const notesDiv = document.getElementById(`notes-${exerciseId}`);
+    if (notesDiv) {
+        notesDiv.classList.add('hidden');
+    }
+}
+
+function completeExercise(exerciseId, workoutIndex) {
+    const exerciseRow = document.getElementById(exerciseId);
+    const completeBtnMobile = document.getElementById(`complete-btn-${exerciseId}`);
+    const completeBtnDesktop = document.getElementById(`complete-btn-${exerciseId}-desktop`);
+    
+    if (exerciseRow) {
+        // Mark as completed
+        exerciseRow.classList.add('opacity-75');
+        exerciseRow.setAttribute('data-completed', 'true');
+        
+        // Update mobile button
+        if (completeBtnMobile) {
+            completeBtnMobile.innerHTML = '<i data-lucide="check-circle" class="w-3 h-3"></i><span>Completed</span>';
+            completeBtnMobile.className = 'flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-700 rounded-md font-medium cursor-default text-xs';
+            completeBtnMobile.disabled = true;
+        }
+        
+        // Update desktop button
+        if (completeBtnDesktop) {
+            completeBtnDesktop.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i>';
+            completeBtnDesktop.className = 'p-2 bg-green-100 text-green-700 rounded-md cursor-default';
+            completeBtnDesktop.disabled = true;
+            completeBtnDesktop.title = 'Exercise Completed';
+        }
+        
+        // Update workout progress
+        updateWorkoutProgress(workoutIndex);
+        
+        lucide.createIcons();
+    }
+}
+
+function updateWorkoutProgress(workoutIndex) {
+    const exercisesContainer = document.getElementById(`exercises-${workoutIndex}`);
+    const totalExercises = exercisesContainer.querySelectorAll('.exercise-row').length;
+    const completedExercises = exercisesContainer.querySelectorAll('.exercise-row[data-completed="true"]').length;
+    
+    const percentage = Math.round((completedExercises / totalExercises) * 100);
+    
+    // Update progress text
+    document.getElementById(`workout-progress-${workoutIndex}`).textContent = `${completedExercises}/${totalExercises}`;
+    document.getElementById(`workout-percentage-${workoutIndex}`).textContent = `${percentage}%`;
+    
+    // Update progress circle
+    const circle = document.getElementById(`workout-circle-${workoutIndex}`);
+    if (percentage === 100) {
+        circle.className = 'w-12 h-12 rounded-full border-4 border-green-500 bg-green-50 flex items-center justify-center';
+        circle.querySelector('span').className = 'text-sm font-bold text-green-600';
+    } else {
+        const hue = (percentage / 100) * 120; // 0 = red, 120 = green
+        circle.style.borderColor = `hsl(${hue}, 60%, 50%)`;
+    }
+}
+
+function completeWorkout(workoutIndex) {
+    const workoutCard = document.getElementById(`complete-workout-${workoutIndex}`).closest('.bg-brand-surface');
+    const notesTextarea = document.getElementById(`workout-notes-${workoutIndex}`);
+    
+    // Get workout data
+    const notes = notesTextarea.value;
+    
+    // Mark entire workout as completed
+    workoutCard.classList.add('ring-2', 'ring-green-200', 'bg-green-50');
+    
+    // Update button
+    const completeBtn = document.getElementById(`complete-workout-${workoutIndex}`);
+    completeBtn.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 mr-2 inline"></i>Workout Completed!';
+    completeBtn.className = 'w-full py-3 px-4 bg-green-600 text-white rounded-lg font-medium cursor-default';
+    completeBtn.disabled = true;
+    
+    console.log(`Workout ${workoutIndex} completed with notes: ${notes}`);
+    
+    lucide.createIcons();
 }
 
 // Calendar Content Loader
