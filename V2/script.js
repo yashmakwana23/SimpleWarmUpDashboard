@@ -245,6 +245,98 @@ function loadTodayContent() {
                     weight: "Bodyweight"
                 }
             ]
+        },
+        {
+            workoutType: "Lower Body Power",
+            exercises: [
+                {
+                    name: "Squats",
+                    video: "https://www.youtube.com/embed/ultWZbUMPL8",
+                    targetSets: 4,
+                    targetReps: 12,
+                    weight: "185 lbs"
+                },
+                {
+                    name: "Deadlifts",
+                    video: "https://www.youtube.com/embed/ytGaGIn3SjE",
+                    targetSets: 3,
+                    targetReps: 6,
+                    weight: "225 lbs"
+                },
+                {
+                    name: "Lunges",
+                    video: "https://www.youtube.com/embed/QE5MltF7Fy0",
+                    targetSets: 3,
+                    targetReps: 10,
+                    weight: "Bodyweight"
+                },
+                {
+                    name: "Calf Raises",
+                    video: "https://www.youtube.com/embed/3UdnIF8qX_k",
+                    targetSets: 4,
+                    targetReps: 15,
+                    weight: "50 lbs"
+                }
+            ]
+        },
+        {
+            workoutType: "HIIT & Conditioning",
+            exercises: [
+                {
+                    name: "Burpees",
+                    video: "https://www.youtube.com/embed/818SkLY7KRM",
+                    targetSets: 4,
+                    targetReps: 8,
+                    weight: "Bodyweight"
+                },
+                {
+                    name: "Jump Squats",
+                    video: "https://www.youtube.com/embed/A5f6RcjvJ2g",
+                    targetSets: 3,
+                    targetReps: 12,
+                    weight: "Bodyweight"
+                },
+                {
+                    name: "High Knees",
+                    video: "https://www.youtube.com/embed/8opcQdC-V-U",
+                    targetSets: 3,
+                    targetReps: "30 sec",
+                    weight: "Bodyweight"
+                }
+            ]
+        },
+        {
+            workoutType: "Flexibility & Mobility",
+            exercises: [
+                {
+                    name: "Cat-Cow Stretch",
+                    video: "https://www.youtube.com/embed/kqnua4rHVVA",
+                    targetSets: 2,
+                    targetReps: "10 reps",
+                    weight: "Bodyweight"
+                },
+                {
+                    name: "Downward Dog",
+                    video: "https://www.youtube.com/embed/yKzV7VkVmYE",
+                    targetSets: 3,
+                    targetReps: "30 sec",
+                    weight: "Bodyweight"
+                },
+                {
+                    name: "Pigeon Pose",
+                    video: "https://www.youtube.com/embed/0_zPqA65Nok",
+                    targetSets: 2,
+                    targetReps: "45 sec",
+                    weight: "Bodyweight"
+                },
+                {
+                    name: "Child's Pose",
+                    video: "https://www.youtube.com/embed/2PcnYsNL5P4",
+                    targetSets: 1,
+                    targetReps: "60 sec",
+                    weight: "Bodyweight"
+                }
+            ]
         }
     ];
 
