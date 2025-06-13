@@ -1259,34 +1259,34 @@ function createPlanCard(planData, planIndex) {
     planCard.id = `plan-card-${planIndex}`;
     
     planCard.innerHTML = `
-        <div class="p-6">
+        <div class="p-4 md:p-6">
             <!-- Plan Header -->
             <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h3 class="text-lg font-bold text-brand-text-primary">${planData.planName}</h3>
-                    <p class="text-sm text-brand-text-secondary">${planData.duration} days • ${planData.workoutDays} workout days • ${planData.restDays} rest days</p>
+                    <h3 class="text-base md:text-lg font-bold text-brand-text-primary">${planData.planName}</h3>
+                    <p class="text-xs md:text-sm text-brand-text-secondary">${planData.duration} days • ${planData.workoutDays} workout days • ${planData.restDays} rest days</p>
                 </div>
                 <button class="plan-toggle-btn p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors bg-brand-lime" 
                         onclick="togglePlanCard(${planIndex})">
-                    <i data-lucide="chevron-up" class="w-5 h-5 plan-toggle-icon"></i>
+                    <i data-lucide="chevron-up" class="w-4 md:w-5 h-4 md:h-5 plan-toggle-icon"></i>
                 </button>
             </div>
             
             <!-- Plan Stats (Clickable for filtering) -->
-            <div class="grid grid-cols-3 gap-3 mb-4">
-                <div class="text-center p-3 bg-green-50 rounded-lg cursor-pointer hover:bg-green-100 transition-colors" 
+            <div class="grid grid-cols-3 gap-2 md:gap-3 mb-4">
+                <div class="text-center p-2 md:p-3 bg-green-50 rounded-lg cursor-pointer hover:bg-green-100 transition-colors" 
                      onclick="filterPlan(${planIndex}, 'completed')">
-                    <div class="text-lg font-bold text-green-600">${planData.completed}</div>
+                    <div class="text-sm md:text-lg font-bold text-green-600">${planData.completed}</div>
                     <div class="text-xs text-green-600">Completed</div>
                 </div>
-                <div class="text-center p-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100 transition-colors" 
+                <div class="text-center p-2 md:p-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100 transition-colors" 
                      onclick="filterPlan(${planIndex}, 'missed')">
-                    <div class="text-lg font-bold text-red-600">${planData.missed}</div>
+                    <div class="text-sm md:text-lg font-bold text-red-600">${planData.missed}</div>
                     <div class="text-xs text-red-600">Missed</div>
                 </div>
-                <div class="text-center p-3 bg-yellow-50 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors" 
+                <div class="text-center p-2 md:p-3 bg-yellow-50 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors" 
                      onclick="filterPlan(${planIndex}, 'upcoming')">
-                    <div class="text-lg font-bold text-yellow-600">${planData.upcoming}</div>
+                    <div class="text-sm md:text-lg font-bold text-yellow-600">${planData.upcoming}</div>
                     <div class="text-xs text-yellow-600">Upcoming</div>
                 </div>
             </div>
@@ -1294,9 +1294,9 @@ function createPlanCard(planData, planIndex) {
             <!-- Filter indicator -->
             <div class="filter-indicator hidden mb-3">
                 <div class="flex items-center justify-between bg-blue-50 rounded-lg p-2">
-                    <span class="text-sm text-blue-700">Filter: <span class="filter-text font-medium"></span></span>
+                    <span class="text-xs md:text-sm text-blue-700">Filter: <span class="filter-text font-medium"></span></span>
                     <button onclick="clearFilter(${planIndex})" class="text-blue-700 hover:text-blue-900">
-                        <i data-lucide="x" class="w-4 h-4"></i>
+                        <i data-lucide="x" class="w-3 md:w-4 h-3 md:h-4"></i>
                     </button>
                 </div>
             </div>
@@ -1304,7 +1304,7 @@ function createPlanCard(planData, planIndex) {
         
         <!-- Plan Content (Collapsible) -->
         <div class="plan-card-content border-t border-gray-100">
-            <div class="p-4 space-y-2 max-h-96 overflow-y-auto plan-days-container">
+            <div class="p-3 md:p-4 space-y-2 max-h-80 md:max-h-96 overflow-y-auto plan-days-container">
                 ${planData.dailyWorkouts.map((day, dayIndex) => createDayRow(day, planIndex, dayIndex)).join('')}
             </div>
         </div>
@@ -1321,30 +1321,30 @@ function createDayRow(dayData, planIndex, dayIndex) {
     return `
         <div class="day-row ${dayClass} rounded-lg border border-gray-100 transition-colors ${dayData.isRestDay ? '' : 'cursor-pointer'}" 
              ${dayData.isRestDay ? '' : `onclick="showDayDetails(${planIndex}, ${dayIndex})"`}>
-            <div class="p-3 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
+            <div class="p-2 md:p-3 flex items-center justify-between">
+                <div class="flex items-center space-x-2 md:space-x-3">
                     <div class="flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full ${statusConfig.bgColor} flex items-center justify-center">
-                            <span class="text-sm font-bold ${statusConfig.textColor}">${dayData.day}</span>
+                        <div class="w-6 md:w-8 h-6 md:h-8 rounded-full ${statusConfig.bgColor} flex items-center justify-center">
+                            <span class="text-xs md:text-sm font-bold ${statusConfig.textColor}">${dayData.day}</span>
                         </div>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center space-x-2">
-                            <h4 class="text-sm font-medium text-brand-text-primary truncate">${dayData.dayName}</h4>
-                            ${!dayData.isRestDay ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)}">${dayData.workoutType}</span>` : ''}
+                        <div class="flex items-center space-x-1 md:space-x-2 mb-1">
+                            <h4 class="text-xs md:text-sm font-medium text-brand-text-primary truncate">${dayData.dayName}</h4>
+                            ${!dayData.isRestDay ? `<span class="hidden sm:inline-flex items-center px-1 md:px-2 py-0.5 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)}">${dayData.workoutType}</span>` : ''}
                         </div>
-                        <p class="text-xs text-brand-text-secondary mt-0.5">
+                        <p class="text-xs text-brand-text-secondary">
                             ${dayData.isRestDay ? 'Rest & Recovery' : `${dayData.totalExercises} exercises • ${dayData.estimatedTime}`}
                         </p>
-                        <p class="text-xs text-brand-text-secondary">
+                        <p class="text-xs text-brand-text-secondary opacity-75">
                             ${dayData.date}
                         </p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-1 md:space-x-2">
                     ${!dayData.isRestDay ? `
-                        <div class="text-xs ${statusConfig.textColor} font-medium">${statusConfig.label}</div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+                        <div class="text-xs ${statusConfig.textColor} font-medium hidden md:block">${statusConfig.label}</div>
+                        <i data-lucide="chevron-right" class="w-3 md:w-4 h-3 md:h-4 text-gray-400"></i>
                     ` : ''}
                 </div>
             </div>
