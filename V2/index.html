@@ -8,6 +8,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .day-card {
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        .day-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -36,10 +56,10 @@
             <div class="h-16 md:h-20 flex items-center px-4 md:px-6">
                 <div class="logo-container w-full">
                     <div class="w-10 h-10 bg-brand-lime rounded-xl flex items-center justify-center overflow-hidden">
-                        <img src="https://yt3.googleusercontent.com/H65VOc8pBxS3u1fbgyYOypUTfZQxFoDOk6yV5UUn2fugwGwfpneqyk3jQSuvqxhmL8QDMUDzNJ8=s160-c-k-c0x00ffffff-no-rj" alt="SimpleWarmUp Logo" class="w-full h-full object-cover">
+                        <img src="https://yt3.googleusercontent.com/H65VOc8pBxS3u1fbgyYOypUTfZQxFoDOk6yV5UUn2fugwGwfpneqyk3jQSuvqxhmL8QDMUDzNJ8" alt="SimpleWarmUp Logo" class="w-full h-full object-cover">
                     </div>
                     <div class="ml-3 logo-text">
-                        <h1 class="text-lg font-bold text-brand-text-primary">FitMove</h1>
+                        <h1 class="text-lg font-bold text-brand-text-primary">InMotion</h1>
                     </div>
                 </div>
             </div>
@@ -151,10 +171,75 @@
                 <!-- Calendar Content -->
                 <div id="calendar-content" class="tab-content hidden p-6">
                     <div class="max-w-7xl mx-auto">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-brand-text-primary">Workout Calendar</h2>
+                                <p class="text-brand-text-secondary mt-1">Track your daily workout progress</p>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <!-- Filter Buttons -->
+                                <div class="hidden md:flex bg-brand-surface rounded-xl p-1 shadow-sm border border-gray-200">
+                                    <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-brand-lime text-brand-text-primary" data-filter="all">All</button>
+                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary" data-filter="completed">Completed</button>
+                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary" data-filter="missed">Missed</button>
+                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary" data-filter="upcoming">Upcoming</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary Stats -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-brand-text-secondary">Completed</p>
+                                        <p class="text-xl font-bold text-brand-text-primary" id="completed-count">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="x-circle" class="w-5 h-5 text-red-600"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-brand-text-secondary">Missed</p>
+                                        <p class="text-xl font-bold text-brand-text-primary" id="missed-count">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="clock" class="w-5 h-5 text-yellow-600"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-brand-text-secondary">Upcoming</p>
+                                        <p class="text-xl font-bold text-brand-text-primary" id="upcoming-count">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="coffee" class="w-5 h-5 text-gray-600"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-brand-text-secondary">Rest Days</p>
+                                        <p class="text-xl font-bold text-brand-text-primary" id="rest-count">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Calendar Grid -->
                         <div class="bg-brand-surface rounded-2xl p-6 shadow-sm border border-gray-100">
-                            <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Workout Calendar</h2>
-                            <div class="h-96 bg-gray-50 rounded-xl flex items-center justify-center">
-                                <p class="text-brand-text-secondary">Calendar view with daily task status will be loaded here</p>
+                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6" id="calendar-grid">
+                                <!-- Days will be populated by JavaScript -->
                             </div>
                         </div>
                     </div>
@@ -200,6 +285,72 @@
 
     <!-- Mobile Overlay -->
     <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-5 hidden lg:hidden"></div>
+
+    <!-- Workout Detail Modal -->
+    <div id="workout-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                    <div>
+                        <h3 class="text-lg font-semibold text-brand-text-primary" id="modal-day-title">Day 1</h3>
+                        <p class="text-sm text-brand-text-secondary" id="modal-date">January 1, 2024</p>
+                    </div>
+                    <button id="close-modal" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="p-6">
+                    <!-- Status Badge -->
+                    <div class="flex items-center mb-4">
+                        <div id="modal-status-badge" class="flex items-center px-3 py-1 rounded-full text-sm font-medium text-white">
+                            <i id="modal-status-icon" class="w-4 h-4 mr-2"></i>
+                            <span id="modal-status-text">Completed</span>
+                        </div>
+                    </div>
+
+                    <!-- Workout Details -->
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-medium text-brand-text-primary mb-2">Workout Plan</h4>
+                            <div id="modal-workout-plan" class="bg-gray-50 rounded-lg p-4">
+                                <!-- Workout details will be populated here -->
+                            </div>
+                        </div>
+
+                        <div id="modal-notes-section" class="hidden">
+                            <h4 class="font-medium text-brand-text-primary mb-2">Notes</h4>
+                            <div id="modal-notes" class="bg-gray-50 rounded-lg p-4 text-sm text-brand-text-secondary">
+                                <!-- Notes will be populated here -->
+                            </div>
+                        </div>
+
+                        <div id="modal-stats-section" class="hidden">
+                            <h4 class="font-medium text-brand-text-primary mb-2">Performance Stats</h4>
+                            <div id="modal-stats" class="bg-gray-50 rounded-lg p-4">
+                                <!-- Stats will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-3 mt-6 pt-4 border-t border-gray-200">
+                        <button id="mark-completed" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                            <i data-lucide="check" class="w-4 h-4 mr-2 inline"></i>
+                            Mark Complete
+                        </button>
+                        <button id="mark-missed" class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors">
+                            <i data-lucide="x" class="w-4 h-4 mr-2 inline"></i>
+                            Mark Missed
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

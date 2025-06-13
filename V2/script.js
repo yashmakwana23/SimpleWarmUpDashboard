@@ -171,8 +171,349 @@ function loadTodayContent() {
 // Calendar Content Loader
 function loadCalendarContent() {
     console.log('Loading calendar content...');
-    // Placeholder for calendar functionality
-    // This will include calendar widget and workout logs
+    
+    // Sample workout data - Replace with actual data source
+    const workoutData = [
+        {
+            day: 1,
+            date: new Date('2024-01-01'),
+            status: 'completed',
+            workoutPlan: ['Push-ups: 3 sets x 10 reps', 'Squats: 3 sets x 15 reps', 'Plank: 3 sets x 30 seconds'],
+            notes: 'Great workout! Felt strong today.',
+            stats: { duration: '25 minutes', calories: '150 cal', heartRate: '140 bpm avg' }
+        },
+        {
+            day: 2,
+            date: new Date('2024-01-02'),
+            status: 'completed',
+            workoutPlan: ['Lunges: 3 sets x 10 each leg', 'Mountain climbers: 3 sets x 20 reps', 'Burpees: 2 sets x 8 reps'],
+            notes: 'Challenging but completed all sets.',
+            stats: { duration: '30 minutes', calories: '180 cal', heartRate: '145 bpm avg' }
+        },
+        {
+            day: 3,
+            date: new Date('2024-01-03'),
+            status: 'missed',
+            workoutPlan: ['Yoga flow: 20 minutes', 'Stretching routine: 10 minutes'],
+            notes: 'Missed due to work meeting.',
+            stats: null
+        },
+        {
+            day: 4,
+            date: new Date('2024-01-04'),
+            status: 'rest',
+            workoutPlan: ['Rest day - light stretching'],
+            notes: 'Recovery day.',
+            stats: null
+        },
+        {
+            day: 5,
+            date: new Date('2024-01-05'),
+            status: 'upcoming',
+            workoutPlan: ['Upper body strength: 4 exercises', 'Core workout: 15 minutes'],
+            notes: null,
+            stats: null
+        },
+        {
+            day: 6,
+            date: new Date('2024-01-06'),
+            status: 'upcoming',
+            workoutPlan: ['Full body HIIT: 20 minutes', 'Cool down: 5 minutes'],
+            notes: null,
+            stats: null
+        },
+        {
+            day: 7,
+            date: new Date('2024-01-07'),
+            status: 'upcoming',
+            workoutPlan: ['Swimming: 30 minutes', 'Stretching: 10 minutes'],
+            notes: null,
+            stats: null
+        },
+        {
+            day: 8,
+            date: new Date('2024-01-08'),
+            status: 'upcoming',
+            workoutPlan: ['Strength training: 45 minutes', 'Cardio: 15 minutes'],
+            notes: null,
+            stats: null
+        }
+    ];
+
+    renderCalendar(workoutData);
+    updateCalendarStats(workoutData);
+    initializeCalendarFilters(workoutData);
+    initializeWorkoutModal(workoutData);
+}
+
+function renderCalendar(workoutData) {
+    const grid = document.getElementById('calendar-grid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+
+    workoutData.forEach(day => {
+        const dayCard = createDayCard(day);
+        grid.appendChild(dayCard);
+    });
+
+    lucide.createIcons();
+}
+
+function createDayCard(dayData) {
+    const card = document.createElement('div');
+    card.className = `day-card bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-200 cursor-pointer transition-all hover:shadow-lg ${getStatusClass(dayData.status)}`;
+    card.setAttribute('data-status', dayData.status);
+    card.setAttribute('data-day', dayData.day);
+
+    const statusConfig = getStatusConfig(dayData.status);
+    
+    card.innerHTML = `
+        <div class="flex items-center space-x-2 mb-3">
+            <div class="w-8 h-8 ${statusConfig.bgColor} rounded-lg flex items-center justify-center">
+                <i data-lucide="${statusConfig.icon}" class="w-4 h-4 ${statusConfig.iconColor}"></i>
+            </div>
+            <div>
+                <h3 class="font-semibold text-brand-text-primary">Day ${dayData.day}</h3>
+            </div>
+        </div>
+        <p class="text-xs text-brand-text-secondary mb-2">${formatCalendarDate(dayData.date)}</p>
+        <div class="text-xs text-brand-text-secondary">
+            <p class="mt-1 line-clamp-2">${dayData.workoutPlan[0] || 'No workout planned'}</p>
+        </div>
+    `;
+
+    card.addEventListener('click', () => openWorkoutModal(dayData));
+    return card;
+}
+
+function getStatusConfig(status) {
+    const configs = {
+        completed: {
+            bgColor: 'bg-green-100',
+            iconColor: 'text-green-600',
+            icon: 'check',
+            statusBg: 'bg-green-500',
+            statusIcon: 'check',
+            statusIconColor: 'text-white',
+            label: 'Completed',
+            textColor: 'text-green-600'
+        },
+        missed: {
+            bgColor: 'bg-red-100',
+            iconColor: 'text-red-600',
+            icon: 'x',
+            statusBg: 'bg-red-500',
+            statusIcon: 'x',
+            statusIconColor: 'text-white',
+            label: 'Missed',
+            textColor: 'text-red-600'
+        },
+        upcoming: {
+            bgColor: 'bg-yellow-100',
+            iconColor: 'text-yellow-600',
+            icon: 'clock',
+            statusBg: 'bg-yellow-500',
+            statusIcon: 'clock',
+            statusIconColor: 'text-white',
+            label: 'Upcoming',
+            textColor: 'text-yellow-600'
+        },
+        rest: {
+            bgColor: 'bg-gray-100',
+            iconColor: 'text-gray-600',
+            icon: 'coffee',
+            statusBg: 'bg-gray-500',
+            statusIcon: 'coffee',
+            statusIconColor: 'text-white',
+            label: 'Rest Day',
+            textColor: 'text-gray-600'
+        }
+    };
+    return configs[status] || configs.upcoming;
+}
+
+function getStatusClass(status) {
+    const classes = {
+        completed: 'border-green-200 hover:border-green-300',
+        missed: 'border-red-200 hover:border-red-300',
+        upcoming: 'border-yellow-200 hover:border-yellow-300',
+        rest: 'border-gray-200 hover:border-gray-300'
+    };
+    return classes[status] || classes.upcoming;
+}
+
+function formatCalendarDate(date) {
+    return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: 'numeric'
+    });
+}
+
+function updateCalendarStats(workoutData) {
+    const completed = workoutData.filter(d => d.status === 'completed').length;
+    const missed = workoutData.filter(d => d.status === 'missed').length;
+    const upcoming = workoutData.filter(d => d.status === 'upcoming').length;
+    const rest = workoutData.filter(d => d.status === 'rest').length;
+
+    const completedEl = document.getElementById('completed-count');
+    const missedEl = document.getElementById('missed-count');  
+    const upcomingEl = document.getElementById('upcoming-count');
+    const restEl = document.getElementById('rest-count');
+
+    if (completedEl) completedEl.textContent = completed;
+    if (missedEl) missedEl.textContent = missed;
+    if (upcomingEl) upcomingEl.textContent = upcoming;
+    if (restEl) restEl.textContent = rest;
+}
+
+function initializeCalendarFilters(workoutData) {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Update active filter button
+            filterBtns.forEach(b => {
+                b.classList.remove('active', 'bg-brand-lime', 'text-brand-text-primary');
+                b.classList.add('text-brand-text-secondary');
+            });
+            this.classList.add('active', 'bg-brand-lime', 'text-brand-text-primary');
+            this.classList.remove('text-brand-text-secondary');
+
+            // Filter cards
+            const filter = this.getAttribute('data-filter');
+            filterCalendarCards(filter);
+        });
+    });
+}
+
+function filterCalendarCards(filter) {
+    const cards = document.querySelectorAll('.day-card');
+    
+    cards.forEach(card => {
+        const cardStatus = card.getAttribute('data-status');
+        
+        if (filter === 'all' || cardStatus === filter) {
+            card.style.display = 'block';
+            card.classList.add('fade-in');
+        } else {
+            card.style.display = 'none';
+            card.classList.remove('fade-in');
+        }
+    });
+}
+
+function initializeWorkoutModal(workoutData) {
+    const modal = document.getElementById('workout-modal');
+    const closeBtn = document.getElementById('close-modal');
+    const markCompleted = document.getElementById('mark-completed');
+    const markMissed = document.getElementById('mark-missed');
+
+    if (!modal || !closeBtn) return;
+
+    closeBtn.addEventListener('click', closeWorkoutModal);
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeWorkoutModal();
+    });
+
+    if (markCompleted) markCompleted.addEventListener('click', () => updateWorkoutStatus('completed', workoutData));
+    if (markMissed) markMissed.addEventListener('click', () => updateWorkoutStatus('missed', workoutData));
+}
+
+function openWorkoutModal(dayData) {
+    const modal = document.getElementById('workout-modal');
+    if (!modal) return;
+    
+    // Populate modal content
+    document.getElementById('modal-day-title').textContent = `Day ${dayData.day}`;
+    document.getElementById('modal-date').textContent = formatCalendarDate(dayData.date);
+    
+    // Status badge
+    const statusConfig = getStatusConfig(dayData.status);
+    const statusBadge = document.getElementById('modal-status-badge');
+    statusBadge.className = `flex items-center px-3 py-1 rounded-full text-sm font-medium text-white ${statusConfig.statusBg}`;
+    document.getElementById('modal-status-icon').setAttribute('data-lucide', statusConfig.statusIcon);
+    document.getElementById('modal-status-text').textContent = statusConfig.label;
+    
+    // Workout plan
+    const workoutPlanDiv = document.getElementById('modal-workout-plan');
+    workoutPlanDiv.innerHTML = dayData.workoutPlan.map(exercise => 
+        `<div class="flex items-center mb-2">
+            <i data-lucide="activity" class="w-4 h-4 text-brand-accent mr-2"></i>
+            <span class="text-sm">${exercise}</span>
+        </div>`
+    ).join('');
+    
+    // Notes
+    if (dayData.notes) {
+        document.getElementById('modal-notes-section').classList.remove('hidden');
+        document.getElementById('modal-notes').textContent = dayData.notes;
+    } else {
+        document.getElementById('modal-notes-section').classList.add('hidden');
+    }
+    
+    // Stats
+    if (dayData.stats) {
+        document.getElementById('modal-stats-section').classList.remove('hidden');
+        const statsDiv = document.getElementById('modal-stats');
+        statsDiv.innerHTML = `
+            <div class="grid grid-cols-3 gap-4 text-center">
+                <div>
+                    <div class="text-lg font-semibold text-brand-text-primary">${dayData.stats.duration}</div>
+                    <div class="text-xs text-brand-text-secondary">Duration</div>
+                </div>
+                <div>
+                    <div class="text-lg font-semibold text-brand-text-primary">${dayData.stats.calories}</div>
+                    <div class="text-xs text-brand-text-secondary">Calories</div>
+                </div>
+                <div>
+                    <div class="text-lg font-semibold text-brand-text-primary">${dayData.stats.heartRate}</div>
+                    <div class="text-xs text-brand-text-secondary">Heart Rate</div>
+                </div>
+            </div>
+        `;
+    } else {
+        document.getElementById('modal-stats-section').classList.add('hidden');
+    }
+    
+    // Store current day for status updates
+    modal.setAttribute('data-current-day', dayData.day);
+    
+    // Show modal
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // Reinitialize icons
+    lucide.createIcons();
+}
+
+function closeWorkoutModal() {
+    const modal = document.getElementById('workout-modal');
+    if (!modal) return;
+    
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+function updateWorkoutStatus(newStatus, workoutData) {
+    const modal = document.getElementById('workout-modal');
+    if (!modal) return;
+    
+    const dayNumber = parseInt(modal.getAttribute('data-current-day'));
+    
+    // Find and update the workout data
+    const dayData = workoutData.find(d => d.day === dayNumber);
+    if (dayData) {
+        dayData.status = newStatus;
+        
+        // Update the UI
+        renderCalendar(workoutData);
+        updateCalendarStats(workoutData);
+        closeWorkoutModal();
+        
+        console.log(`Day ${dayNumber} marked as ${newStatus}`);
+    }
 }
 
 // Planner Content Loader
