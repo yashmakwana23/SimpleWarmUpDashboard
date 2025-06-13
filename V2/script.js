@@ -302,7 +302,90 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
     
     return `
         <div class="bg-gray-50 rounded-lg p-3 exercise-row" id="${exerciseId}">
-            <div class="flex items-center gap-3">
+            <!-- Mobile Layout: Optimized 2-Row -->
+            <div class="lg:hidden space-y-3">
+                <!-- Row 1: Video Thumbnail + Exercise Name & Target Info -->
+                <div class="flex items-center gap-3">
+                    <!-- Small Video Thumbnail -->
+                    <div class="flex-shrink-0">
+                        <div class="relative group cursor-pointer" onclick="openExerciseVideo('${exercise.video}', '${exercise.name}')">
+                            <div class="w-14 h-10 bg-gray-200 rounded-md overflow-hidden">
+                                <img 
+                                    src="https://img.youtube.com/vi/${getYouTubeVideoId(exercise.video)}/maxresdefault.jpg" 
+                                    alt="${exercise.name}"
+                                    class="w-full h-full object-cover"
+                                    onerror="this.src='https://img.youtube.com/vi/${getYouTubeVideoId(exercise.video)}/hqdefault.jpg'"
+                                >
+                            </div>
+                            <div class="absolute inset-0 bg-black bg-opacity-50 rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <i data-lucide="play" class="w-3 h-3 text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Exercise Info -->
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-brand-text-primary text-sm truncate">${exercise.name}</h4>
+                        <p class="text-xs text-brand-text-secondary truncate">Target: ${exercise.targetSets} × ${exercise.targetReps} • ${exercise.weight}</p>
+                    </div>
+                </div>
+
+                <!-- Row 2: Input Fields + Action Buttons -->
+                <div class="flex items-end gap-1">
+                    <!-- Input Fields with Labels -->
+                    <div class="flex-auto grid grid-cols-3 gap-1.5 mr-1">
+                        <div class="text-center">
+                            <label class="block text-xs font-medium text-brand-text-secondary mb-1">Weight</label>
+                            <input 
+                                type="text" 
+                                id="weight-${exerciseId}"
+                                placeholder="${exercise.weight}"
+                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
+                            >
+                        </div>
+                        <div class="text-center">
+                            <label class="block text-xs font-medium text-brand-text-secondary mb-1">Sets</label>
+                            <input 
+                                type="number" 
+                                id="sets-${exerciseId}"
+                                placeholder="${exercise.targetSets}"
+                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
+                            >
+                        </div>
+                        <div class="text-center">
+                            <label class="block text-xs font-medium text-brand-text-secondary mb-1">Reps</label>
+                            <input 
+                                type="text" 
+                                id="reps-${exerciseId}"
+                                placeholder="${exercise.targetReps}"
+                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons (Icons Only) -->
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        <button 
+                            onclick="openExerciseNotes('${exerciseId}')"
+                            class="p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
+                            title="Add Notes"
+                        >
+                            <i data-lucide="sticky-note" class="w-4 h-4"></i>
+                        </button>
+                        <button 
+                            onclick="completeExercise('${exerciseId}', ${workoutIndex})"
+                            id="complete-btn-${exerciseId}"
+                            class="p-2 bg-brand-lime text-brand-text-primary rounded-md hover:bg-opacity-90 transition-colors"
+                            title="Complete Exercise"
+                        >
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Layout: Single Row -->
+            <div class="hidden lg:flex lg:items-center lg:gap-3">
                 <!-- Small Video Thumbnail -->
                 <div class="flex-shrink-0">
                     <div class="relative group cursor-pointer" onclick="openExerciseVideo('${exercise.video}', '${exercise.name}')">
@@ -320,124 +403,62 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
                     </div>
                 </div>
 
-                <!-- Mobile Layout: Stacked -->
-                <div class="flex-1 min-w-0 lg:hidden">
-                    <!-- Exercise Name & Target -->
-                    <div class="mb-3">
-                        <h4 class="font-semibold text-brand-text-primary text-sm">${exercise.name}</h4>
-                        <p class="text-xs text-brand-text-secondary">Target: ${exercise.targetSets} × ${exercise.targetReps} • ${exercise.weight}</p>
-                    </div>
+                <!-- Exercise Name & Target Info -->
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-semibold text-brand-text-primary text-sm truncate">${exercise.name}</h4>
+                    <p class="text-xs text-brand-text-secondary truncate">Target: ${exercise.targetSets} × ${exercise.targetReps} • ${exercise.weight}</p>
+                </div>
 
-                    <!-- Input Fields -->
-                    <div class="grid grid-cols-3 gap-2 mb-3">
-                        <div>
-                            <label class="block text-xs font-medium text-brand-text-secondary mb-1">Weight</label>
-                            <input 
-                                type="text" 
-                                id="weight-${exerciseId}"
-                                placeholder="${exercise.weight}"
-                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent"
-                            >
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-brand-text-secondary mb-1">Sets</label>
-                            <input 
-                                type="number" 
-                                id="sets-${exerciseId}"
-                                placeholder="${exercise.targetSets}"
-                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent"
-                            >
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-brand-text-secondary mb-1">Reps</label>
-                            <input 
-                                type="text" 
-                                id="reps-${exerciseId}"
-                                placeholder="${exercise.targetReps}"
-                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent"
-                            >
-                        </div>
+                <!-- Input Fields (Inline) -->
+                <div class="flex items-center gap-3">
+                    <div class="w-20">
+                        <label class="block text-xs font-medium text-brand-text-secondary mb-1 text-center">Weight</label>
+                        <input 
+                            type="text" 
+                            id="weight-${exerciseId}-desktop"
+                            placeholder="${exercise.weight}"
+                            class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
+                        >
                     </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex items-center gap-2">
-                        <button 
-                            onclick="openExerciseNotes('${exerciseId}')"
-                            class="flex items-center gap-1 px-3 py-1.5 text-xs text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
-                            title="Add Notes"
+                    <div class="w-16">
+                        <label class="block text-xs font-medium text-brand-text-secondary mb-1 text-center">Sets</label>
+                        <input 
+                            type="number" 
+                            id="sets-${exerciseId}-desktop"
+                            placeholder="${exercise.targetSets}"
+                            class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
                         >
-                            <i data-lucide="sticky-note" class="w-3 h-3"></i>
-                            <span>Notes</span>
-                        </button>
-                        <button 
-                            onclick="completeExercise('${exerciseId}', ${workoutIndex})"
-                            id="complete-btn-${exerciseId}"
-                            class="flex items-center gap-1 px-3 py-1.5 bg-brand-lime text-brand-text-primary rounded-md font-medium hover:bg-opacity-90 transition-colors text-xs"
+                    </div>
+                    <div class="w-16">
+                        <label class="block text-xs font-medium text-brand-text-secondary mb-1 text-center">Reps</label>
+                        <input 
+                            type="text" 
+                            id="reps-${exerciseId}-desktop"
+                            placeholder="${exercise.targetReps}"
+                            class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
                         >
-                            <i data-lucide="check" class="w-3 h-3"></i>
-                            <span>Complete</span>
-                        </button>
                     </div>
                 </div>
 
-                <!-- Desktop Layout: Single Row -->
-                <div class="hidden lg:flex lg:items-center lg:flex-1 lg:min-w-0 lg:gap-4">
-                    <!-- Exercise Name & Target Info -->
-                    <div class="flex-1 min-w-0">
-                        <h4 class="font-semibold text-brand-text-primary text-sm truncate">${exercise.name}</h4>
-                        <p class="text-xs text-brand-text-secondary truncate">Target: ${exercise.targetSets} × ${exercise.targetReps} • ${exercise.weight}</p>
-                    </div>
-
-                    <!-- Input Fields (Inline) -->
-                    <div class="flex items-center gap-3">
-                        <div class="w-20">
-                            <label class="block text-xs font-medium text-brand-text-secondary mb-1 text-center">Weight</label>
-                            <input 
-                                type="text" 
-                                id="weight-${exerciseId}-desktop"
-                                placeholder="${exercise.weight}"
-                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
-                            >
-                        </div>
-                        <div class="w-16">
-                            <label class="block text-xs font-medium text-brand-text-secondary mb-1 text-center">Sets</label>
-                            <input 
-                                type="number" 
-                                id="sets-${exerciseId}-desktop"
-                                placeholder="${exercise.targetSets}"
-                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
-                            >
-                        </div>
-                        <div class="w-16">
-                            <label class="block text-xs font-medium text-brand-text-secondary mb-1 text-center">Reps</label>
-                            <input 
-                                type="text" 
-                                id="reps-${exerciseId}-desktop"
-                                placeholder="${exercise.targetReps}"
-                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
-                            >
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons (Icons Only) -->
-                    <div class="flex items-center gap-2">
-                        <button 
-                            onclick="openExerciseNotes('${exerciseId}')"
-                            class="p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
-                            title="Add Notes"
-                        >
-                            <i data-lucide="sticky-note" class="w-4 h-4"></i>
-                        </button>
-                        <button 
-                            onclick="completeExercise('${exerciseId}', ${workoutIndex})"
-                            id="complete-btn-${exerciseId}-desktop"
-                            class="p-2 bg-brand-lime text-brand-text-primary rounded-md hover:bg-opacity-90 transition-colors"
-                            title="Complete Exercise"
-                        >
-                            <i data-lucide="check" class="w-4 h-4"></i>
-                        </button>
-                    </div>
+                <!-- Action Buttons (Icons Only) -->
+                <div class="flex items-center gap-2">
+                    <button 
+                        onclick="openExerciseNotes('${exerciseId}')"
+                        class="p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
+                        title="Add Notes"
+                    >
+                        <i data-lucide="sticky-note" class="w-4 h-4"></i>
+                    </button>
+                    <button 
+                        onclick="completeExercise('${exerciseId}', ${workoutIndex})"
+                        id="complete-btn-${exerciseId}-desktop"
+                        class="p-2 bg-brand-lime text-brand-text-primary rounded-md hover:bg-opacity-90 transition-colors"
+                        title="Complete Exercise"
+                    >
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                    </button>
                 </div>
+            </div>
             </div>
 
             <!-- Exercise Notes (Hidden by default) -->
@@ -569,11 +590,12 @@ function completeExercise(exerciseId, workoutIndex) {
         exerciseRow.classList.add('opacity-75');
         exerciseRow.setAttribute('data-completed', 'true');
         
-        // Update mobile button
+        // Update mobile button (now uses same icon-only style as desktop)
         if (completeBtnMobile) {
-            completeBtnMobile.innerHTML = '<i data-lucide="check-circle" class="w-3 h-3"></i><span>Completed</span>';
-            completeBtnMobile.className = 'flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-700 rounded-md font-medium cursor-default text-xs';
+            completeBtnMobile.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i>';
+            completeBtnMobile.className = 'p-2 bg-green-100 text-green-700 rounded-md cursor-default';
             completeBtnMobile.disabled = true;
+            completeBtnMobile.title = 'Exercise Completed';
         }
         
         // Update desktop button
