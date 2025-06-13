@@ -29,125 +29,87 @@
     </script>
 </head>
 <body class="bg-brand-bg font-sans">
-    <div class="flex h-screen">
+    <div class="flex h-screen p-2 md:p-4 lg:p-6 gap-2 md:gap-4 lg:gap-6">
         <!-- Sidebar Navigation -->
-        <aside id="sidebar" class="w-64 bg-brand-surface flex flex-col shadow-xl transition-all duration-300 relative z-10">
+        <aside id="sidebar" class="w-64 bg-brand-surface flex flex-col flex-shrink-0 rounded-2xl md:rounded-[2.5rem] shadow-lg transition-all duration-300 relative z-10">
             <!-- Logo/Brand Section -->
-            <div class="h-20 flex items-center px-6 border-b border-gray-100">
-                <div class="flex items-center">
+            <div class="h-16 md:h-20 flex items-center px-4 md:px-6">
+                <div class="logo-container w-full">
                     <div class="w-10 h-10 bg-brand-lime rounded-xl flex items-center justify-center">
                         <i data-lucide="dumbbell" class="w-6 h-6 text-brand-text-primary"></i>
                     </div>
-                    <div class="ml-3">
+                    <div class="ml-3 logo-text">
                         <h1 class="text-lg font-bold text-brand-text-primary">FitMove</h1>
-                        <p class="text-xs text-brand-text-secondary">Dashboard V2</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Navigation Menu -->
-            <nav class="flex-1 px-4 py-6">
-                <div class="space-y-2">
-                    <!-- Today's Plan Tab -->
-                    <a href="#today" 
-                       class="nav-item flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 bg-brand-lime text-brand-text-primary" 
-                       data-tab="today">
-                        <i data-lucide="sun" class="w-5 h-5 mr-3"></i>
-                        <span>Today's Plan</span>
-                        <div class="ml-auto w-2 h-2 bg-brand-text-primary rounded-full opacity-60"></div>
-                    </a>
-
-                    <!-- Calendar Tab -->
-                    <a href="#calendar" 
-                       class="nav-item flex items-center px-4 py-3 rounded-xl text-sm font-medium text-brand-text-secondary hover:bg-gray-50 hover:text-brand-text-primary transition-all duration-200" 
-                       data-tab="calendar">
-                        <i data-lucide="calendar" class="w-5 h-5 mr-3"></i>
-                        <span>Calendar</span>
-                    </a>
-
-                    <!-- Complete Planner Tab -->
-                    <a href="#planner" 
-                       class="nav-item flex items-center px-4 py-3 rounded-xl text-sm font-medium text-brand-text-secondary hover:bg-gray-50 hover:text-brand-text-primary transition-all duration-200" 
-                       data-tab="planner">
-                        <i data-lucide="layout-grid" class="w-5 h-5 mr-3"></i>
-                        <span>Complete Planner</span>
-                    </a>
-
-                    <!-- Assessment & Goals Tab -->
-                    <a href="#goals" 
-                       class="nav-item flex items-center px-4 py-3 rounded-xl text-sm font-medium text-brand-text-secondary hover:bg-gray-50 hover:text-brand-text-primary transition-all duration-200" 
-                       data-tab="goals">
-                        <i data-lucide="target" class="w-5 h-5 mr-3"></i>
-                        <span>Progress & Goals</span>
-                    </a>
-                </div>
-
-                <!-- Secondary Navigation -->
-                <div class="mt-8 pt-6 border-t border-gray-100">
-                    <h3 class="px-4 text-xs font-semibold text-brand-text-secondary uppercase tracking-wider mb-3">
-                        Quick Actions
-                    </h3>
-                    <div class="space-y-1">
-                        <a href="#" class="flex items-center px-4 py-2 text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors">
-                            <i data-lucide="plus-circle" class="w-4 h-4 mr-3"></i>
-                            <span>Add Workout</span>
-                        </a>
-                        <a href="#" class="flex items-center px-4 py-2 text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors">
-                            <i data-lucide="trending-up" class="w-4 h-4 mr-3"></i>
-                            <span>View Progress</span>
-                        </a>
-                        <a href="#" class="flex items-center px-4 py-2 text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors">
-                            <i data-lucide="settings" class="w-4 h-4 mr-3"></i>
-                            <span>Settings</span>
-                        </a>
-                    </div>
-                </div>
+                        <!-- Navigation Menu -->
+            <nav class="flex-grow px-3 md:px-4">
+                <!-- Today's Plan Tab -->
+                <a href="#today" 
+                   class="nav-item flex items-center px-4 py-3 text-sm font-semibold bg-brand-lime rounded-full mb-2" 
+                   data-tab="today">
+                    <i data-lucide="sun" class="w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Today's Plan</span>
+                </a>
+                
+                <!-- Calendar Tab -->
+                <a href="#calendar" 
+                   class="nav-item flex items-center px-4 py-3 mt-2 text-sm font-semibold text-brand-text-secondary hover:bg-gray-100 rounded-lg" 
+                   data-tab="calendar">
+                    <i data-lucide="calendar" class="w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Calendar</span>
+                </a>
+                
+                <!-- Complete Planner Tab -->
+                <a href="#planner" 
+                   class="nav-item flex items-center px-4 py-3 mt-2 text-sm font-semibold text-brand-text-secondary hover:bg-gray-100 rounded-lg" 
+                   data-tab="planner">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Complete Planner</span>
+                </a>
+                
+                <!-- Assessment & Goals Tab -->
+                <a href="#goals" 
+                   class="nav-item flex items-center px-4 py-3 mt-2 text-sm font-semibold text-brand-text-secondary hover:bg-gray-100 rounded-lg" 
+                   data-tab="goals">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Assessment & Goals</span>
+                </a>
             </nav>
 
             <!-- Sidebar Footer -->
-            <div class="p-4 border-t border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-brand-accent rounded-full flex items-center justify-center">
-                            <span class="text-white text-sm font-semibold">W</span>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-brand-text-primary">Wingman</p>
-                            <p class="text-xs text-brand-text-secondary">Premium User</p>
-                        </div>
-                    </div>
-                    <button class="p-1 rounded-lg hover:bg-gray-100 transition-colors">
-                        <i data-lucide="more-vertical" class="w-4 h-4 text-brand-text-secondary"></i>
-                    </button>
-                </div>
+            <div class="border-t border-gray-200 p-3 md:p-4 hidden md:block">
+                <button id="left-sidebar-toggle" class="flex items-center justify-center w-full rounded-lg p-2 text-brand-text-secondary hover:bg-gray-100 group">
+                    <i data-lucide="chevrons-left" class="transition-transform duration-300 w-5 h-5"></i>
+                    <span class="ml-2 sidebar-text">Collapse</span>
+                </button>
             </div>
         </aside>
 
         <!-- Main Content Area -->
         <main class="flex-1 flex flex-col min-w-0">
             <!-- Header -->
-            <header class="h-20 bg-brand-surface border-b border-gray-100 px-6 flex items-center justify-between">
+            <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8">
                 <div class="flex items-center">
-                    <button id="sidebar-toggle" class="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden">
-                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    <button id="mobile-menu-btn" class="p-2 rounded-lg text-brand-text-secondary hover:bg-gray-100 md:hidden mr-4">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
-                    <div class="ml-4 lg:ml-0">
-                        <h1 id="page-title" class="text-xl font-bold text-brand-text-primary">Today's Plan</h1>
-                        <p id="page-subtitle" class="text-sm text-brand-text-secondary">Ready to crush your fitness goals today!</p>
+                    <div>
+                        <h1 class="text-lg md:text-xl font-bold text-brand-text-primary">Hello, Wingman! 👋</h1>
+                        <p class="text-xs md:text-sm text-brand-text-secondary">Welcome and let's do some workout today!</p>
                     </div>
                 </div>
                 
-                <!-- Header Actions -->
-                <div class="flex items-center space-x-3">
-                    <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
-                        <i data-lucide="bell" class="w-5 h-5 text-brand-text-secondary"></i>
-                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                <!-- Desktop Calendar Button -->
+                <div class="hidden md:flex items-center">
+                    <button id="calendar-toggle-btn" class="relative flex items-center bg-brand-surface rounded-full px-4 py-3 shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200 hover:border-gray-300 group">
+                        <i data-lucide="calendar" class="w-4 h-4 text-brand-text-secondary mr-3"></i>
+                        <div class="text-sm">
+                            <div id="current-full-date" class="font-semibold text-brand-text-primary leading-none"></div>
+                        </div>
                     </button>
-                    <div class="w-px h-6 bg-gray-200"></div>
-                    <div class="flex items-center space-x-2">
-                        <span id="current-date" class="text-sm font-medium text-brand-text-primary"></span>
-                        <i data-lucide="calendar-days" class="w-4 h-4 text-brand-text-secondary"></i>
-                    </div>
                 </div>
             </header>
 

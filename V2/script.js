@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeDashboard();
     initializeNavigation();
     initializeMobileFeatures();
+    initializeSidebarCollapse();
     updateDateTime();
     
     // Update date/time every minute
@@ -46,20 +47,22 @@ function initializeNavigation() {
 
 // Tab Switching Function
 function switchTab(tabName) {
-    // Remove active class from all nav items
+    // Remove active class from all nav items and set inactive state
     const navItems = document.querySelectorAll('.nav-item[data-tab]');
     navItems.forEach(item => {
-        item.classList.remove('active');
-        item.classList.remove('bg-brand-lime', 'text-brand-text-primary');
-        item.classList.add('text-brand-text-secondary', 'hover:bg-gray-50', 'hover:text-brand-text-primary');
+        // Remove active styles
+        item.classList.remove('bg-brand-lime', 'text-brand-text-primary', 'rounded-full');
+        // Add inactive styles
+        item.classList.add('text-brand-text-secondary', 'hover:bg-gray-100', 'rounded-lg');
     });
     
     // Add active class to current nav item
     const activeNavItem = document.querySelector(`[data-tab="${tabName}"]`);
     if (activeNavItem) {
-        activeNavItem.classList.add('active');
-        activeNavItem.classList.add('bg-brand-lime', 'text-brand-text-primary');
-        activeNavItem.classList.remove('text-brand-text-secondary', 'hover:bg-gray-50', 'hover:text-brand-text-primary');
+        // Remove inactive styles
+        activeNavItem.classList.remove('text-brand-text-secondary', 'hover:bg-gray-100', 'rounded-lg');
+        // Add active styles
+        activeNavItem.classList.add('bg-brand-lime', 'text-brand-text-primary', 'rounded-full');
     }
     
     // Hide all tab contents
@@ -75,41 +78,66 @@ function switchTab(tabName) {
         targetContent.classList.remove('hidden');
         targetContent.classList.add('fade-in');
         
-        // Update page title and subtitle
-        updatePageHeader(tabName);
-        
         // Load content for the tab if needed
         loadTabContent(tabName);
     }
 }
 
-// Update Page Header
-function updatePageHeader(tabName) {
-    const pageTitle = document.getElementById('page-title');
-    const pageSubtitle = document.getElementById('page-subtitle');
+// Sidebar Collapse Functionality
+function initializeSidebarCollapse() {
+    console.log('Initializing sidebar collapse...');
     
-    const tabInfo = {
-        today: {
-            title: "Today's Plan",
-            subtitle: "Ready to crush your fitness goals today!"
-        },
-        calendar: {
-            title: "Workout Calendar",
-            subtitle: "Track your daily progress and plan ahead"
-        },
-        planner: {
-            title: "Complete Planner",
-            subtitle: "Build comprehensive workout routines"
-        },
-        goals: {
-            title: "Progress & Goals",
-            subtitle: "Monitor your achievements and set new targets"
+    const collapseBtn = document.getElementById('left-sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    console.log('Collapse button:', collapseBtn);
+    console.log('Sidebar:', sidebar);
+    
+    if (collapseBtn && sidebar) {
+        console.log('Adding click event listener to collapse button');
+        collapseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Collapse button clicked!');
+            toggleSidebarCollapse();
+        });
+    } else {
+        console.error('Collapse button or sidebar not found!');
+    }
+}
+
+function toggleSidebarCollapse() {
+    console.log('Toggle sidebar collapse called');
+    
+    const sidebar = document.getElementById('sidebar');
+    const collapseIcon = document.querySelector('#left-sidebar-toggle svg');
+    
+    console.log('Sidebar element:', sidebar);
+    console.log('Collapse icon:', collapseIcon);
+    
+    if (sidebar && collapseIcon) {
+        // Toggle collapsed class
+        sidebar.classList.toggle('collapsed');
+        
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        console.log('Sidebar is now:', isCollapsed ? 'collapsed' : 'expanded');
+        
+        // Update icon based on state
+        if (isCollapsed) {
+            // Sidebar is now collapsed, show right arrow to expand
+            collapseIcon.setAttribute('data-lucide', 'chevrons-right');
+            console.log('Changed icon to chevrons-right');
+        } else {
+            // Sidebar is now expanded, show left arrow to collapse
+            collapseIcon.setAttribute('data-lucide', 'chevrons-left');
+            console.log('Changed icon to chevrons-left');
         }
-    };
-    
-    if (tabInfo[tabName]) {
-        pageTitle.textContent = tabInfo[tabName].title;
-        pageSubtitle.textContent = tabInfo[tabName].subtitle;
+        
+        // Reinitialize Lucide icons to update the icon
+        lucide.createIcons();
+        console.log('Lucide icons recreated');
+    } else {
+        console.error('Sidebar or collapse icon not found!');
+        console.log('Available icons in button:', document.querySelectorAll('#left-sidebar-toggle *'));
     }
 }
 
@@ -163,7 +191,7 @@ function loadGoalsContent() {
 
 // Mobile Features
 function initializeMobileFeatures() {
-    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarToggle = document.getElementById('mobile-menu-btn');
     const sidebar = document.getElementById('sidebar');
     const mobileOverlay = document.getElementById('mobile-overlay');
     
@@ -185,6 +213,11 @@ function initializeMobileFeatures() {
     window.addEventListener('resize', function() {
         if (window.innerWidth >= 1024) {
             closeMobileSidebar();
+            // Reset collapse state on larger screens
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && sidebar.classList.contains('collapsed')) {
+                // Keep collapse state on desktop
+            }
         }
     });
     
@@ -228,14 +261,15 @@ function closeMobileSidebar() {
 
 // Update Date and Time
 function updateDateTime() {
-    const currentDateElement = document.getElementById('current-date');
+    const currentDateElement = document.getElementById('current-full-date');
     
     if (currentDateElement) {
         const now = new Date();
         const options = { 
-            weekday: 'short', 
-            month: 'short', 
-            day: 'numeric' 
+            weekday: 'long', 
+            month: 'long', 
+            day: 'numeric',
+            year: 'numeric'
         };
         const dateString = now.toLocaleDateString('en-US', options);
         currentDateElement.textContent = dateString;
@@ -315,6 +349,7 @@ window.addEventListener('error', function(e) {
 window.FitMove = {
     switchTab,
     toggleMobileSidebar,
+    toggleSidebarCollapse,
     loadTabContent,
     showNotification
 }; 

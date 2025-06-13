@@ -46,7 +46,152 @@ main {
 
 /* Sidebar Styles */
 #sidebar {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 16rem; /* w-64 = 256px = 16rem */
+    min-width: 16rem;
+}
+
+#sidebar.collapsed {
+    width: 4rem; /* Reduced width for consistent icon sizes */
+    min-width: 4rem;
+}
+
+/* Sidebar text visibility */
+.sidebar-text {
+    opacity: 1;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#sidebar.collapsed .sidebar-text {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+}
+
+/* Navigation items responsive behavior */
+.nav-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+}
+
+/* Stronger CSS for collapsed navigation items */
+#sidebar.collapsed .nav-item {
+    justify-content: center !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.75rem 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    text-align: center !important;
+}
+
+/* Remove all margin and positioning from nav item children */
+#sidebar.collapsed .nav-item > * {
+    margin: 0 !important;
+}
+
+/* Icon sizing - keep consistent between expanded and collapsed */
+#sidebar .nav-item i,
+#sidebar .nav-item svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+#sidebar.collapsed .nav-item i,
+#sidebar.collapsed .nav-item svg {
+    margin: 0 !important;
+    width: 20px !important; /* Keep same size as expanded */
+    height: 20px !important; /* Keep same size as expanded */
+    display: block !important;
+}
+
+/* Force center alignment for logo area in collapsed state */
+#sidebar.collapsed .h-16,
+#sidebar.collapsed .md\:h-20 {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Logo container specific styling */
+#sidebar .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#sidebar.collapsed .logo-container {
+    justify-content: center !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Logo icon and text */
+#sidebar.collapsed .logo-text {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    overflow: hidden;
+}
+
+.logo-text {
+    opacity: 1;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Logo icon sizing - reduce size for collapsed state to fit better */
+#sidebar .w-10.h-10 {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#sidebar.collapsed .w-10.h-10 {
+    width: 2rem !important; /* Smaller logo for collapsed state */
+    height: 2rem !important; /* Smaller logo for collapsed state */
+    margin: 0 !important;
+}
+
+/* Force center all flex containers in collapsed sidebar */
+#sidebar.collapsed .flex {
+    justify-content: center !important;
+    margin: 0 !important;
+}
+
+/* Collapse button styling */
+#sidebar.collapsed #left-sidebar-toggle {
+    justify-content: center !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.75rem !important;
+    margin: 0 !important;
+}
+
+#sidebar.collapsed #left-sidebar-toggle .sidebar-text {
+    display: none;
+}
+
+#sidebar.collapsed #left-sidebar-toggle svg {
+    margin: 0 !important;
+    width: 20px !important; /* Keep same size as other icons */
+    height: 20px !important; /* Keep same size as other icons */
+}
+
+/* Override any Tailwind margin classes in collapsed state */
+#sidebar.collapsed .ml-3,
+#sidebar.collapsed .mr-3,
+#sidebar.collapsed .ml-2,
+#sidebar.collapsed .mr-2 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 
 @media (max-width: 1023px) {
@@ -57,10 +202,19 @@ main {
         height: 100vh;
         z-index: 50;
         transform: translateX(-100%);
+        margin: 0;
+        border-radius: 0;
+        width: 16rem !important; /* Force full width on mobile */
+        min-width: 16rem !important;
     }
     
     #sidebar.open {
         transform: translateX(0);
+    }
+    
+    #sidebar.collapsed {
+        width: 16rem !important; /* Prevent collapse on mobile */
+        min-width: 16rem !important;
     }
     
     #mobile-overlay.active {
