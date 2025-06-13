@@ -1100,86 +1100,55 @@ function updateWorkoutStatus(newStatus, workoutData) {
 function loadPlannerContent() {
     console.log('Loading planner content...');
     
-    // Load monthly workout data
-    loadMonthlyPlannerCards();
-    initializePlannerControls();
+    // Load plan cards
+    loadPlanCards();
 }
 
-// Initialize planner controls
-function initializePlannerControls() {
-    const collapseAllBtn = document.getElementById('collapse-all-months');
-    const expandAllBtn = document.getElementById('expand-all-months');
+// Load Plan Cards
+function loadPlanCards() {
+    const planGrid = document.getElementById('plan-cards-grid');
+    if (!planGrid) return;
     
-    if (collapseAllBtn) {
-        collapseAllBtn.addEventListener('click', () => {
-            const allMonthCards = document.querySelectorAll('.month-card-content');
-            const allToggleBtns = document.querySelectorAll('.month-toggle-btn');
-            const allToggleIcons = document.querySelectorAll('.month-toggle-icon');
-            
-            allMonthCards.forEach(card => card.classList.add('hidden'));
-            allToggleBtns.forEach(btn => btn.classList.remove('bg-brand-lime'));
-            allToggleIcons.forEach(icon => {
-                icon.setAttribute('data-lucide', 'chevron-down');
-            });
-            lucide.createIcons();
-        });
-    }
+    // Get plan data
+    const planData = getPlanData();
     
-    if (expandAllBtn) {
-        expandAllBtn.addEventListener('click', () => {
-            const allMonthCards = document.querySelectorAll('.month-card-content');
-            const allToggleBtns = document.querySelectorAll('.month-toggle-btn');
-            const allToggleIcons = document.querySelectorAll('.month-toggle-icon');
-            
-            allMonthCards.forEach(card => card.classList.remove('hidden'));
-            allToggleBtns.forEach(btn => btn.classList.add('bg-brand-lime'));
-            allToggleIcons.forEach(icon => {
-                icon.setAttribute('data-lucide', 'chevron-up');
-            });
-            lucide.createIcons();
-        });
-    }
-}
-
-// Load Monthly Planner Cards
-function loadMonthlyPlannerCards() {
-    const monthlyGrid = document.getElementById('monthly-planner-grid');
-    if (!monthlyGrid) return;
+    planGrid.innerHTML = '';
     
-    // Get monthly workout data for 4 months
-    const monthlyData = getMonthlyPlannerData();
-    
-    monthlyGrid.innerHTML = '';
-    
-    // Create monthly cards
-    monthlyData.forEach((monthData, monthIndex) => {
-        const monthCard = createMonthlyPlannerCard(monthData, monthIndex);
-        monthlyGrid.appendChild(monthCard);
+    // Create plan cards
+    planData.forEach((plan, planIndex) => {
+        const planCard = createPlanCard(plan, planIndex);
+        planGrid.appendChild(planCard);
     });
     
     lucide.createIcons();
 }
 
-// Get Monthly Planner Data (4 months)
-function getMonthlyPlannerData() {
-    const months = [
-        { name: "January 2024", days: 31, startDay: 1 },
-        { name: "February 2024", days: 29, startDay: 4 },
-        { name: "March 2024", days: 31, startDay: 5 },
-        { name: "April 2024", days: 30, startDay: 1 }
+// Get Plan Data (Multiple plans with varying durations)
+function getPlanData() {
+    const plans = [
+        { name: "Beginner Strength", duration: 30, startDate: "2024-01-01" },
+        { name: "Advanced HIIT", duration: 45, startDate: "2024-01-15" },
+        { name: "Weight Loss Challenge", duration: 60, startDate: "2024-02-01" },
+        { name: "Muscle Building", duration: 90, startDate: "2024-03-01" }
     ];
     
-    return months.map((month, monthIndex) => {
+    return plans.map((plan, planIndex) => {
         const dailyWorkouts = [];
+        const startDate = new Date(plan.startDate);
         
-        // Generate workout days for the month
-        for (let day = 1; day <= month.days; day++) {
-            // Skip Sundays and random rest days
-            if ((day + month.startDay - 1) % 7 === 0 || Math.random() > 0.8) {
+        // Generate workout days for the plan duration
+        for (let day = 0; day < plan.duration; day++) {
+            const currentDate = new Date(startDate);
+            currentDate.setDate(startDate.getDate() + day);
+            
+            const dayOfWeek = currentDate.getDay();
+            const isRestDay = dayOfWeek === 0 || (day > 0 && day % 6 === 0); // Sundays and every 6th day
+            
+            if (isRestDay) {
                 dailyWorkouts.push({
-                    day: day,
-                    date: `${month.name.split(' ')[0]} ${day}, 2024`,
-                    dayName: getDayName((day + month.startDay - 1) % 7),
+                    day: day + 1,
+                    date: currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    dayName: getDayName(dayOfWeek),
                     isRestDay: true,
                     workoutType: "Rest Day",
                     totalExercises: 0,
@@ -1188,38 +1157,55 @@ function getMonthlyPlannerData() {
                     status: "rest"
                 });
             } else {
-                const workoutTypes = [
-                    "Upper Body Strength", "Core & Cardio", "Lower Body Power", 
-                    "HIIT & Conditioning", "Full Body Circuit"
-                ];
+                const workoutTypes = getPlanWorkoutTypes(plan.name);
                 const workoutType = workoutTypes[Math.floor(Math.random() * workoutTypes.length)];
                 
+                // Determine status based on current date
+                const today = new Date();
+                const status = currentDate < today ? 
+                    (Math.random() > 0.2 ? "completed" : "missed") : 
+                    "upcoming";
+                
                 dailyWorkouts.push({
-                    day: day,
-                    date: `${month.name.split(' ')[0]} ${day}, 2024`,
-                    dayName: getDayName((day + month.startDay - 1) % 7),
+                    day: day + 1,
+                    date: currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    dayName: getDayName(dayOfWeek),
                     isRestDay: false,
                     workoutType: workoutType,
-                    totalExercises: Math.floor(Math.random() * 4) + 3,
+                    totalExercises: Math.floor(Math.random() * 3) + 3,
                     estimatedTime: `${Math.floor(Math.random() * 30) + 30} min`,
                     exercises: getRandomExercises(workoutType),
-                    status: day < 15 ? (Math.random() > 0.3 ? "completed" : "missed") : "upcoming"
+                    status: status
                 });
             }
         }
         
         return {
-            monthName: month.name,
-            monthIndex: monthIndex,
-            totalDays: month.days,
+            planName: plan.name,
+            planIndex: planIndex,
+            duration: plan.duration,
+            totalDays: plan.duration,
             workoutDays: dailyWorkouts.filter(d => !d.isRestDay).length,
             restDays: dailyWorkouts.filter(d => d.isRestDay).length,
             completed: dailyWorkouts.filter(d => d.status === "completed").length,
             missed: dailyWorkouts.filter(d => d.status === "missed").length,
             upcoming: dailyWorkouts.filter(d => d.status === "upcoming").length,
-            dailyWorkouts: dailyWorkouts
+            dailyWorkouts: dailyWorkouts,
+            currentFilter: 'all' // Default filter
         };
     });
+}
+
+// Get plan specific workout types
+function getPlanWorkoutTypes(planName) {
+    const planTypes = {
+        "Beginner Strength": ["Upper Body Strength", "Lower Body Power", "Full Body Circuit"],
+        "Advanced HIIT": ["HIIT & Conditioning", "Core & Cardio", "Full Body Circuit"],
+        "Weight Loss Challenge": ["Core & Cardio", "HIIT & Conditioning", "Full Body Circuit"],
+        "Muscle Building": ["Upper Body Strength", "Lower Body Power", "Full Body Circuit"]
+    };
+    
+    return planTypes[planName] || ["Full Body Circuit"];
 }
 
 // Helper function to get day name
@@ -1266,61 +1252,75 @@ function getRandomExercises(workoutType) {
     return exercises.slice(0, numExercises);
 }
 
-// Create Monthly Planner Card
-function createMonthlyPlannerCard(monthData, monthIndex) {
-    const monthCard = document.createElement('div');
-    monthCard.className = 'bg-brand-surface rounded-2xl shadow-sm border border-gray-100 overflow-hidden';
+// Create Plan Card
+function createPlanCard(planData, planIndex) {
+    const planCard = document.createElement('div');
+    planCard.className = 'bg-brand-surface rounded-2xl shadow-sm border border-gray-100 overflow-hidden';
+    planCard.id = `plan-card-${planIndex}`;
     
-    monthCard.innerHTML = `
+    planCard.innerHTML = `
         <div class="p-6">
-            <!-- Month Header -->
+            <!-- Plan Header -->
             <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h3 class="text-lg font-bold text-brand-text-primary">${monthData.monthName}</h3>
-                    <p class="text-sm text-brand-text-secondary">${monthData.workoutDays} workout days • ${monthData.restDays} rest days</p>
+                    <h3 class="text-lg font-bold text-brand-text-primary">${planData.planName}</h3>
+                    <p class="text-sm text-brand-text-secondary">${planData.duration} days • ${planData.workoutDays} workout days • ${planData.restDays} rest days</p>
                 </div>
-                <button class="month-toggle-btn p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors bg-brand-lime" 
-                        onclick="toggleMonthCard(${monthIndex})">
-                    <i data-lucide="chevron-up" class="w-5 h-5 month-toggle-icon"></i>
+                <button class="plan-toggle-btn p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors bg-brand-lime" 
+                        onclick="togglePlanCard(${planIndex})">
+                    <i data-lucide="chevron-up" class="w-5 h-5 plan-toggle-icon"></i>
                 </button>
             </div>
             
-            <!-- Month Stats -->
+            <!-- Plan Stats (Clickable for filtering) -->
             <div class="grid grid-cols-3 gap-3 mb-4">
-                <div class="text-center p-3 bg-green-50 rounded-lg">
-                    <div class="text-lg font-bold text-green-600">${monthData.completed}</div>
+                <div class="text-center p-3 bg-green-50 rounded-lg cursor-pointer hover:bg-green-100 transition-colors" 
+                     onclick="filterPlan(${planIndex}, 'completed')">
+                    <div class="text-lg font-bold text-green-600">${planData.completed}</div>
                     <div class="text-xs text-green-600">Completed</div>
                 </div>
-                <div class="text-center p-3 bg-red-50 rounded-lg">
-                    <div class="text-lg font-bold text-red-600">${monthData.missed}</div>
+                <div class="text-center p-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100 transition-colors" 
+                     onclick="filterPlan(${planIndex}, 'missed')">
+                    <div class="text-lg font-bold text-red-600">${planData.missed}</div>
                     <div class="text-xs text-red-600">Missed</div>
                 </div>
-                <div class="text-center p-3 bg-yellow-50 rounded-lg">
-                    <div class="text-lg font-bold text-yellow-600">${monthData.upcoming}</div>
+                <div class="text-center p-3 bg-yellow-50 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors" 
+                     onclick="filterPlan(${planIndex}, 'upcoming')">
+                    <div class="text-lg font-bold text-yellow-600">${planData.upcoming}</div>
                     <div class="text-xs text-yellow-600">Upcoming</div>
+                </div>
+            </div>
+            
+            <!-- Filter indicator -->
+            <div class="filter-indicator hidden mb-3">
+                <div class="flex items-center justify-between bg-blue-50 rounded-lg p-2">
+                    <span class="text-sm text-blue-700">Filter: <span class="filter-text font-medium"></span></span>
+                    <button onclick="clearFilter(${planIndex})" class="text-blue-700 hover:text-blue-900">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
         </div>
         
-        <!-- Month Content (Collapsible) -->
-        <div class="month-card-content border-t border-gray-100">
-            <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
-                ${monthData.dailyWorkouts.map((day, dayIndex) => createDayRow(day, monthIndex, dayIndex)).join('')}
+        <!-- Plan Content (Collapsible) -->
+        <div class="plan-card-content border-t border-gray-100">
+            <div class="p-4 space-y-2 max-h-96 overflow-y-auto plan-days-container">
+                ${planData.dailyWorkouts.map((day, dayIndex) => createDayRow(day, planIndex, dayIndex)).join('')}
             </div>
         </div>
     `;
     
-    return monthCard;
+    return planCard;
 }
 
 // Create Day Row
-function createDayRow(dayData, monthIndex, dayIndex) {
+function createDayRow(dayData, planIndex, dayIndex) {
     const statusConfig = getStatusConfig(dayData.status);
     const dayClass = dayData.isRestDay ? 'bg-gray-50' : 'bg-white hover:bg-gray-50';
     
     return `
         <div class="day-row ${dayClass} rounded-lg border border-gray-100 transition-colors ${dayData.isRestDay ? '' : 'cursor-pointer'}" 
-             ${dayData.isRestDay ? '' : `onclick="showDayDetails(${monthIndex}, ${dayIndex})"`}>
+             ${dayData.isRestDay ? '' : `onclick="showDayDetails(${planIndex}, ${dayIndex})"`}>
             <div class="p-3 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="flex-shrink-0">
@@ -1335,6 +1335,9 @@ function createDayRow(dayData, monthIndex, dayIndex) {
                         </div>
                         <p class="text-xs text-brand-text-secondary mt-0.5">
                             ${dayData.isRestDay ? 'Rest & Recovery' : `${dayData.totalExercises} exercises • ${dayData.estimatedTime}`}
+                        </p>
+                        <p class="text-xs text-brand-text-secondary">
+                            ${dayData.date}
                         </p>
                     </div>
                 </div>
@@ -1570,18 +1573,18 @@ function getMonthlyWorkoutData() {
     return monthlyPlans;
 }
 
-// Toggle Month Card
-function toggleMonthCard(monthIndex) {
-    const monthCard = document.querySelectorAll('.month-card-content')[monthIndex];
-    const toggleBtn = document.querySelectorAll('.month-toggle-btn')[monthIndex];
-    const toggleIcon = document.querySelectorAll('.month-toggle-icon')[monthIndex];
+// Toggle Plan Card
+function togglePlanCard(planIndex) {
+    const planCard = document.querySelectorAll('.plan-card-content')[planIndex];
+    const toggleBtn = document.querySelectorAll('.plan-toggle-btn')[planIndex];
+    const toggleIcon = document.querySelectorAll('.plan-toggle-icon')[planIndex];
     
-    if (monthCard.classList.contains('hidden')) {
-        monthCard.classList.remove('hidden');
+    if (planCard.classList.contains('hidden')) {
+        planCard.classList.remove('hidden');
         toggleBtn.classList.add('bg-brand-lime');
         toggleIcon.setAttribute('data-lucide', 'chevron-up');
     } else {
-        monthCard.classList.add('hidden');
+        planCard.classList.add('hidden');
         toggleBtn.classList.remove('bg-brand-lime');
         toggleIcon.setAttribute('data-lucide', 'chevron-down');
     }
@@ -1589,10 +1592,65 @@ function toggleMonthCard(monthIndex) {
     lucide.createIcons();
 }
 
+// Filter Plan by Status
+function filterPlan(planIndex, status) {
+    const planData = getPlanData();
+    const plan = planData[planIndex];
+    const planCard = document.getElementById(`plan-card-${planIndex}`);
+    const daysContainer = planCard.querySelector('.plan-days-container');
+    const filterIndicator = planCard.querySelector('.filter-indicator');
+    const filterText = planCard.querySelector('.filter-text');
+    
+    // Update filter status
+    plan.currentFilter = status;
+    
+    // Show filter indicator
+    filterIndicator.classList.remove('hidden');
+    filterText.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    
+    // Filter days
+    const filteredDays = plan.dailyWorkouts.filter(day => {
+        if (status === 'completed') return day.status === 'completed';
+        if (status === 'missed') return day.status === 'missed';
+        if (status === 'upcoming') return day.status === 'upcoming';
+        return true;
+    });
+    
+    // Re-render filtered days
+    daysContainer.innerHTML = filteredDays.map((day, dayIndex) => {
+        const originalIndex = plan.dailyWorkouts.findIndex(d => d.day === day.day);
+        return createDayRow(day, planIndex, originalIndex);
+    }).join('');
+    
+    lucide.createIcons();
+}
+
+// Clear Filter
+function clearFilter(planIndex) {
+    const planData = getPlanData();
+    const plan = planData[planIndex];
+    const planCard = document.getElementById(`plan-card-${planIndex}`);
+    const daysContainer = planCard.querySelector('.plan-days-container');
+    const filterIndicator = planCard.querySelector('.filter-indicator');
+    
+    // Clear filter status
+    plan.currentFilter = 'all';
+    
+    // Hide filter indicator
+    filterIndicator.classList.add('hidden');
+    
+    // Re-render all days
+    daysContainer.innerHTML = plan.dailyWorkouts.map((day, dayIndex) => 
+        createDayRow(day, planIndex, dayIndex)
+    ).join('');
+    
+    lucide.createIcons();
+}
+
 // Show Day Details
-function showDayDetails(monthIndex, dayIndex) {
-    const monthlyData = getMonthlyPlannerData();
-    const dayData = monthlyData[monthIndex].dailyWorkouts[dayIndex];
+function showDayDetails(planIndex, dayIndex) {
+    const planData = getPlanData();
+    const dayData = planData[planIndex].dailyWorkouts[dayIndex];
     
     if (dayData.isRestDay) return;
     
