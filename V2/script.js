@@ -278,17 +278,11 @@ function createWorkoutCard(workout, workoutIndex) {
                 </div>
                 <div>
                     <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary">${workout.workoutType}</h3>
-                    <p class="text-sm text-brand-text-secondary">${workout.exercises.length} exercises</p>
+                    <p class="text-sm text-brand-text-secondary" id="workout-progress-${workoutIndex}">0/${workout.exercises.length} exercises</p>
                 </div>
             </div>
-            <div class="flex items-center space-x-2">
-                <div class="text-right">
-                    <p class="text-sm font-medium text-brand-text-primary" id="workout-progress-${workoutIndex}">0/${workout.exercises.length}</p>
-                    <p class="text-xs text-brand-text-secondary">Completed</p>
-                </div>
-                <div class="w-12 h-12 rounded-full border-4 border-gray-200 flex items-center justify-center" id="workout-circle-${workoutIndex}">
-                    <span class="text-sm font-bold text-brand-text-secondary" id="workout-percentage-${workoutIndex}">0%</span>
-                </div>
+            <div class="w-12 h-12 rounded-full border-4 border-gray-200 flex items-center justify-center" id="workout-circle-${workoutIndex}">
+                <span class="text-sm font-bold text-brand-text-secondary" id="workout-percentage-${workoutIndex}">0%</span>
             </div>
         </div>
 
@@ -450,15 +444,24 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
             <div id="notes-${exerciseId}" class="hidden mt-3 pt-3 border-t border-gray-200">
                 <label class="block text-sm font-medium text-brand-text-secondary mb-2">Exercise Notes</label>
                 <textarea 
+                    id="notes-textarea-${exerciseId}"
                     placeholder="Add notes about this exercise..."
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-lime focus:border-transparent text-sm resize-none h-16"
                 ></textarea>
-                <button 
-                    onclick="closeExerciseNotes('${exerciseId}')"
-                    class="mt-2 text-sm text-brand-text-secondary hover:text-brand-text-primary"
-                >
-                    Close Notes
-                </button>
+                <div class="flex gap-2 mt-2">
+                    <button 
+                        onclick="saveExerciseNotes('${exerciseId}')"
+                        class="px-3 py-1.5 bg-brand-lime text-brand-text-primary rounded-md text-sm hover:bg-opacity-90 transition-colors"
+                    >
+                        Save Notes
+                    </button>
+                    <button 
+                        onclick="closeExerciseNotes('${exerciseId}')"
+                        class="px-3 py-1.5 text-sm text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                        Close
+                    </button>
+                </div>
             </div>
         </div>
     `;
@@ -512,6 +515,50 @@ function closeExerciseNotes(exerciseId) {
     }
 }
 
+function saveExerciseNotes(exerciseId) {
+    const textarea = document.getElementById(`notes-textarea-${exerciseId}`);
+    const notesDiv = document.getElementById(`notes-${exerciseId}`);
+    
+    if (textarea) {
+        const notes = textarea.value.trim();
+        
+        if (notes) {
+            // Store the notes (you can expand this to save to localStorage or server)
+            console.log(`Saving notes for ${exerciseId}:`, notes);
+            
+            // Visual feedback - show success message
+            const originalLabel = notesDiv.querySelector('label');
+            const originalText = originalLabel.textContent;
+            originalLabel.textContent = 'Exercise Notes (Saved ✓)';
+            originalLabel.className = 'block text-sm font-medium text-green-600 mb-2';
+            
+            // Store in exercise data attribute for persistence
+            const exerciseRow = document.getElementById(exerciseId);
+            if (exerciseRow) {
+                exerciseRow.setAttribute('data-notes', notes);
+            }
+            
+            // Reset label after 2 seconds
+            setTimeout(() => {
+                originalLabel.textContent = originalText;
+                originalLabel.className = 'block text-sm font-medium text-brand-text-secondary mb-2';
+            }, 2000);
+            
+        } else {
+            // Show message if no notes entered
+            const originalLabel = notesDiv.querySelector('label');
+            const originalText = originalLabel.textContent;
+            originalLabel.textContent = 'Please enter some notes first';
+            originalLabel.className = 'block text-sm font-medium text-red-600 mb-2';
+            
+            setTimeout(() => {
+                originalLabel.textContent = originalText;
+                originalLabel.className = 'block text-sm font-medium text-brand-text-secondary mb-2';
+            }, 2000);
+        }
+    }
+}
+
 function completeExercise(exerciseId, workoutIndex) {
     const exerciseRow = document.getElementById(exerciseId);
     const completeBtnMobile = document.getElementById(`complete-btn-${exerciseId}`);
@@ -552,7 +599,7 @@ function updateWorkoutProgress(workoutIndex) {
     const percentage = Math.round((completedExercises / totalExercises) * 100);
     
     // Update progress text
-    document.getElementById(`workout-progress-${workoutIndex}`).textContent = `${completedExercises}/${totalExercises}`;
+    document.getElementById(`workout-progress-${workoutIndex}`).textContent = `${completedExercises}/${totalExercises} exercises`;
     document.getElementById(`workout-percentage-${workoutIndex}`).textContent = `${percentage}%`;
     
     // Update progress circle
