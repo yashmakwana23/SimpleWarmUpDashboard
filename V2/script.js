@@ -1099,8 +1099,787 @@ function updateWorkoutStatus(newStatus, workoutData) {
 // Planner Content Loader
 function loadPlannerContent() {
     console.log('Loading planner content...');
-    // Placeholder for complete planner features
-    // This will include workout builders and templates
+    
+    // Load monthly workout data
+    loadMonthlyPlannerCards();
+    initializePlannerControls();
+}
+
+// Initialize planner controls
+function initializePlannerControls() {
+    const collapseAllBtn = document.getElementById('collapse-all-months');
+    const expandAllBtn = document.getElementById('expand-all-months');
+    
+    if (collapseAllBtn) {
+        collapseAllBtn.addEventListener('click', () => {
+            const allMonthCards = document.querySelectorAll('.month-card-content');
+            const allToggleBtns = document.querySelectorAll('.month-toggle-btn');
+            const allToggleIcons = document.querySelectorAll('.month-toggle-icon');
+            
+            allMonthCards.forEach(card => card.classList.add('hidden'));
+            allToggleBtns.forEach(btn => btn.classList.remove('bg-brand-lime'));
+            allToggleIcons.forEach(icon => {
+                icon.setAttribute('data-lucide', 'chevron-down');
+            });
+            lucide.createIcons();
+        });
+    }
+    
+    if (expandAllBtn) {
+        expandAllBtn.addEventListener('click', () => {
+            const allMonthCards = document.querySelectorAll('.month-card-content');
+            const allToggleBtns = document.querySelectorAll('.month-toggle-btn');
+            const allToggleIcons = document.querySelectorAll('.month-toggle-icon');
+            
+            allMonthCards.forEach(card => card.classList.remove('hidden'));
+            allToggleBtns.forEach(btn => btn.classList.add('bg-brand-lime'));
+            allToggleIcons.forEach(icon => {
+                icon.setAttribute('data-lucide', 'chevron-up');
+            });
+            lucide.createIcons();
+        });
+    }
+}
+
+// Load Monthly Planner Cards
+function loadMonthlyPlannerCards() {
+    const monthlyGrid = document.getElementById('monthly-planner-grid');
+    if (!monthlyGrid) return;
+    
+    // Get monthly workout data for 4 months
+    const monthlyData = getMonthlyPlannerData();
+    
+    monthlyGrid.innerHTML = '';
+    
+    // Create monthly cards
+    monthlyData.forEach((monthData, monthIndex) => {
+        const monthCard = createMonthlyPlannerCard(monthData, monthIndex);
+        monthlyGrid.appendChild(monthCard);
+    });
+    
+    lucide.createIcons();
+}
+
+// Get Monthly Planner Data (4 months)
+function getMonthlyPlannerData() {
+    const months = [
+        { name: "January 2024", days: 31, startDay: 1 },
+        { name: "February 2024", days: 29, startDay: 4 },
+        { name: "March 2024", days: 31, startDay: 5 },
+        { name: "April 2024", days: 30, startDay: 1 }
+    ];
+    
+    return months.map((month, monthIndex) => {
+        const dailyWorkouts = [];
+        
+        // Generate workout days for the month
+        for (let day = 1; day <= month.days; day++) {
+            // Skip Sundays and random rest days
+            if ((day + month.startDay - 1) % 7 === 0 || Math.random() > 0.8) {
+                dailyWorkouts.push({
+                    day: day,
+                    date: `${month.name.split(' ')[0]} ${day}, 2024`,
+                    dayName: getDayName((day + month.startDay - 1) % 7),
+                    isRestDay: true,
+                    workoutType: "Rest Day",
+                    totalExercises: 0,
+                    estimatedTime: "0 min",
+                    exercises: [],
+                    status: "rest"
+                });
+            } else {
+                const workoutTypes = [
+                    "Upper Body Strength", "Core & Cardio", "Lower Body Power", 
+                    "HIIT & Conditioning", "Full Body Circuit"
+                ];
+                const workoutType = workoutTypes[Math.floor(Math.random() * workoutTypes.length)];
+                
+                dailyWorkouts.push({
+                    day: day,
+                    date: `${month.name.split(' ')[0]} ${day}, 2024`,
+                    dayName: getDayName((day + month.startDay - 1) % 7),
+                    isRestDay: false,
+                    workoutType: workoutType,
+                    totalExercises: Math.floor(Math.random() * 4) + 3,
+                    estimatedTime: `${Math.floor(Math.random() * 30) + 30} min`,
+                    exercises: getRandomExercises(workoutType),
+                    status: day < 15 ? (Math.random() > 0.3 ? "completed" : "missed") : "upcoming"
+                });
+            }
+        }
+        
+        return {
+            monthName: month.name,
+            monthIndex: monthIndex,
+            totalDays: month.days,
+            workoutDays: dailyWorkouts.filter(d => !d.isRestDay).length,
+            restDays: dailyWorkouts.filter(d => d.isRestDay).length,
+            completed: dailyWorkouts.filter(d => d.status === "completed").length,
+            missed: dailyWorkouts.filter(d => d.status === "missed").length,
+            upcoming: dailyWorkouts.filter(d => d.status === "upcoming").length,
+            dailyWorkouts: dailyWorkouts
+        };
+    });
+}
+
+// Helper function to get day name
+function getDayName(dayIndex) {
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return days[dayIndex];
+}
+
+// Helper function to get random exercises based on workout type
+function getRandomExercises(workoutType) {
+    const exerciseLibrary = {
+        "Upper Body Strength": [
+            { name: "Push-ups", subtitle: "Chest, Shoulders, Triceps", targetSets: 3, targetReps: 12, targetWeight: "Bodyweight" },
+            { name: "Bench Press", subtitle: "Chest, Shoulders, Triceps", targetSets: 4, targetReps: 8, targetWeight: "135 lbs" },
+            { name: "Pull-ups", subtitle: "Back, Biceps", targetSets: 3, targetReps: 8, targetWeight: "Bodyweight" },
+            { name: "Overhead Press", subtitle: "Shoulders, Triceps", targetSets: 3, targetReps: 10, targetWeight: "95 lbs" }
+        ],
+        "Core & Cardio": [
+            { name: "Plank", subtitle: "Core Stability", targetSets: 3, targetReps: "45 sec", targetWeight: "Bodyweight" },
+            { name: "Mountain Climbers", subtitle: "Cardio, Core", targetSets: 3, targetReps: 20, targetWeight: "Bodyweight" },
+            { name: "Russian Twists", subtitle: "Obliques, Core", targetSets: 3, targetReps: 15, targetWeight: "Bodyweight" }
+        ],
+        "Lower Body Power": [
+            { name: "Squats", subtitle: "Quads, Glutes, Hamstrings", targetSets: 4, targetReps: 12, targetWeight: "185 lbs" },
+            { name: "Deadlifts", subtitle: "Hamstrings, Glutes, Back", targetSets: 3, targetReps: 6, targetWeight: "225 lbs" },
+            { name: "Lunges", subtitle: "Quads, Glutes, Balance", targetSets: 3, targetReps: 10, targetWeight: "Bodyweight" },
+            { name: "Calf Raises", subtitle: "Calves", targetSets: 4, targetReps: 15, targetWeight: "50 lbs" }
+        ],
+        "HIIT & Conditioning": [
+            { name: "Burpees", subtitle: "Full Body HIIT", targetSets: 4, targetReps: 8, targetWeight: "Bodyweight" },
+            { name: "Jump Squats", subtitle: "Explosive Lower Body", targetSets: 3, targetReps: 12, targetWeight: "Bodyweight" },
+            { name: "High Knees", subtitle: "Cardio, Core", targetSets: 3, targetReps: "30 sec", targetWeight: "Bodyweight" }
+        ],
+        "Full Body Circuit": [
+            { name: "Push-ups", subtitle: "Chest, Shoulders, Triceps", targetSets: 3, targetReps: 10, targetWeight: "Bodyweight" },
+            { name: "Squats", subtitle: "Quads, Glutes, Hamstrings", targetSets: 3, targetReps: 12, targetWeight: "Bodyweight" },
+            { name: "Plank", subtitle: "Core Stability", targetSets: 2, targetReps: "30 sec", targetWeight: "Bodyweight" },
+            { name: "Jumping Jacks", subtitle: "Cardio, Coordination", targetSets: 3, targetReps: 20, targetWeight: "Bodyweight" }
+        ]
+    };
+    
+    const exercises = exerciseLibrary[workoutType] || exerciseLibrary["Full Body Circuit"];
+    const numExercises = Math.floor(Math.random() * 2) + 3; // 3-4 exercises
+    return exercises.slice(0, numExercises);
+}
+
+// Create Monthly Planner Card
+function createMonthlyPlannerCard(monthData, monthIndex) {
+    const monthCard = document.createElement('div');
+    monthCard.className = 'bg-brand-surface rounded-2xl shadow-sm border border-gray-100 overflow-hidden';
+    
+    monthCard.innerHTML = `
+        <div class="p-6">
+            <!-- Month Header -->
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="text-lg font-bold text-brand-text-primary">${monthData.monthName}</h3>
+                    <p class="text-sm text-brand-text-secondary">${monthData.workoutDays} workout days • ${monthData.restDays} rest days</p>
+                </div>
+                <button class="month-toggle-btn p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors bg-brand-lime" 
+                        onclick="toggleMonthCard(${monthIndex})">
+                    <i data-lucide="chevron-up" class="w-5 h-5 month-toggle-icon"></i>
+                </button>
+            </div>
+            
+            <!-- Month Stats -->
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="text-center p-3 bg-green-50 rounded-lg">
+                    <div class="text-lg font-bold text-green-600">${monthData.completed}</div>
+                    <div class="text-xs text-green-600">Completed</div>
+                </div>
+                <div class="text-center p-3 bg-red-50 rounded-lg">
+                    <div class="text-lg font-bold text-red-600">${monthData.missed}</div>
+                    <div class="text-xs text-red-600">Missed</div>
+                </div>
+                <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                    <div class="text-lg font-bold text-yellow-600">${monthData.upcoming}</div>
+                    <div class="text-xs text-yellow-600">Upcoming</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Month Content (Collapsible) -->
+        <div class="month-card-content border-t border-gray-100">
+            <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
+                ${monthData.dailyWorkouts.map((day, dayIndex) => createDayRow(day, monthIndex, dayIndex)).join('')}
+            </div>
+        </div>
+    `;
+    
+    return monthCard;
+}
+
+// Create Day Row
+function createDayRow(dayData, monthIndex, dayIndex) {
+    const statusConfig = getStatusConfig(dayData.status);
+    const dayClass = dayData.isRestDay ? 'bg-gray-50' : 'bg-white hover:bg-gray-50';
+    
+    return `
+        <div class="day-row ${dayClass} rounded-lg border border-gray-100 transition-colors ${dayData.isRestDay ? '' : 'cursor-pointer'}" 
+             ${dayData.isRestDay ? '' : `onclick="showDayDetails(${monthIndex}, ${dayIndex})"`}>
+            <div class="p-3 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full ${statusConfig.bgColor} flex items-center justify-center">
+                            <span class="text-sm font-bold ${statusConfig.textColor}">${dayData.day}</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center space-x-2">
+                            <h4 class="text-sm font-medium text-brand-text-primary truncate">${dayData.dayName}</h4>
+                            ${!dayData.isRestDay ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)}">${dayData.workoutType}</span>` : ''}
+                        </div>
+                        <p class="text-xs text-brand-text-secondary mt-0.5">
+                            ${dayData.isRestDay ? 'Rest & Recovery' : `${dayData.totalExercises} exercises • ${dayData.estimatedTime}`}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    ${!dayData.isRestDay ? `
+                        <div class="text-xs ${statusConfig.textColor} font-medium">${statusConfig.label}</div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Get Monthly Workout Data
+function getMonthlyWorkoutData() {
+    // Return detailed workout plans with full exercise data like Today's Plan
+    const monthlyPlans = [
+        {
+            day: 1,
+            date: "Jan 1, 2024",
+            dayName: "Monday",
+            workoutType: "Upper Body Strength",
+            totalExercises: 4,
+            estimatedTime: "45 min",
+            exercises: [
+                {
+                    name: "Push-ups",
+                    subtitle: "Chest, Shoulders, Triceps",
+                    videoUrl: "https://www.youtube.com/watch?v=IODxDxX7oi4",
+                    targetSets: 3,
+                    targetReps: 12,
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                },
+                {
+                    name: "Bench Press",
+                    subtitle: "Chest, Shoulders, Triceps",
+                    videoUrl: "https://www.youtube.com/watch?v=rT7DgCr-3pg",
+                    targetSets: 4,
+                    targetReps: 8,
+                    targetWeight: "135 lbs",
+                    notes: ""
+                },
+                {
+                    name: "Pull-ups",
+                    subtitle: "Back, Biceps",
+                    videoUrl: "https://www.youtube.com/watch?v=eGo4IYlbE5g",
+                    targetSets: 3,
+                    targetReps: 8,
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                },
+                {
+                    name: "Overhead Press",
+                    subtitle: "Shoulders, Triceps",
+                    videoUrl: "https://www.youtube.com/watch?v=2yjwXTZQDDI",
+                    targetSets: 3,
+                    targetReps: 10,
+                    targetWeight: "95 lbs",
+                    notes: ""
+                }
+            ]
+        },
+        {
+            day: 2,
+            date: "Jan 2, 2024",
+            dayName: "Tuesday",
+            workoutType: "Core & Cardio",
+            totalExercises: 3,
+            estimatedTime: "30 min",
+            exercises: [
+                {
+                    name: "Plank",
+                    subtitle: "Core Stability",
+                    videoUrl: "https://www.youtube.com/watch?v=ASdvN_XEl_c",
+                    targetSets: 3,
+                    targetReps: "45 sec",
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                },
+                {
+                    name: "Mountain Climbers",
+                    subtitle: "Cardio, Core",
+                    videoUrl: "https://www.youtube.com/watch?v=kLh-uczlPLg",
+                    targetSets: 3,
+                    targetReps: 20,
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                },
+                {
+                    name: "Russian Twists",
+                    subtitle: "Obliques, Core",
+                    videoUrl: "https://www.youtube.com/watch?v=wkD8rjkodUI",
+                    targetSets: 3,
+                    targetReps: 15,
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                }
+            ]
+        },
+        {
+            day: 3,
+            date: "Jan 3, 2024",
+            dayName: "Wednesday",
+            workoutType: "Lower Body Power",
+            totalExercises: 4,
+            estimatedTime: "50 min",
+            exercises: [
+                {
+                    name: "Squats",
+                    subtitle: "Quads, Glutes, Hamstrings",
+                    videoUrl: "https://www.youtube.com/watch?v=ultWZbUMPL8",
+                    targetSets: 4,
+                    targetReps: 12,
+                    targetWeight: "185 lbs",
+                    notes: ""
+                },
+                {
+                    name: "Deadlifts",
+                    subtitle: "Hamstrings, Glutes, Back",
+                    videoUrl: "https://www.youtube.com/watch?v=ytGaGIn3SjE",
+                    targetSets: 3,
+                    targetReps: 6,
+                    targetWeight: "225 lbs",
+                    notes: ""
+                },
+                {
+                    name: "Lunges",
+                    subtitle: "Quads, Glutes, Balance",
+                    videoUrl: "https://www.youtube.com/watch?v=QE_hU9_dJCk",
+                    targetSets: 3,
+                    targetReps: 10,
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                },
+                {
+                    name: "Calf Raises",
+                    subtitle: "Calves",
+                    videoUrl: "https://www.youtube.com/watch?v=gwLzBJYoWlI",
+                    targetSets: 4,
+                    targetReps: 15,
+                    targetWeight: "50 lbs",
+                    notes: ""
+                }
+            ]
+        },
+        {
+            day: 4,
+            date: "Jan 4, 2024",
+            dayName: "Thursday",
+            workoutType: "HIIT & Conditioning",
+            totalExercises: 3,
+            estimatedTime: "25 min",
+            exercises: [
+                {
+                    name: "Burpees",
+                    subtitle: "Full Body HIIT",
+                    videoUrl: "https://www.youtube.com/watch?v=auBLPXO8Fww",
+                    targetSets: 4,
+                    targetReps: 8,
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                },
+                {
+                    name: "Jump Squats",
+                    subtitle: "Explosive Lower Body",
+                    videoUrl: "https://www.youtube.com/watch?v=A2jzBkKCgaQ",
+                    targetSets: 3,
+                    targetReps: 12,
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                },
+                {
+                    name: "High Knees",
+                    subtitle: "Cardio, Core",
+                    videoUrl: "https://www.youtube.com/watch?v=8opcQdC-V-U",
+                    targetSets: 3,
+                    targetReps: "30 sec",
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                }
+            ]
+        },
+        {
+            day: 5,
+            date: "Jan 5, 2024",
+            dayName: "Friday",
+            workoutType: "Flexibility & Mobility",
+            totalExercises: 4,
+            estimatedTime: "35 min",
+            exercises: [
+                {
+                    name: "Cat-Cow Stretch",
+                    subtitle: "Spine Mobility",
+                    videoUrl: "https://www.youtube.com/watch?v=kqnua4rHVVA",
+                    targetSets: 2,
+                    targetReps: "10 reps",
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                },
+                {
+                    name: "Downward Dog",
+                    subtitle: "Full Body Stretch",
+                    videoUrl: "https://www.youtube.com/watch?v=gLEXOGGcLlk",
+                    targetSets: 3,
+                    targetReps: "30 sec",
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                },
+                {
+                    name: "Pigeon Pose",
+                    subtitle: "Hip Flexibility",
+                    videoUrl: "https://www.youtube.com/watch?v=0_zPqA65Nok",
+                    targetSets: 2,
+                    targetReps: "45 sec",
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                },
+                {
+                    name: "Child's Pose",
+                    subtitle: "Relaxation, Back Stretch",
+                    videoUrl: "https://www.youtube.com/watch?v=2Y8gSBg0aAA",
+                    targetSets: 1,
+                    targetReps: "60 sec",
+                    targetWeight: "Bodyweight",
+                    notes: ""
+                }
+            ]
+        }
+    ];
+    
+    return monthlyPlans;
+}
+
+// Toggle Month Card
+function toggleMonthCard(monthIndex) {
+    const monthCard = document.querySelectorAll('.month-card-content')[monthIndex];
+    const toggleBtn = document.querySelectorAll('.month-toggle-btn')[monthIndex];
+    const toggleIcon = document.querySelectorAll('.month-toggle-icon')[monthIndex];
+    
+    if (monthCard.classList.contains('hidden')) {
+        monthCard.classList.remove('hidden');
+        toggleBtn.classList.add('bg-brand-lime');
+        toggleIcon.setAttribute('data-lucide', 'chevron-up');
+    } else {
+        monthCard.classList.add('hidden');
+        toggleBtn.classList.remove('bg-brand-lime');
+        toggleIcon.setAttribute('data-lucide', 'chevron-down');
+    }
+    
+    lucide.createIcons();
+}
+
+// Show Day Details
+function showDayDetails(monthIndex, dayIndex) {
+    const monthlyData = getMonthlyPlannerData();
+    const dayData = monthlyData[monthIndex].dailyWorkouts[dayIndex];
+    
+    if (dayData.isRestDay) return;
+    
+    // Create and show day details modal
+    showDayDetailsModal(dayData);
+}
+
+// Show Day Details Modal
+function showDayDetailsModal(dayData) {
+    // Create modal backdrop
+    const modalBackdrop = document.createElement('div');
+    modalBackdrop.id = 'day-details-modal';
+    modalBackdrop.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
+    modalBackdrop.innerHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onclick="closeDayDetailsModal()"></div>
+        <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative z-10">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <div>
+                    <h3 class="text-xl font-bold text-brand-text-primary">${dayData.dayName}, ${dayData.date}</h3>
+                    <p class="text-sm text-brand-text-secondary mt-1">${dayData.workoutType}</p>
+                </div>
+                <button onclick="closeDayDetailsModal()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6">
+                <!-- Workout Info -->
+                <div class="mb-6">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-brand-text-secondary"></i>
+                            <span class="text-sm text-brand-text-secondary">${dayData.estimatedTime}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="activity" class="w-4 h-4 text-brand-text-secondary"></i>
+                            <span class="text-sm text-brand-text-secondary">${dayData.totalExercises} exercises</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 rounded-full ${getStatusConfig(dayData.status).bgColor.replace('bg-', '')} bg-opacity-20"></div>
+                            <span class="text-sm font-medium ${getStatusConfig(dayData.status).textColor}">${getStatusConfig(dayData.status).label}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercise List -->
+                <div class="space-y-4">
+                    <h4 class="font-semibold text-brand-text-primary mb-3">Exercise Details</h4>
+                    ${dayData.exercises.map((exercise, index) => `
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex-1">
+                                    <h5 class="font-medium text-brand-text-primary">${exercise.name}</h5>
+                                    <p class="text-sm text-brand-text-secondary">${exercise.subtitle}</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <span class="text-brand-text-secondary block">Sets</span>
+                                    <span class="font-medium text-brand-text-primary">${exercise.targetSets}</span>
+                                </div>
+                                <div>
+                                    <span class="text-brand-text-secondary block">Reps</span>
+                                    <span class="font-medium text-brand-text-primary">${exercise.targetReps}</span>
+                                </div>
+                                <div>
+                                    <span class="text-brand-text-secondary block">Weight</span>
+                                    <span class="font-medium text-brand-text-primary">${exercise.targetWeight}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-3 mt-6 pt-4 border-t border-gray-200">
+                    ${dayData.status === 'upcoming' ? `
+                        <button class="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                            <i data-lucide="check" class="w-4 h-4 mr-2 inline"></i>
+                            Mark as Completed
+                        </button>
+                        <button class="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors">
+                            <i data-lucide="x" class="w-4 h-4 mr-2 inline"></i>
+                            Mark as Missed
+                        </button>
+                    ` : `
+                        <button class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            <i data-lucide="edit" class="w-4 h-4 mr-2 inline"></i>
+                            Edit Workout
+                        </button>
+                    `}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalBackdrop);
+    lucide.createIcons();
+}
+
+// Close Day Details Modal
+function closeDayDetailsModal() {
+    const modal = document.getElementById('day-details-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Create Planner Workout Card (Like Today's Plan)
+function createPlannerWorkoutCard(dailyPlan, planIndex) {
+    const card = document.createElement('div');
+    card.className = 'bg-brand-surface rounded-xl md:rounded-2xl shadow-sm border border-gray-100';
+    
+    card.innerHTML = `
+        <div class="p-4 md:p-6">
+            <!-- Workout Header -->
+            <div class="flex items-center justify-between mb-4 md:mb-6">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-brand-lime rounded-xl flex items-center justify-center mr-3 md:mr-4">
+                        <span class="text-sm font-bold text-brand-text-primary">${dailyPlan.day}</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary">${dailyPlan.date}</h3>
+                        <p class="text-brand-text-secondary">${dailyPlan.dayName} • ${dailyPlan.workoutType}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-medium text-brand-text-primary">${dailyPlan.totalExercises} exercises</div>
+                    <div class="text-sm text-brand-text-secondary">${dailyPlan.estimatedTime}</div>
+                </div>
+            </div>
+
+            <!-- Exercises List -->
+            <div class="space-y-4">
+                ${dailyPlan.exercises.map((exercise, exerciseIndex) => 
+                    createPlannerExerciseRow(exercise, planIndex, exerciseIndex)
+                ).join('')}
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+// Create Planner Exercise Row (View Only)
+function createPlannerExerciseRow(exercise, planIndex, exerciseIndex) {
+    const videoId = getYouTubeVideoId(exercise.videoUrl);
+    const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : 'https://via.placeholder.com/320x180?text=No+Video';
+    
+    return `
+        <div class="exercise-row bg-white rounded-lg border border-gray-100 p-3">
+            <!-- Desktop Layout -->
+            <div class="hidden md:flex md:items-center md:gap-4">
+                <!-- Video Thumbnail and Exercise Info -->
+                <div class="flex items-center gap-3 flex-1">
+                    <div class="relative flex-shrink-0">
+                        <img src="${thumbnailUrl}" alt="${exercise.name}" class="w-16 h-10 object-cover rounded-lg">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center">
+                            <i data-lucide="play" class="w-4 h-4 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-brand-text-primary text-sm">${exercise.name}</h4>
+                        <p class="text-brand-text-secondary text-xs">${exercise.subtitle}</p>
+                    </div>
+                </div>
+
+                <!-- Exercise Details -->
+                <div class="flex items-center gap-4 text-xs text-brand-text-secondary">
+                    <span>${exercise.targetWeight}</span>
+                    <span>${exercise.targetSets} sets</span>
+                    <span>${exercise.targetReps} reps</span>
+                </div>
+            </div>
+
+            <!-- Mobile Layout -->
+            <div class="md:hidden">
+                <!-- Exercise Info -->
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="relative flex-shrink-0">
+                        <img src="${thumbnailUrl}" alt="${exercise.name}" class="w-12 h-8 object-cover rounded-lg">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center">
+                            <i data-lucide="play" class="w-3 h-3 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-brand-text-primary text-sm truncate">${exercise.name}</h4>
+                        <p class="text-brand-text-secondary text-xs truncate">${exercise.subtitle}</p>
+                    </div>
+                </div>
+
+                <!-- Exercise Details -->
+                <div class="flex items-center gap-3 text-xs text-brand-text-secondary">
+                    <span>${exercise.targetWeight}</span>
+                    <span>${exercise.targetSets} sets</span>
+                    <span>${exercise.targetReps} reps</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
+
+// Get Planner Workouts (Mock Data)
+function getPlannerWorkouts(year, month, day) {
+    // Mock data - replace with actual data source
+    const mockWorkouts = {
+        1: [{ name: 'Upper Body', type: 'strength' }],
+        3: [{ name: 'Cardio', type: 'cardio' }],
+        5: [{ name: 'Lower Body', type: 'strength' }, { name: 'Core', type: 'core' }],
+        8: [{ name: 'HIIT', type: 'hiit' }],
+        10: [{ name: 'Yoga', type: 'flexibility' }],
+        12: [{ name: 'Full Body', type: 'strength' }],
+        15: [{ name: 'Running', type: 'cardio' }],
+        17: [{ name: 'Arms & Chest', type: 'strength' }],
+        19: [{ name: 'Pilates', type: 'flexibility' }],
+        22: [{ name: 'Legs & Glutes', type: 'strength' }],
+        24: [{ name: 'HIIT Circuit', type: 'hiit' }],
+        26: [{ name: 'Swim', type: 'cardio' }],
+        29: [{ name: 'Full Body', type: 'strength' }, { name: 'Stretching', type: 'flexibility' }]
+    };
+    
+    return mockWorkouts[day] || [];
+}
+
+// Get Workout Type Class
+function getWorkoutTypeClass(type) {
+    const classes = {
+        'Upper Body Strength': 'bg-blue-100 text-blue-700',
+        'Core & Cardio': 'bg-red-100 text-red-700',
+        'Lower Body Power': 'bg-green-100 text-green-700',
+        'HIIT & Conditioning': 'bg-orange-100 text-orange-700',
+        'Full Body Circuit': 'bg-purple-100 text-purple-700',
+        'strength': 'bg-blue-100 text-blue-700',
+        'cardio': 'bg-red-100 text-red-700',
+        'hiit': 'bg-orange-100 text-orange-700',
+        'flexibility': 'bg-green-100 text-green-700',
+        'core': 'bg-purple-100 text-purple-700'
+    };
+    return classes[type] || 'bg-gray-100 text-gray-700';
+}
+
+
+
+// Get Workout Type Icon
+function getWorkoutTypeIcon(type) {
+    const icons = {
+        'strength': 'dumbbell',
+        'cardio': 'heart',
+        'hiit': 'zap',
+        'flexibility': 'flower-2',
+        'core': 'target'
+    };
+    return icons[type] || 'activity';
+}
+
+// Show Create Plan Modal (Placeholder)
+function showCreatePlanModal() {
+    console.log('Opening create plan modal...');
+    showNotification('Create Plan feature coming soon!', 'info');
+}
+
+// Show Templates Modal (Placeholder)
+function showTemplatesModal() {
+    console.log('Opening templates modal...');
+    showNotification('Template management coming soon!', 'info');
+}
+
+// Show Day Plan Modal (Placeholder)
+function showDayPlanModal(year, month, day, workouts) {
+    console.log(`Opening day plan for ${month + 1}/${day}/${year}`, workouts);
+    showNotification(`Day planning for ${month + 1}/${day}/${year} coming soon!`, 'info');
+}
+
+// Use Workout Template (Placeholder)
+function useWorkoutTemplate(template) {
+    console.log('Using template:', template);
+    showNotification(`"${template.name}" template selected! Add to calendar?`, 'info');
+}
+
+// Switch Planner View (Placeholder)
+function switchPlannerView(viewType) {
+    console.log('Switching to', viewType, 'view');
+    showNotification(`${viewType} view coming soon!`, 'info');
 }
 
 // Goals Content Loader
