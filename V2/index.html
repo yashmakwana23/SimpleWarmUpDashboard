@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitMove Dashboard V2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-lime': '#D4FF4F',
+                        'brand-bg': '#F8FAFC',
+                        'brand-surface': '#FFFFFF',
+                        'brand-text-primary': '#1F2937',
+                        'brand-text-secondary': '#6B7280',
+                        'brand-accent': '#3B82F6',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-bg font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="w-64 bg-brand-surface flex flex-col shadow-xl transition-all duration-300 relative z-10">
+            <!-- Logo/Brand Section -->
+            <div class="h-20 flex items-center px-6 border-b border-gray-100">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-brand-lime rounded-xl flex items-center justify-center">
+                        <i data-lucide="dumbbell" class="w-6 h-6 text-brand-text-primary"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h1 class="text-lg font-bold text-brand-text-primary">FitMove</h1>
+                        <p class="text-xs text-brand-text-secondary">Dashboard V2</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="flex-1 px-4 py-6">
+                <div class="space-y-2">
+                    <!-- Today's Plan Tab -->
+                    <a href="#today" 
+                       class="nav-item flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 bg-brand-lime text-brand-text-primary" 
+                       data-tab="today">
+                        <i data-lucide="sun" class="w-5 h-5 mr-3"></i>
+                        <span>Today's Plan</span>
+                        <div class="ml-auto w-2 h-2 bg-brand-text-primary rounded-full opacity-60"></div>
+                    </a>
+
+                    <!-- Calendar Tab -->
+                    <a href="#calendar" 
+                       class="nav-item flex items-center px-4 py-3 rounded-xl text-sm font-medium text-brand-text-secondary hover:bg-gray-50 hover:text-brand-text-primary transition-all duration-200" 
+                       data-tab="calendar">
+                        <i data-lucide="calendar" class="w-5 h-5 mr-3"></i>
+                        <span>Calendar</span>
+                    </a>
+
+                    <!-- Complete Planner Tab -->
+                    <a href="#planner" 
+                       class="nav-item flex items-center px-4 py-3 rounded-xl text-sm font-medium text-brand-text-secondary hover:bg-gray-50 hover:text-brand-text-primary transition-all duration-200" 
+                       data-tab="planner">
+                        <i data-lucide="layout-grid" class="w-5 h-5 mr-3"></i>
+                        <span>Complete Planner</span>
+                    </a>
+
+                    <!-- Assessment & Goals Tab -->
+                    <a href="#goals" 
+                       class="nav-item flex items-center px-4 py-3 rounded-xl text-sm font-medium text-brand-text-secondary hover:bg-gray-50 hover:text-brand-text-primary transition-all duration-200" 
+                       data-tab="goals">
+                        <i data-lucide="target" class="w-5 h-5 mr-3"></i>
+                        <span>Progress & Goals</span>
+                    </a>
+                </div>
+
+                <!-- Secondary Navigation -->
+                <div class="mt-8 pt-6 border-t border-gray-100">
+                    <h3 class="px-4 text-xs font-semibold text-brand-text-secondary uppercase tracking-wider mb-3">
+                        Quick Actions
+                    </h3>
+                    <div class="space-y-1">
+                        <a href="#" class="flex items-center px-4 py-2 text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors">
+                            <i data-lucide="plus-circle" class="w-4 h-4 mr-3"></i>
+                            <span>Add Workout</span>
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-2 text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-3"></i>
+                            <span>View Progress</span>
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-2 text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors">
+                            <i data-lucide="settings" class="w-4 h-4 mr-3"></i>
+                            <span>Settings</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="p-4 border-t border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-brand-accent rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-semibold">W</span>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-brand-text-primary">Wingman</p>
+                            <p class="text-xs text-brand-text-secondary">Premium User</p>
+                        </div>
+                    </div>
+                    <button class="p-1 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i data-lucide="more-vertical" class="w-4 h-4 text-brand-text-secondary"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col min-w-0">
+            <!-- Header -->
+            <header class="h-20 bg-brand-surface border-b border-gray-100 px-6 flex items-center justify-between">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                    <div class="ml-4 lg:ml-0">
+                        <h1 id="page-title" class="text-xl font-bold text-brand-text-primary">Today's Plan</h1>
+                        <p id="page-subtitle" class="text-sm text-brand-text-secondary">Ready to crush your fitness goals today!</p>
+                    </div>
+                </div>
+                
+                <!-- Header Actions -->
+                <div class="flex items-center space-x-3">
+                    <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
+                        <i data-lucide="bell" class="w-5 h-5 text-brand-text-secondary"></i>
+                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="w-px h-6 bg-gray-200"></div>
+                    <div class="flex items-center space-x-2">
+                        <span id="current-date" class="text-sm font-medium text-brand-text-primary"></span>
+                        <i data-lucide="calendar-days" class="w-4 h-4 text-brand-text-secondary"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Container -->
+            <div class="flex-1 overflow-y-auto">
+                <!-- Today's Plan Content -->
+                <div id="today-content" class="tab-content p-6">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Today's Summary Card -->
+                            <div class="lg:col-span-2">
+                                <div class="bg-brand-surface rounded-2xl p-6 shadow-sm border border-gray-100">
+                                    <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Today's Overview</h2>
+                                    <div class="space-y-4">
+                                        <!-- Placeholder for today's content -->
+                                        <div class="h-32 bg-gray-50 rounded-xl flex items-center justify-center">
+                                            <p class="text-brand-text-secondary">Today's workout plan will be loaded here</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Stats Card -->
+                            <div>
+                                <div class="bg-brand-surface rounded-2xl p-6 shadow-sm border border-gray-100">
+                                    <h3 class="text-lg font-semibold text-brand-text-primary mb-4">Quick Stats</h3>
+                                    <div class="space-y-3">
+                                        <!-- Placeholder for stats -->
+                                        <div class="h-20 bg-gray-50 rounded-lg flex items-center justify-center">
+                                            <p class="text-brand-text-secondary text-sm">Stats will be loaded here</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar Content -->
+                <div id="calendar-content" class="tab-content hidden p-6">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="bg-brand-surface rounded-2xl p-6 shadow-sm border border-gray-100">
+                            <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Workout Calendar</h2>
+                            <div class="h-96 bg-gray-50 rounded-xl flex items-center justify-center">
+                                <p class="text-brand-text-secondary">Calendar view with daily task status will be loaded here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complete Planner Content -->
+                <div id="planner-content" class="tab-content hidden p-6">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="bg-brand-surface rounded-2xl p-6 shadow-sm border border-gray-100">
+                            <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Complete Workout Planner</h2>
+                            <div class="h-96 bg-gray-50 rounded-xl flex items-center justify-center">
+                                <p class="text-brand-text-secondary">Complete planning options will be loaded here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress & Goals Content -->
+                <div id="goals-content" class="tab-content hidden p-6">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Goals Section -->
+                            <div class="bg-brand-surface rounded-2xl p-6 shadow-sm border border-gray-100">
+                                <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Goals & Targets</h2>
+                                <div class="h-64 bg-gray-50 rounded-xl flex items-center justify-center">
+                                    <p class="text-brand-text-secondary">Goals tracking will be loaded here</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Assessment Section -->
+                            <div class="bg-brand-surface rounded-2xl p-6 shadow-sm border border-gray-100">
+                                <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Body Assessment</h2>
+                                <div class="h-64 bg-gray-50 rounded-xl flex items-center justify-center">
+                                    <p class="text-brand-text-secondary">Assessment tools will be loaded here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-5 hidden lg:hidden"></div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
