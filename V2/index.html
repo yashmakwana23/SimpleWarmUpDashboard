@@ -117,8 +117,8 @@
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                     <div>
-                        <h1 class="text-lg md:text-xl font-bold text-brand-text-primary">Hello, Wingman! 👋</h1>
-                        <p class="text-xs md:text-sm text-brand-text-secondary">Welcome and let's do some workout today!</p>
+                        <h1 id="page-title" class="text-lg md:text-xl font-bold text-brand-text-primary">Hello, Wingman! 👋</h1>
+                        <p id="page-subtitle" class="text-xs md:text-sm text-brand-text-secondary">Welcome and let's do some workout today!</p>
                     </div>
                 </div>
                 
@@ -169,76 +169,69 @@
                 </div>
 
                 <!-- Calendar Content -->
-                <div id="calendar-content" class="tab-content hidden p-6">
-                    <div class="max-w-7xl mx-auto">
-                        <!-- Header -->
-                        <div class="flex items-center justify-between mb-6">
-                            <div>
-                                <h2 class="text-2xl font-bold text-brand-text-primary">Workout Calendar</h2>
-                                <p class="text-brand-text-secondary mt-1">Track your daily workout progress</p>
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <!-- Filter Buttons -->
-                                <div class="hidden md:flex bg-brand-surface rounded-xl p-1 shadow-sm border border-gray-200">
-                                    <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-brand-lime text-brand-text-primary" data-filter="all">All</button>
-                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary" data-filter="completed">Completed</button>
-                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary" data-filter="missed">Missed</button>
-                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary" data-filter="upcoming">Upcoming</button>
-                                </div>
+                <div id="calendar-content" class="tab-content hidden p-4 md:p-6">
+                    <div class="w-full">
+                        <!-- Filter Buttons -->
+                        <div class="flex justify-center md:justify-end mb-6">
+                            <div class="flex bg-brand-surface rounded-xl p-1 shadow-sm border border-gray-200 overflow-x-auto">
+                                <button class="filter-btn active px-3 md:px-4 py-2 text-sm font-medium rounded-lg bg-brand-lime text-brand-text-primary whitespace-nowrap" data-filter="all">All</button>
+                                <button class="filter-btn px-3 md:px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary whitespace-nowrap" data-filter="completed">Completed</button>
+                                <button class="filter-btn px-3 md:px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary whitespace-nowrap" data-filter="missed">Missed</button>
+                                <button class="filter-btn px-3 md:px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary whitespace-nowrap" data-filter="upcoming">Upcoming</button>
                             </div>
                         </div>
 
                         <!-- Summary Stats -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                            <div class="bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-100">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+                            <div class="bg-brand-surface rounded-xl p-3 md:p-4 shadow-sm border border-gray-100">
                                 <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                        <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                                    <div class="w-8 md:w-10 h-8 md:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="check-circle" class="w-4 md:w-5 h-4 md:h-5 text-green-600"></i>
                                     </div>
                                     <div class="ml-3">
-                                        <p class="text-sm font-medium text-brand-text-secondary">Completed</p>
-                                        <p class="text-xl font-bold text-brand-text-primary" id="completed-count">0</p>
+                                        <p class="text-xs md:text-sm font-medium text-brand-text-secondary">Completed</p>
+                                        <p class="text-lg md:text-xl font-bold text-brand-text-primary" id="completed-count">0</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-100">
+                            <div class="bg-brand-surface rounded-xl p-3 md:p-4 shadow-sm border border-gray-100">
                                 <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                                        <i data-lucide="x-circle" class="w-5 h-5 text-red-600"></i>
+                                    <div class="w-8 md:w-10 h-8 md:h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="x-circle" class="w-4 md:w-5 h-4 md:h-5 text-red-600"></i>
                                     </div>
                                     <div class="ml-3">
-                                        <p class="text-sm font-medium text-brand-text-secondary">Missed</p>
-                                        <p class="text-xl font-bold text-brand-text-primary" id="missed-count">0</p>
+                                        <p class="text-xs md:text-sm font-medium text-brand-text-secondary">Missed</p>
+                                        <p class="text-lg md:text-xl font-bold text-brand-text-primary" id="missed-count">0</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-100">
+                            <div class="bg-brand-surface rounded-xl p-3 md:p-4 shadow-sm border border-gray-100">
                                 <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                        <i data-lucide="clock" class="w-5 h-5 text-yellow-600"></i>
+                                    <div class="w-8 md:w-10 h-8 md:h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="clock" class="w-4 md:w-5 h-4 md:h-5 text-yellow-600"></i>
                                     </div>
                                     <div class="ml-3">
-                                        <p class="text-sm font-medium text-brand-text-secondary">Upcoming</p>
-                                        <p class="text-xl font-bold text-brand-text-primary" id="upcoming-count">0</p>
+                                        <p class="text-xs md:text-sm font-medium text-brand-text-secondary">Upcoming</p>
+                                        <p class="text-lg md:text-xl font-bold text-brand-text-primary" id="upcoming-count">0</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-100">
+                            <div class="bg-brand-surface rounded-xl p-3 md:p-4 shadow-sm border border-gray-100">
                                 <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <i data-lucide="coffee" class="w-5 h-5 text-gray-600"></i>
+                                    <div class="w-8 md:w-10 h-8 md:h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="coffee" class="w-4 md:w-5 h-4 md:h-5 text-gray-600"></i>
                                     </div>
                                     <div class="ml-3">
-                                        <p class="text-sm font-medium text-brand-text-secondary">Rest Days</p>
-                                        <p class="text-xl font-bold text-brand-text-primary" id="rest-count">0</p>
+                                        <p class="text-xs md:text-sm font-medium text-brand-text-secondary">Rest Days</p>
+                                        <p class="text-lg md:text-xl font-bold text-brand-text-primary" id="rest-count">0</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Calendar Grid -->
-                        <div class="bg-brand-surface rounded-2xl p-6 shadow-sm border border-gray-100">
-                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6" id="calendar-grid">
+                        <div class="bg-brand-surface rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4 lg:gap-6" id="calendar-grid">
                                 <!-- Days will be populated by JavaScript -->
                             </div>
                         </div>

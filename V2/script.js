@@ -78,6 +78,9 @@ function switchTab(tabName) {
         targetContent.classList.remove('hidden');
         targetContent.classList.add('fade-in');
         
+        // Update page header based on tab
+        updatePageHeader(tabName);
+        
         // Load content for the tab if needed
         loadTabContent(tabName);
     }
@@ -139,6 +142,37 @@ function toggleSidebarCollapse() {
         console.error('Sidebar or collapse icon not found!');
         console.log('Available icons in button:', document.querySelectorAll('#left-sidebar-toggle *'));
     }
+}
+
+// Update Page Header Based on Active Tab
+function updatePageHeader(tabName) {
+    const titleEl = document.getElementById('page-title');
+    const subtitleEl = document.getElementById('page-subtitle');
+    
+    if (!titleEl || !subtitleEl) return;
+    
+    const headerConfig = {
+        today: {
+            title: "Today's Workout 💪",
+            subtitle: "Let's crush today's fitness goals!"
+        },
+        calendar: {
+            title: "Workout Calendar 📅", 
+            subtitle: "Track your progress and stay on schedule"
+        },
+        planner: {
+            title: "Workout Planner ✏️",
+            subtitle: "Design and customize your fitness routine"
+        },
+        goals: {
+            title: "Goals & Assessment 🎯",
+            subtitle: "Monitor progress and set new targets"
+        }
+    };
+    
+    const config = headerConfig[tabName] || headerConfig.today;
+    titleEl.textContent = config.title;
+    subtitleEl.textContent = config.subtitle;
 }
 
 // Load Tab Content (placeholder for future content loading)
