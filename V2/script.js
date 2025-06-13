@@ -1304,7 +1304,7 @@ function createPlanCard(planData, planIndex) {
         
         <!-- Plan Content (Collapsible) -->
         <div class="plan-card-content border-t border-gray-100">
-            <div class="p-3 md:p-4 space-y-2 max-h-80 md:max-h-96 overflow-y-auto plan-days-container">
+            <div class="p-2 md:p-3 space-y-1 md:space-y-2 max-h-96 md:max-h-[500px] overflow-y-auto plan-days-container">
                 ${planData.dailyWorkouts.map((day, dayIndex) => createDayRow(day, planIndex, dayIndex)).join('')}
             </div>
         </div>
@@ -1319,33 +1319,85 @@ function createDayRow(dayData, planIndex, dayIndex) {
     const dayClass = dayData.isRestDay ? 'bg-gray-50' : 'bg-white hover:bg-gray-50';
     
     return `
-        <div class="day-row ${dayClass} rounded-lg border border-gray-100 transition-colors ${dayData.isRestDay ? '' : 'cursor-pointer'}" 
+        <div class="day-row ${dayClass} rounded-lg border border-gray-100 transition-colors" 
              ${dayData.isRestDay ? '' : `onclick="showDayDetails(${planIndex}, ${dayIndex})"`}>
-            <div class="p-2 md:p-3 flex items-center justify-between">
-                <div class="flex items-center space-x-2 md:space-x-3">
+            
+            <!-- Mobile Layout -->
+            <div class="md:hidden p-3">
+                <div class="flex items-start space-x-3">
                     <div class="flex-shrink-0">
-                        <div class="w-6 md:w-8 h-6 md:h-8 rounded-full ${statusConfig.bgColor} flex items-center justify-center">
-                            <span class="text-xs md:text-sm font-bold ${statusConfig.textColor}">${dayData.day}</span>
+                        <div class="w-8 h-8 rounded-full ${statusConfig.bgColor} flex items-center justify-center">
+                            <span class="text-sm font-bold ${statusConfig.textColor}">${dayData.day}</span>
                         </div>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center space-x-1 md:space-x-2 mb-1">
-                            <h4 class="text-xs md:text-sm font-medium text-brand-text-primary truncate">${dayData.dayName}</h4>
-                            ${!dayData.isRestDay ? `<span class="hidden sm:inline-flex items-center px-1 md:px-2 py-0.5 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)}">${dayData.workoutType}</span>` : ''}
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <h4 class="text-sm font-medium text-brand-text-primary">${dayData.dayName}</h4>
+                                <p class="text-xs text-brand-text-secondary opacity-75">${dayData.date}</p>
+                            </div>
+                            ${!dayData.isRestDay ? `<div class="text-xs ${statusConfig.textColor} font-medium">${statusConfig.label}</div>` : ''}
                         </div>
-                        <p class="text-xs text-brand-text-secondary">
-                            ${dayData.isRestDay ? 'Rest & Recovery' : `${dayData.totalExercises} exercises • ${dayData.estimatedTime}`}
-                        </p>
-                        <p class="text-xs text-brand-text-secondary opacity-75">
-                            ${dayData.date}
-                        </p>
+                        
+                        ${!dayData.isRestDay ? `
+                            <div class="mb-2">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)} mb-2">
+                                    ${dayData.workoutType}
+                                </span>
+                            </div>
+                            <div class="space-y-1">
+                                ${dayData.exercises.slice(0, 4).map(exercise => `
+                                    <div class="text-xs text-brand-text-secondary">
+                                        • ${exercise.name}
+                                    </div>
+                                `).join('')}
+                                ${dayData.exercises.length > 4 ? `<div class="text-xs text-brand-text-secondary opacity-75">+${dayData.exercises.length - 4} more...</div>` : ''}
+                            </div>
+                        ` : `
+                            <div class="text-sm text-brand-text-secondary">Rest & Recovery</div>
+                        `}
                     </div>
                 </div>
-                <div class="flex items-center space-x-1 md:space-x-2">
-                    ${!dayData.isRestDay ? `
-                        <div class="text-xs ${statusConfig.textColor} font-medium hidden md:block">${statusConfig.label}</div>
-                        <i data-lucide="chevron-right" class="w-3 md:w-4 h-3 md:h-4 text-gray-400"></i>
-                    ` : ''}
+            </div>
+
+            <!-- Desktop Layout -->
+            <div class="hidden md:block p-3 ${dayData.isRestDay ? '' : 'cursor-pointer'}">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-3 flex-1">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 rounded-full ${statusConfig.bgColor} flex items-center justify-center">
+                                <span class="text-sm font-bold ${statusConfig.textColor}">${dayData.day}</span>
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <h4 class="text-sm font-medium text-brand-text-primary">${dayData.dayName}</h4>
+                                <span class="text-xs text-brand-text-secondary opacity-75">${dayData.date}</span>
+                                ${!dayData.isRestDay ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)}">${dayData.workoutType}</span>` : ''}
+                            </div>
+                            
+                            ${!dayData.isRestDay ? `
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-1 text-xs text-brand-text-secondary">
+                                    ${dayData.exercises.map(exercise => `
+                                        <div class="flex items-center">
+                                            <span class="truncate">• ${exercise.name}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="mt-2 text-xs text-brand-text-secondary opacity-75">
+                                    Total: ${dayData.estimatedTime} • ${dayData.totalExercises} exercises
+                                </div>
+                            ` : `
+                                <div class="text-sm text-brand-text-secondary">Rest & Recovery</div>
+                            `}
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 ml-4">
+                        ${!dayData.isRestDay ? `
+                            <div class="text-xs ${statusConfig.textColor} font-medium">${statusConfig.label}</div>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+                        ` : ''}
+                    </div>
                 </div>
             </div>
         </div>
