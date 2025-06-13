@@ -395,7 +395,7 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
     return `
         <div class="bg-gray-50 rounded-lg p-3 exercise-row" id="${exerciseId}">
             <!-- Mobile Layout: Optimized 2-Row -->
-            <div class="lg:hidden space-y-3">
+            <div class="md:hidden space-y-3">
                 <!-- Row 1: Video Thumbnail + Exercise Name & Target Info -->
                 <div class="flex items-center gap-3">
                     <!-- Small Video Thumbnail -->
@@ -459,6 +459,7 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
                     <div class="flex items-center gap-1 flex-shrink-0">
                         <button 
                             onclick="openExerciseNotes('${exerciseId}')"
+                            id="notes-btn-${exerciseId}"
                             class="p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
                             title="Add Notes"
                         >
@@ -472,6 +473,88 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
                         >
                             <i data-lucide="check" class="w-4 h-4"></i>
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tablet Layout: Hybrid approach -->
+            <div class="hidden md:block lg:hidden">
+                <!-- Top row: Video + Exercise name + Action buttons -->
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <!-- Video Thumbnail -->
+                        <div class="flex-shrink-0">
+                            <div class="relative group cursor-pointer" onclick="openExerciseVideo('${exercise.video}', '${exercise.name}')">
+                                <div class="w-16 h-12 bg-gray-200 rounded-md overflow-hidden">
+                                    <img 
+                                        src="https://img.youtube.com/vi/${getYouTubeVideoId(exercise.video)}/maxresdefault.jpg" 
+                                        alt="${exercise.name}"
+                                        class="w-full h-full object-cover"
+                                        onerror="this.src='https://img.youtube.com/vi/${getYouTubeVideoId(exercise.video)}/hqdefault.jpg'"
+                                    >
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-50 rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <i data-lucide="play" class="w-4 h-4 text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Exercise Info -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-semibold text-brand-text-primary text-base truncate">${exercise.name}</h4>
+                            <p class="text-sm text-brand-text-secondary truncate">Target: ${exercise.targetSets} × ${exercise.targetReps} • ${exercise.weight}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-2 ml-4">
+                        <button 
+                            onclick="openExerciseNotes('${exerciseId}')"
+                            id="notes-btn-${exerciseId}-tablet"
+                            class="p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
+                            title="Add Notes"
+                        >
+                            <i data-lucide="sticky-note" class="w-4 h-4"></i>
+                        </button>
+                        <button 
+                            onclick="completeExercise('${exerciseId}', ${workoutIndex})"
+                            id="complete-btn-${exerciseId}-tablet"
+                            class="p-2 bg-brand-lime text-brand-text-primary rounded-md hover:bg-opacity-90 transition-colors"
+                            title="Complete Exercise"
+                        >
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bottom row: Input fields -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="text-center">
+                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Weight</label>
+                        <input 
+                            type="text" 
+                            id="weight-${exerciseId}-tablet"
+                            placeholder="${exercise.weight}"
+                            class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
+                        >
+                    </div>
+                    <div class="text-center">
+                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Sets</label>
+                        <input 
+                            type="number" 
+                            id="sets-${exerciseId}-tablet"
+                            placeholder="${exercise.targetSets}"
+                            class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
+                        >
+                    </div>
+                    <div class="text-center">
+                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Reps</label>
+                        <input 
+                            type="text" 
+                            id="reps-${exerciseId}-tablet"
+                            placeholder="${exercise.targetReps}"
+                            class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-brand-lime focus:border-transparent text-center"
+                        >
                     </div>
                 </div>
             </div>
@@ -536,6 +619,7 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
                 <div class="flex items-center gap-2">
                     <button 
                         onclick="openExerciseNotes('${exerciseId}')"
+                        id="notes-btn-${exerciseId}-desktop"
                         class="p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
                         title="Add Notes"
                     >
@@ -651,6 +735,9 @@ function saveExerciseNotes(exerciseId) {
                 exerciseRow.setAttribute('data-notes', notes);
             }
             
+            // Update notes button state for both mobile and desktop
+            updateNotesButtonState(exerciseId, true);
+            
             // Reset label after 2 seconds
             setTimeout(() => {
                 originalLabel.textContent = originalText;
@@ -672,9 +759,53 @@ function saveExerciseNotes(exerciseId) {
     }
 }
 
+// Update notes button visual state
+function updateNotesButtonState(exerciseId, hasNotes) {
+    const notesBtnMobile = document.getElementById(`notes-btn-${exerciseId}`);
+    const notesBtnTablet = document.getElementById(`notes-btn-${exerciseId}-tablet`);
+    const notesBtnDesktop = document.getElementById(`notes-btn-${exerciseId}-desktop`);
+    
+    if (hasNotes) {
+        // Show filled/highlighted state when notes are present
+        const activeClass = 'p-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-md transition-colors';
+        const activeTitle = 'View/Edit Notes (Notes Added)';
+        
+        if (notesBtnMobile) {
+            notesBtnMobile.className = activeClass;
+            notesBtnMobile.title = activeTitle;
+        }
+        if (notesBtnTablet) {
+            notesBtnTablet.className = activeClass;
+            notesBtnTablet.title = activeTitle;
+        }
+        if (notesBtnDesktop) {
+            notesBtnDesktop.className = activeClass;
+            notesBtnDesktop.title = activeTitle;
+        }
+    } else {
+        // Show default state when no notes
+        const defaultClass = 'p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors';
+        const defaultTitle = 'Add Notes';
+        
+        if (notesBtnMobile) {
+            notesBtnMobile.className = defaultClass;
+            notesBtnMobile.title = defaultTitle;
+        }
+        if (notesBtnTablet) {
+            notesBtnTablet.className = defaultClass;
+            notesBtnTablet.title = defaultTitle;
+        }
+        if (notesBtnDesktop) {
+            notesBtnDesktop.className = defaultClass;
+            notesBtnDesktop.title = defaultTitle;
+        }
+    }
+}
+
 function completeExercise(exerciseId, workoutIndex) {
     const exerciseRow = document.getElementById(exerciseId);
     const completeBtnMobile = document.getElementById(`complete-btn-${exerciseId}`);
+    const completeBtnTablet = document.getElementById(`complete-btn-${exerciseId}-tablet`);
     const completeBtnDesktop = document.getElementById(`complete-btn-${exerciseId}-desktop`);
     
     if (exerciseRow) {
@@ -682,20 +813,33 @@ function completeExercise(exerciseId, workoutIndex) {
         exerciseRow.classList.add('opacity-75');
         exerciseRow.setAttribute('data-completed', 'true');
         
-        // Update mobile button (now uses same icon-only style as desktop)
+        // Common completed button styles
+        const completedIcon = '<i data-lucide="check-circle" class="w-4 h-4"></i>';
+        const completedClass = 'p-2 bg-green-100 text-green-700 rounded-md cursor-default';
+        const completedTitle = 'Exercise Completed';
+        
+        // Update mobile button
         if (completeBtnMobile) {
-            completeBtnMobile.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i>';
-            completeBtnMobile.className = 'p-2 bg-green-100 text-green-700 rounded-md cursor-default';
+            completeBtnMobile.innerHTML = completedIcon;
+            completeBtnMobile.className = completedClass;
             completeBtnMobile.disabled = true;
-            completeBtnMobile.title = 'Exercise Completed';
+            completeBtnMobile.title = completedTitle;
+        }
+        
+        // Update tablet button
+        if (completeBtnTablet) {
+            completeBtnTablet.innerHTML = completedIcon;
+            completeBtnTablet.className = completedClass;
+            completeBtnTablet.disabled = true;
+            completeBtnTablet.title = completedTitle;
         }
         
         // Update desktop button
         if (completeBtnDesktop) {
-            completeBtnDesktop.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i>';
-            completeBtnDesktop.className = 'p-2 bg-green-100 text-green-700 rounded-md cursor-default';
+            completeBtnDesktop.innerHTML = completedIcon;
+            completeBtnDesktop.className = completedClass;
             completeBtnDesktop.disabled = true;
-            completeBtnDesktop.title = 'Exercise Completed';
+            completeBtnDesktop.title = completedTitle;
         }
         
         // Update workout progress
