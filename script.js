@@ -477,24 +477,22 @@ function createWorkoutCard(workout, workoutIndex) {
         <!-- Workout Header -->
         <div class="flex flex-col mb-6">
             <div class="flex items-center">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 bg-brand-lime rounded-lg flex items-center justify-center mr-3">
-                        <i data-lucide="${getWorkoutTypeIcon(workout.workoutType)}" class="w-5 h-5 text-brand-text-primary"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary">${workout.workoutType}</h3>
-                    </div>
+                <div class="w-10 h-10 bg-brand-lime rounded-lg flex items-center justify-center mr-3">
+                    <i data-lucide="${getWorkoutTypeIcon(workout.workoutType)}" class="w-5 h-5 text-brand-text-primary"></i>
                 </div>
-            </div>
-            <div class="flex items-center justify-between mt-2">
-                <p class="text-sm text-brand-text-secondary" id="workout-progress-${workoutIndex}">0/${workout.exercises.length} exercises</p>
-                <div class="flex items-center cursor-pointer workout-timer" 
-                    id="workout-timer-${workoutIndex}" 
-                    data-workout-index="${workoutIndex}" 
-                    data-status="stopped"
-                    title="Click: start/stop | Double-click: reset">
-                    <i id="workout-timer-icon-${workoutIndex}" data-lucide="timer" class="w-4 h-4 text-gray-600 mr-1"></i>
-                    <span class="text-sm font-bold text-gray-700" id="workout-time-${workoutIndex}">00:00</span>
+                <div class="flex-1">
+                    <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary">${workout.workoutType}</h3>
+                    <div class="flex items-center justify-between mt-1">
+                        <p class="text-sm text-brand-text-secondary" id="workout-progress-${workoutIndex}">0/${workout.exercises.length} exercises</p>
+                        <div class="flex items-center cursor-pointer workout-timer" 
+                            id="workout-timer-${workoutIndex}" 
+                            data-workout-index="${workoutIndex}" 
+                            data-status="stopped"
+                            title="Click: start/stop | Double-click: reset">
+                            <i id="workout-timer-icon-${workoutIndex}" data-lucide="timer" class="w-4 h-4 text-gray-600 mr-1"></i>
+                            <span class="text-sm font-bold text-gray-700" id="workout-time-${workoutIndex}">00:00</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
