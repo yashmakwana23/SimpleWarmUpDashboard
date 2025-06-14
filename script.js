@@ -379,6 +379,7 @@ function initializeWorkoutCardTimers() {
     workoutTimers.forEach(timerEl => {
         const workoutIndex = timerEl.dataset.workoutIndex;
         const timeDisplay = document.getElementById(`workout-time-${workoutIndex}`);
+        const timerIcon = document.getElementById(`workout-timer-icon-${workoutIndex}`);
         
         // Initialize timer data for this workout
         window.workoutTimers[workoutIndex] = {
@@ -388,7 +389,7 @@ function initializeWorkoutCardTimers() {
             isRunning: false
         };
         
-                 // Add click event listener
+         // Add click event listener
          timerEl.addEventListener('click', function() {
              const timer = window.workoutTimers[workoutIndex];
              
@@ -405,7 +406,8 @@ function initializeWorkoutCardTimers() {
                  // Update UI
                  timerEl.dataset.status = 'stopped';
                  timerEl.classList.remove('bg-brand-lime/10');
-                 timerEl.classList.add('hover:bg-brand-lime/10');
+                 timerIcon.setAttribute('data-lucide', 'timer');
+                 lucide.createIcons();
                  timerEl.title = "Click: start/stop | Double-click: reset";
              } else {
                  // Start the timer
@@ -415,7 +417,8 @@ function initializeWorkoutCardTimers() {
                  // Update UI
                  timerEl.dataset.status = 'running';
                  timerEl.classList.add('bg-brand-lime/10');
-                 timerEl.classList.remove('hover:bg-brand-lime/10');
+                 timerIcon.setAttribute('data-lucide', 'timer');
+                 lucide.createIcons();
                  timerEl.title = "Click to pause | Double-click to reset";
                  
                  // Update the timer display
@@ -427,7 +430,7 @@ function initializeWorkoutCardTimers() {
              }
          });
         
-                 // Add double-click event to reset
+         // Add double-click event to reset
          timerEl.addEventListener('dblclick', function(e) {
              e.preventDefault();
              
@@ -445,16 +448,14 @@ function initializeWorkoutCardTimers() {
              timerEl.dataset.status = 'stopped';
              timeDisplay.textContent = '00:00';
              timerEl.classList.remove('bg-brand-lime/10');
-             timerEl.classList.add('hover:bg-brand-lime/10');
+             timerIcon.setAttribute('data-lucide', 'timer');
+             lucide.createIcons();
              
              // Add flash animation to indicate reset
-             timerEl.classList.add('bg-brand-lime/30');
+             timeDisplay.classList.add('bg-gray-100');
              setTimeout(() => {
-                 timerEl.classList.remove('bg-brand-lime/30');
+                 timeDisplay.classList.remove('bg-gray-100');
              }, 300);
-             
-             // Show reset tooltip
-             showNotification('Timer reset', 'info');
          });
     });
 }
@@ -474,30 +475,36 @@ function createWorkoutCard(workout, workoutIndex) {
     
     card.innerHTML = `
         <!-- Workout Header -->
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-brand-lime rounded-lg flex items-center justify-center mr-3">
-                    <i data-lucide="dumbbell" class="w-5 h-5 text-brand-text-primary"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary">${workout.workoutType}</h3>
-                    <p class="text-sm text-brand-text-secondary" id="workout-progress-${workoutIndex}">0/${workout.exercises.length} exercises</p>
+        <div class="flex flex-col mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-brand-lime rounded-lg flex items-center justify-center mr-3">
+                        <i data-lucide="${getWorkoutTypeIcon(workout.workoutType)}" class="w-5 h-5 text-brand-text-primary"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary">${workout.workoutType}</h3>
+                    </div>
                 </div>
             </div>
-            <div class="w-14 h-14 rounded-full border-2 border-brand-lime hover:bg-brand-lime/10 flex flex-col items-center justify-center transition-all cursor-pointer workout-timer" 
-                id="workout-timer-${workoutIndex}" 
-                data-workout-index="${workoutIndex}" 
-                data-status="stopped"
-                title="Click: start/stop | Double-click: reset">
-                <span class="text-xs font-medium text-brand-text-secondary">TIMER</span>
-                <span class="text-xs font-bold text-brand-text-primary" id="workout-time-${workoutIndex}">00:00</span>
+            <div class="flex items-center justify-between mt-2">
+                <p class="text-sm text-brand-text-secondary" id="workout-progress-${workoutIndex}">0/${workout.exercises.length} exercises</p>
+                <div class="flex items-center cursor-pointer workout-timer" 
+                    id="workout-timer-${workoutIndex}" 
+                    data-workout-index="${workoutIndex}" 
+                    data-status="stopped"
+                    title="Click: start/stop | Double-click: reset">
+                    <i id="workout-timer-icon-${workoutIndex}" data-lucide="timer" class="w-4 h-4 text-gray-600 mr-1"></i>
+                    <span class="text-sm font-bold text-gray-700" id="workout-time-${workoutIndex}">00:00</span>
+                </div>
             </div>
         </div>
 
         <!-- Exercise List -->
-        <div class="space-y-4" id="exercises-${workoutIndex}">
+        <div class="space-y-4 mb-4" id="exercises-${workoutIndex}">
             ${workout.exercises.map((exercise, exerciseIndex) => createExerciseRow(exercise, workoutIndex, exerciseIndex)).join('')}
         </div>
+        
+
     `;
 
     return card;
