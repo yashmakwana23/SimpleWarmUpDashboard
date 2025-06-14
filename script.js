@@ -2766,13 +2766,13 @@ function createAssessmentContent() {
                     </div>
                 </div>
                 
-                <div class="weight-chart h-44 sm:h-52 bg-brand-accent/10 rounded-lg mb-3 p-2 flex items-end">
-                    <div class="w-1/6 h-[50%] bg-brand-accent/50 rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[55%] bg-brand-accent/50 rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[60%] bg-brand-accent/50 rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[65%] bg-brand-accent/50 rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[70%] bg-brand-accent/50 rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[75%] bg-brand-accent/50 rounded-md mx-0.5"></div>
+                <div class="weight-chart h-44 sm:h-52 bg-gray-50 rounded-lg mb-3 p-2 flex items-end">
+                    <div class="w-1/6 h-[50%] bg-brand-accent/70 rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[55%] bg-brand-accent/70 rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[60%] bg-brand-accent/70 rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[65%] bg-brand-accent/70 rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[70%] bg-brand-accent/70 rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[75%] bg-brand-accent/70 rounded-md mx-0.5"></div>
                 </div>
                 
                 <div class="flex flex-wrap justify-between text-xs text-brand-text-secondary mt-2">
@@ -2794,7 +2794,7 @@ function createAssessmentContent() {
                 <div class="flex flex-wrap items-center justify-between mb-4">
                     <h3 class="font-medium text-brand-text-primary">Body Measurements</h3>
                     <div>
-                        <button class="text-xs bg-brand-secondary/10 text-brand-secondary px-2 py-1 rounded-md hover:bg-opacity-80 transition-colors" onclick="updateMeasurementsModal()">
+                        <button class="text-xs bg-brand-primary/10 text-brand-primary px-2 py-1 rounded-md hover:bg-opacity-80 transition-colors" onclick="updateMeasurementsModal()">
                             <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i> Update
                         </button>
                         <button class="text-xs bg-gray-100 text-brand-text-secondary px-2 py-1 rounded-md ml-1 hover:bg-gray-200 transition-colors" onclick="viewMeasurementsHistory()">
@@ -2871,8 +2871,8 @@ function createAssessmentContent() {
                     </div>
                     
                     <!-- Add Custom Measurement Button -->
-                    <button class="bg-white border border-dashed border-gray-200 rounded-lg p-3 flex items-center justify-center text-white bg-brand-primary hover:bg-brand-primary/90 transition-colors group" onclick="addMeasurementModal()">
-                        <i data-lucide="plus-circle" class="w-5 h-5 mr-2 text-white"></i>
+                    <button class="bg-white border border-dashed border-gray-200 rounded-lg p-3 flex items-center justify-center text-brand-text-secondary hover:bg-gray-50 transition-colors group" onclick="addMeasurementModal()">
+                        <i data-lucide="plus-circle" class="w-5 h-5 mr-2 group-hover:text-brand-primary"></i>
                         <span class="text-sm">Add Custom</span>
                     </button>
                 </div>
@@ -3203,7 +3203,7 @@ function initializeGoalsModals() {
                                 </div>
                                 
                                 <div class="pt-4 border-t border-gray-200">
-                                                    <button type="button" class="w-full py-3 px-4 bg-brand-accent text-white rounded-lg font-medium" onclick="saveMeasurements()">
+                                                    <button type="button" class="w-full py-3 px-4 bg-brand-primary text-white rounded-lg font-medium" onclick="saveMeasurements()">
                     Save Measurements
                 </button>
                                 </div>
