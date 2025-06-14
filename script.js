@@ -471,12 +471,12 @@ function formatTimeForDisplay(timeInMs) {
 
 function createWorkoutCard(workout, workoutIndex) {
     const card = document.createElement('div');
-    card.className = 'bg-brand-surface rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 h-auto';
+    card.className = 'bg-brand-surface rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 h-auto relative';
     
     card.innerHTML = `
         <!-- Workout Header -->
         <div class="flex flex-col mb-6">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center">
                 <div class="flex items-center">
                     <div class="w-10 h-10 bg-brand-lime rounded-lg flex items-center justify-center mr-3">
                         <i data-lucide="${getWorkoutTypeIcon(workout.workoutType)}" class="w-5 h-5 text-brand-text-primary"></i>
@@ -504,6 +504,40 @@ function createWorkoutCard(workout, workoutIndex) {
             ${workout.exercises.map((exercise, exerciseIndex) => createExerciseRow(exercise, workoutIndex, exerciseIndex)).join('')}
         </div>
         
+        <!-- Simple Notes Link - Fixed to Bottom Right -->
+        <div class="flex justify-end mt-6">
+            <button 
+                onclick="openWorkoutNotes(${workoutIndex})"
+                id="workout-notes-btn-${workoutIndex}"
+                class="text-xs text-brand-text-secondary hover:text-brand-text-primary transition-colors absolute bottom-4 right-6"
+            >
+                <i data-lucide="pencil" class="w-3 h-3 inline mr-1"></i>Click to add notes
+            </button>
+        </div>
+        
+        <!-- Workout Notes (Hidden by default) -->
+        <div id="workout-notes-container-${workoutIndex}" class="hidden mt-3 pt-3 border-t border-gray-200">
+            <label class="block text-sm font-medium text-brand-text-secondary mb-2">Workout Notes</label>
+            <textarea 
+                id="workout-notes-textarea-${workoutIndex}"
+                placeholder="Add notes about this workout session..."
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-lime focus:border-transparent text-sm resize-none h-24"
+            ></textarea>
+            <div class="flex gap-2 mt-2">
+                <button 
+                    onclick="saveWorkoutNotes(${workoutIndex})"
+                    class="px-3 py-1.5 bg-brand-lime text-brand-text-primary rounded-md text-sm hover:bg-opacity-90 transition-colors"
+                >
+                    Save Notes
+                </button>
+                <button 
+                    onclick="closeWorkoutNotes(${workoutIndex})"
+                    class="px-3 py-1.5 text-sm text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
 
     `;
 
@@ -576,16 +610,8 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
                         </div>
                     </div>
 
-                    <!-- Action Buttons (Icons Only) -->
+                    <!-- Action Button -->
                     <div class="flex items-center gap-1 flex-shrink-0">
-                        <button 
-                            onclick="openExerciseNotes('${exerciseId}')"
-                            id="notes-btn-${exerciseId}"
-                            class="p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
-                            title="Add Notes"
-                        >
-                            <i data-lucide="sticky-note" class="w-4 h-4"></i>
-                        </button>
                         <button 
                             onclick="completeExercise('${exerciseId}', ${workoutIndex})"
                             id="complete-btn-${exerciseId}"
@@ -627,16 +653,8 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
                         </div>
                     </div>
                     
-                    <!-- Action Buttons -->
+                    <!-- Action Button -->
                     <div class="flex items-center gap-2 ml-4">
-                        <button 
-                            onclick="openExerciseNotes('${exerciseId}')"
-                            id="notes-btn-${exerciseId}-tablet"
-                            class="p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
-                            title="Add Notes"
-                        >
-                            <i data-lucide="sticky-note" class="w-4 h-4"></i>
-                        </button>
                         <button 
                             onclick="completeExercise('${exerciseId}', ${workoutIndex})"
                             id="complete-btn-${exerciseId}-tablet"
@@ -736,16 +754,8 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
                     </div>
                 </div>
 
-                <!-- Action Buttons (Icons Only) -->
-                <div class="flex items-center gap-2">
-                    <button 
-                        onclick="openExerciseNotes('${exerciseId}')"
-                        id="notes-btn-${exerciseId}-desktop"
-                        class="p-2 text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
-                        title="Add Notes"
-                    >
-                        <i data-lucide="sticky-note" class="w-4 h-4"></i>
-                    </button>
+                <!-- Action Button -->
+                <div class="flex items-center">
                     <button 
                         onclick="completeExercise('${exerciseId}', ${workoutIndex})"
                         id="complete-btn-${exerciseId}-desktop"
@@ -758,29 +768,7 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
             </div>
             </div>
 
-            <!-- Exercise Notes (Hidden by default) -->
-            <div id="notes-${exerciseId}" class="hidden mt-3 pt-3 border-t border-gray-200">
-                <label class="block text-sm font-medium text-brand-text-secondary mb-2">Exercise Notes</label>
-                <textarea 
-                    id="notes-textarea-${exerciseId}"
-                    placeholder="Add notes about this exercise..."
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-lime focus:border-transparent text-sm resize-none h-16"
-                ></textarea>
-                <div class="flex gap-2 mt-2">
-                    <button 
-                        onclick="saveExerciseNotes('${exerciseId}')"
-                        class="px-3 py-1.5 bg-brand-lime text-brand-text-primary rounded-md text-sm hover:bg-opacity-90 transition-colors"
-                    >
-                        Save Notes
-                    </button>
-                    <button 
-                        onclick="closeExerciseNotes('${exerciseId}')"
-                        class="px-3 py-1.5 text-sm text-brand-text-secondary hover:text-brand-text-primary hover:bg-gray-100 rounded-md transition-colors"
-                    >
-                        Close
-                    </button>
-                </div>
-            </div>
+
         </div>
     `;
 }
@@ -3906,4 +3894,69 @@ tabs.forEach(tab => {
             loadGoalsContent();
         }
     });
+});
+
+// Workout Notes Functions
+function openWorkoutNotes(workoutIndex) {
+    const notesContainer = document.getElementById(`workout-notes-container-${workoutIndex}`);
+    if (notesContainer) {
+        notesContainer.classList.remove('hidden');
+    }
+}
+
+function closeWorkoutNotes(workoutIndex) {
+    const notesContainer = document.getElementById(`workout-notes-container-${workoutIndex}`);
+    if (notesContainer) {
+        notesContainer.classList.add('hidden');
+    }
+}
+
+function saveWorkoutNotes(workoutIndex) {
+    const textarea = document.getElementById(`workout-notes-textarea-${workoutIndex}`);
+    const notesContainer = document.getElementById(`workout-notes-container-${workoutIndex}`);
+    const notesButton = document.getElementById(`workout-notes-btn-${workoutIndex}`);
+    
+    if (textarea) {
+        const notes = textarea.value.trim();
+        
+        if (notes) {
+            // Store the notes (you can expand this to save to localStorage or server)
+            console.log(`Saving workout notes for workout ${workoutIndex}:`, notes);
+            
+            // Visual feedback - show success message
+            const originalLabel = notesContainer.querySelector('label');
+            const originalText = originalLabel.textContent;
+            originalLabel.textContent = 'Workout Notes (Saved ✓)';
+            originalLabel.className = 'block text-sm font-medium text-green-600 mb-2';
+            
+            // Update notes button state to show notes are present
+            notesButton.className = 'text-xs text-blue-600 font-medium hover:text-blue-800 transition-colors absolute bottom-4 right-6';
+            notesButton.innerHTML = '<i data-lucide="pencil" class="w-3 h-3 inline mr-1"></i>View/edit notes';
+            lucide.createIcons();
+            notesButton.title = 'View/Edit Workout Notes';
+            
+            // Reset label after 2 seconds
+            setTimeout(() => {
+                originalLabel.textContent = originalText;
+                originalLabel.className = 'block text-sm font-medium text-brand-text-secondary mb-2';
+            }, 2000);
+            
+        } else {
+            // Show message if no notes entered
+            const originalLabel = notesContainer.querySelector('label');
+            const originalText = originalLabel.textContent;
+            originalLabel.textContent = 'Please enter some notes first';
+            originalLabel.className = 'block text-sm font-medium text-red-600 mb-2';
+            
+            setTimeout(() => {
+                originalLabel.textContent = originalText;
+                originalLabel.className = 'block text-sm font-medium text-brand-text-secondary mb-2';
+            }, 2000);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const progressSlider = document.getElementById('edit-goal-progress');
+    const progressValue = document.getElementById('edit-goal-progress-value');
 });
