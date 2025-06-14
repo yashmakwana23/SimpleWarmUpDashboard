@@ -498,7 +498,7 @@ function createWorkoutCard(workout, workoutIndex) {
         </div>
 
         <!-- Exercise List -->
-        <div class="space-y-4 mb-4" id="exercises-${workoutIndex}">
+        <div class="space-y-6 mb-4" id="exercises-${workoutIndex}">
             ${workout.exercises.map((exercise, exerciseIndex) => createExerciseRow(exercise, workoutIndex, exerciseIndex)).join('')}
         </div>
         
@@ -755,18 +755,15 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
                 <!-- Action Button -->
                 <div class="flex items-center">
                     <button 
-                                                                onclick="completeExercise('${exerciseId}', ${workoutIndex})"
-                                        id="complete-btn-${exerciseId}-desktop"
-                                        class="p-2 bg-brand-secondary text-white rounded-md hover:bg-opacity-90 transition-colors"
-                                        title="Complete Exercise"
+                        onclick="completeExercise('${exerciseId}', ${workoutIndex})"
+                        id="complete-btn-${exerciseId}-desktop"
+                        class="p-2 bg-brand-secondary text-white rounded-md hover:bg-opacity-90 transition-colors"
+                        title="Complete Exercise"
                     >
                         <i data-lucide="check" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
-            </div>
-
-
         </div>
     `;
 }
