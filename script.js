@@ -922,7 +922,7 @@ function completeExercise(exerciseId, workoutIndex) {
         
         // Common completed button styles
         const completedIcon = '<i data-lucide="check-circle" class="w-4 h-4"></i>';
-        const completedClass = 'p-2 bg-green-100 text-green-700 rounded-md cursor-default';
+        const completedClass = 'p-2 bg-brand-secondary/20 text-brand-secondary rounded-md cursor-default';
         const completedTitle = 'Exercise Completed';
         
         // Update mobile button
@@ -1948,15 +1948,15 @@ function getPlannerWorkouts(year, month, day) {
 // Get Workout Type Class
 function getWorkoutTypeClass(type) {
     const classes = {
-        'Upper Body Strength': 'bg-blue-100 text-blue-700',
-        'Core & Cardio': 'bg-red-100 text-red-700',
-        'Lower Body Power': 'bg-green-100 text-green-700',
+        'Upper Body Strength': 'bg-brand-primary/20 text-brand-primary',
+        'Core & Cardio': 'bg-brand-accent/20 text-brand-accent',
+        'Lower Body Power': 'bg-brand-secondary/20 text-brand-secondary',
         'HIIT & Conditioning': 'bg-orange-100 text-orange-700',
         'Full Body Circuit': 'bg-purple-100 text-purple-700',
-        'strength': 'bg-blue-100 text-blue-700',
-        'cardio': 'bg-red-100 text-red-700',
+        'strength': 'bg-brand-primary/20 text-brand-primary',
+        'cardio': 'bg-brand-accent/20 text-brand-accent',
         'hiit': 'bg-orange-100 text-orange-700',
-        'flexibility': 'bg-green-100 text-green-700',
+        'flexibility': 'bg-brand-secondary/20 text-brand-secondary',
         'core': 'bg-purple-100 text-purple-700'
     };
     return classes[type] || 'bg-gray-100 text-gray-700';
@@ -2117,7 +2117,7 @@ function renderGoalsSection(goalsData) {
             
             <div class="completed-goals mt-6 pt-4 border-t border-gray-200">
                 <h3 class="text-md font-medium text-brand-text-primary mb-3 flex items-center">
-                    <i data-lucide="check-circle" class="w-4 h-4 mr-2 text-green-500"></i>
+                    <i data-lucide="check-circle" class="w-4 h-4 mr-2 text-brand-secondary"></i>
                     Completed Goals
                 </h3>
                 ${goalsData.completedGoals.length > 0 ? 
@@ -2526,10 +2526,10 @@ function closeWorkoutModal() {
 function getStatusConfig(status) {
     const configs = {
         completed: {
-            bgColor: 'bg-green-100',
-            iconColor: 'text-green-600',
+            bgColor: 'bg-brand-secondary/20',
+                          iconColor: 'text-brand-secondary',
             label: 'Completed',
-            textColor: 'text-green-600'
+                          textColor: 'text-brand-secondary'
         },
         upcoming: {
             bgColor: 'bg-yellow-100',
@@ -2580,13 +2580,13 @@ function createGoalsContent() {
                             <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
                                 <div class="w-full sm:w-auto mb-2 sm:mb-0">
                                     <div class="flex items-center">
-                                        <i data-lucide="scale" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                                        <i data-lucide="target" class="w-4 h-4 mr-2 text-brand-primary"></i>
                                         <h4 class="font-medium text-brand-text-primary">Weight Loss</h4>
                                     </div>
                                     <p class="text-sm text-brand-text-secondary">Target: 165 lbs</p>
                                 </div>
                                 <div class="flex items-center">
-                                    <div class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full mr-2">
+                                    <div class="text-xs bg-brand-primary/20 text-brand-primary px-2 py-1 rounded-full mr-2">
                                         In Progress
                                     </div>
                                     <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(1)">
@@ -2604,7 +2604,7 @@ function createGoalsContent() {
                                     <span>45%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-brand-lime h-2 rounded-full" style="width: 45%"></div>
+                                    <div class="bg-brand-primary h-2 rounded-full" style="width: 45%"></div>
                                 </div>
                             </div>
                             
@@ -2619,13 +2619,13 @@ function createGoalsContent() {
                             <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
                                 <div class="w-full sm:w-auto mb-2 sm:mb-0">
                                     <div class="flex items-center">
-                                        <i data-lucide="ruler" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                                        <i data-lucide="target" class="w-4 h-4 mr-2 text-brand-primary"></i>
                                         <h4 class="font-medium text-brand-text-primary">Waist Measurement</h4>
                                     </div>
                                     <p class="text-sm text-brand-text-secondary">Target: 32 inches</p>
                                 </div>
                                 <div class="flex items-center">
-                                    <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mr-2">
+                                    <div class="text-xs bg-brand-secondary/20 text-brand-secondary px-2 py-1 rounded-full mr-2">
                                         On Track
                                     </div>
                                     <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(2)">
@@ -2643,7 +2643,7 @@ function createGoalsContent() {
                                     <span>50%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-brand-lime h-2 rounded-full" style="width: 50%"></div>
+                                    <div class="bg-brand-primary h-2 rounded-full" style="width: 50%"></div>
                                 </div>
                             </div>
                             
@@ -2658,13 +2658,13 @@ function createGoalsContent() {
                             <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
                                 <div class="w-full sm:w-auto mb-2 sm:mb-0">
                                     <div class="flex items-center">
-                                        <i data-lucide="dumbbell" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                                        <i data-lucide="target" class="w-4 h-4 mr-2 text-brand-primary"></i>
                                         <h4 class="font-medium text-brand-text-primary">Arm Size</h4>
                                     </div>
                                     <p class="text-sm text-brand-text-secondary">Target: 16 inches</p>
                                 </div>
                                 <div class="flex items-center">
-                                    <div class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full mr-2">
+                                    <div class="text-xs bg-brand-accent/20 text-brand-accent px-2 py-1 rounded-full mr-2">
                                         Muscle Gain
                                     </div>
                                     <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(3)">
@@ -2682,7 +2682,7 @@ function createGoalsContent() {
                                     <span>40%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 40%"></div>
+                                    <div class="bg-brand-primary h-2 rounded-full" style="width: 40%"></div>
                                 </div>
                             </div>
                             
@@ -2697,13 +2697,13 @@ function createGoalsContent() {
                             <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
                                 <div class="w-full sm:w-auto mb-2 sm:mb-0">
                                     <div class="flex items-center">
-                                        <i data-lucide="timer" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                                        <i data-lucide="target" class="w-4 h-4 mr-2 text-brand-primary"></i>
                                         <h4 class="font-medium text-brand-text-primary">Strength Training</h4>
                                     </div>
                                     <p class="text-sm text-brand-text-secondary">Target: 3x weekly</p>
                                 </div>
                                 <div class="flex items-center">
-                                    <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mr-2">
+                                    <div class="text-xs bg-brand-secondary/20 text-brand-secondary px-2 py-1 rounded-full mr-2">
                                         On Track
                                     </div>
                                     <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(4)">
@@ -2721,7 +2721,7 @@ function createGoalsContent() {
                                     <span>80%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-brand-lime h-2 rounded-full" style="width: 80%"></div>
+                                    <div class="bg-brand-primary h-2 rounded-full" style="width: 80%"></div>
                                 </div>
                             </div>
                             
@@ -2736,12 +2736,12 @@ function createGoalsContent() {
                 <!-- Completed Goals -->
                 <div class="completed-goals mt-5 pt-4 border-t border-gray-200">
                     <h3 class="text-md font-medium mb-3 flex items-center">
-                        <i data-lucide="check-circle" class="w-4 h-4 mr-2 text-green-500"></i>
+                        <i data-lucide="check-circle" class="w-4 h-4 mr-2 text-brand-secondary"></i>
                         Completed Goals
                     </h3>
                     <div class="completed-goal flex flex-wrap sm:flex-nowrap items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
                         <div class="flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-                            <i data-lucide="trophy" class="w-4 h-4 text-yellow-500 mr-2"></i>
+                            <i data-lucide="target" class="w-4 h-4 text-brand-primary mr-2"></i>
                             <div>
                                 <h4 class="text-sm font-medium text-brand-text-primary">Drink More Water</h4>
                                 <p class="text-xs text-brand-text-secondary">Target: 2L daily</p>
@@ -2825,35 +2825,31 @@ function showNotification(message, type = 'success') {
 // Create Assessment Content
 function createAssessmentContent() {
     return `
-        <!-- Body Assessment Section (With dedicated card) -->
-        <div class="bg-brand-surface rounded-xl p-5 shadow-lg border border-gray-100 mb-6">
+        <!-- Assessment Stats Section -->
+        <div class="bg-brand-surface rounded-xl p-5 shadow-lg border border-gray-100">
             <div class="flex items-center mb-4">
                 <div class="bg-brand-accent/20 p-2 rounded-lg mr-3">
                     <i data-lucide="activity" class="w-5 h-5 text-brand-accent"></i>
                 </div>
-                <h2 class="text-lg font-semibold text-brand-text-primary">Body Assessment</h2>
+                <h2 class="text-lg font-semibold text-brand-text-primary">Body Assessments</h2>
             </div>
             
             <div class="space-y-5">
-                <!-- Weight Tracker Card -->
-                <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
-                    <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
-                        <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-                            <i data-lucide="scale" class="w-4 h-4 mr-2 text-brand-primary"></i>
-                            Weight Tracker
-                        </h3>
-                        <div class="flex items-center justify-between w-full sm:w-auto">
-                            <button class="text-xs bg-gray-100 text-brand-text-secondary py-1 px-2 rounded-lg mr-2" onclick="viewWeightHistory()">
-                                <i data-lucide="history" class="w-3 h-3 mr-1 inline"></i> History
+                <!-- Weight Tracking Chart -->
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <div class="flex flex-wrap items-center justify-between mb-3">
+                        <h3 class="font-medium text-brand-text-primary">Weight Tracking</h3>
+                        <div>
+                            <button class="text-xs bg-brand-primary/10 text-brand-primary px-2 py-1 rounded-md hover:bg-opacity-80 transition-colors" onclick="updateWeightModal()">
+                                <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i> Add
                             </button>
-                            <span class="text-xs text-brand-text-secondary">Last: Mar 15</span>
-                            <button class="ml-3 text-xs bg-brand-primary text-white py-1 px-2 sm:px-3 rounded-lg" onclick="updateWeightModal()">
-                                Update
+                            <button class="text-xs bg-gray-100 text-brand-text-secondary px-2 py-1 rounded-md ml-1 hover:bg-gray-200 transition-colors" onclick="viewWeightHistory()">
+                                <i data-lucide="list" class="w-3 h-3 inline mr-1"></i> History
                             </button>
                         </div>
                     </div>
                     
-                    <div class="weight-chart h-24 sm:h-32 bg-gray-50 rounded-lg mb-3 p-2 flex items-end">
+                    <div class="weight-chart h-44 sm:h-52 bg-brand-accent/10 rounded-lg mb-3 p-2 flex items-end">
                         <div class="w-1/6 h-[50%] bg-brand-primary rounded-md mx-0.5"></div>
                         <div class="w-1/6 h-[55%] bg-brand-primary rounded-md mx-0.5"></div>
                         <div class="w-1/6 h-[60%] bg-brand-primary rounded-md mx-0.5"></div>
@@ -2862,65 +2858,106 @@ function createAssessmentContent() {
                         <div class="w-1/6 h-[75%] bg-brand-primary rounded-md mx-0.5"></div>
                     </div>
                     
-                    <div class="flex justify-between items-center flex-wrap sm:flex-nowrap">
-                        <div class="text-sm mb-2 sm:mb-0">
-                            <span class="text-brand-text-secondary">Current:</span>
-                            <span class="font-medium text-brand-text-primary">176 lbs</span>
+                    <div class="flex flex-wrap justify-between text-xs text-brand-text-secondary mt-2">
+                        <div>
+                            <span class="font-medium">Current: </span>176 lbs
                         </div>
-                        <div class="text-sm mb-2 sm:mb-0">
-                            <span class="text-brand-text-secondary">Target:</span>
-                            <span class="font-medium text-brand-secondary">165 lbs</span>
+                        <div>
+                            <span class="font-medium">Target: </span>165 lbs
                         </div>
-                        <div class="text-sm text-brand-secondary">
-                            <span>-9 lbs</span>
-                            <span class="text-xs text-brand-text-secondary">since Jan 1</span>
+                        <div>
+                            <span class="font-medium">To Go: </span>
+                            <span class="text-brand-primary">-11 lbs</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Body Metrics Card -->
-                <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
-                    <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
-                        <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-                            <i data-lucide="ruler" class="w-4 h-4 mr-2 text-brand-accent"></i>
-                            Body Measurements
-                        </h3>
-                        <div class="flex items-center">
-                            <button class="text-xs bg-gray-100 text-brand-text-secondary py-1 px-2 rounded-lg mr-2" onclick="viewMeasurementsHistory()">
-                                <i data-lucide="history" class="w-3 h-3 mr-1 inline"></i> History
+                <!-- Body Measurements -->
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <div class="flex flex-wrap items-center justify-between mb-4">
+                        <h3 class="font-medium text-brand-text-primary">Body Measurements</h3>
+                        <div>
+                            <button class="text-xs bg-brand-secondary/10 text-brand-secondary px-2 py-1 rounded-md hover:bg-opacity-80 transition-colors" onclick="updateMeasurementsModal()">
+                                <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i> Update
                             </button>
-                            <button class="text-xs bg-brand-accent text-white py-1 px-2 sm:px-3 rounded-lg" onclick="updateMeasurementsModal()">
-                                Update
+                            <button class="text-xs bg-gray-100 text-brand-text-secondary px-2 py-1 rounded-md ml-1 hover:bg-gray-200 transition-colors" onclick="viewMeasurementsHistory()">
+                                <i data-lucide="list" class="w-3 h-3 inline mr-1"></i> History
                             </button>
                         </div>
                     </div>
                     
-                    <div id="measurements-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
-                            <div class="text-xs text-brand-text-secondary mb-1">Chest</div>
-                            <div class="font-medium text-brand-text-primary">40 in</div>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
-                            <div class="text-xs text-brand-text-secondary mb-1">Waist</div>
-                            <div class="font-medium text-brand-text-primary">34 in</div>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
-                            <div class="text-xs text-brand-text-secondary mb-1">Hips</div>
-                            <div class="font-medium text-brand-text-primary">38 in</div>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
-                            <div class="text-xs text-brand-text-secondary mb-1">Thighs</div>
-                            <div class="font-medium text-brand-text-primary">22 in</div>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
-                            <div class="text-xs text-brand-text-secondary mb-1">Arms</div>
-                            <div class="font-medium text-brand-text-primary">14 in</div>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center cursor-pointer hover:bg-gray-100" onclick="addMeasurementModal()">
-                            <div class="h-full flex items-center justify-center">
-                                <i data-lucide="plus" class="w-5 h-5 text-brand-text-secondary"></i>
+                    <!-- Body Measurements Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 mt-3">
+                        <!-- Chest -->
+                        <div class="bg-white border border-gray-100 rounded-lg p-3 relative shadow-sm">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-brand-primary/10 rounded-full flex items-center justify-center mr-2">
+                                    <i data-lucide="ruler" class="w-4 h-4 text-brand-primary"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-brand-text-secondary">Chest</p>
+                                    <p class="text-sm font-semibold text-brand-text-primary">42"</p>
+                                </div>
                             </div>
                         </div>
+                        
+                        <!-- Waist -->
+                        <div class="bg-white border border-gray-100 rounded-lg p-3 relative shadow-sm">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-brand-primary/10 rounded-full flex items-center justify-center mr-2">
+                                    <i data-lucide="ruler" class="w-4 h-4 text-brand-primary"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-brand-text-secondary">Waist</p>
+                                    <p class="text-sm font-semibold text-brand-text-primary">34"</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hips -->
+                        <div class="bg-white border border-gray-100 rounded-lg p-3 relative shadow-sm">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-brand-primary/10 rounded-full flex items-center justify-center mr-2">
+                                    <i data-lucide="ruler" class="w-4 h-4 text-brand-primary"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-brand-text-secondary">Hips</p>
+                                    <p class="text-sm font-semibold text-brand-text-primary">38"</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Thighs -->
+                        <div class="bg-white border border-gray-100 rounded-lg p-3 relative shadow-sm">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-brand-primary/10 rounded-full flex items-center justify-center mr-2">
+                                    <i data-lucide="ruler" class="w-4 h-4 text-brand-primary"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-brand-text-secondary">Thighs</p>
+                                    <p class="text-sm font-semibold text-brand-text-primary">24"</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Arms -->
+                        <div class="bg-white border border-gray-100 rounded-lg p-3 relative shadow-sm">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-brand-primary/10 rounded-full flex items-center justify-center mr-2">
+                                    <i data-lucide="ruler" class="w-4 h-4 text-brand-primary"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-brand-text-secondary">Arms</p>
+                                    <p class="text-sm font-semibold text-brand-text-primary">14"</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Add Custom Measurement Button -->
+                        <button class="bg-white border border-dashed border-gray-200 rounded-lg p-3 flex items-center justify-center text-brand-text-secondary hover:bg-gray-50 transition-colors group" onclick="addMeasurementModal()">
+                            <i data-lucide="plus-circle" class="w-5 h-5 mr-2 group-hover:text-brand-primary"></i>
+                            <span class="text-sm">Add Custom</span>
+                        </button>
                     </div>
                 </div>
             </div>
