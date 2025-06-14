@@ -2576,9 +2576,6 @@ function createGoalsContent() {
                                 <p class="text-sm text-brand-text-secondary">Target: 165 lbs</p>
                             </div>
                             <div class="flex items-center">
-                                <div class="text-xs bg-brand-primary/20 text-brand-primary px-2 py-1 rounded-full mr-2">
-                                    In Progress
-                                </div>
                                 <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(1)">
                                     <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
                                 </button>
@@ -2594,7 +2591,7 @@ function createGoalsContent() {
                                 <span>45%</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-brand-primary h-2 rounded-full" style="width: 45%"></div>
+                                <div class="bg-brand-primary/60 h-2 rounded-full" style="width: 45%"></div>
                             </div>
                         </div>
                         
@@ -2615,9 +2612,6 @@ function createGoalsContent() {
                                 <p class="text-sm text-brand-text-secondary">Target: 32 inches</p>
                             </div>
                             <div class="flex items-center">
-                                <div class="text-xs bg-brand-secondary/20 text-brand-secondary px-2 py-1 rounded-full mr-2">
-                                    On Track
-                                </div>
                                 <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(2)">
                                     <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
                                 </button>
@@ -2633,7 +2627,7 @@ function createGoalsContent() {
                                 <span>50%</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-brand-primary h-2 rounded-full" style="width: 50%"></div>
+                                <div class="bg-brand-primary/60 h-2 rounded-full" style="width: 50%"></div>
                             </div>
                         </div>
                         
@@ -2654,9 +2648,6 @@ function createGoalsContent() {
                                 <p class="text-sm text-brand-text-secondary">Target: 16 inches</p>
                             </div>
                             <div class="flex items-center">
-                                <div class="text-xs bg-brand-accent/20 text-brand-accent px-2 py-1 rounded-full mr-2">
-                                    Muscle Gain
-                                </div>
                                 <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(3)">
                                     <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
                                 </button>
@@ -2672,7 +2663,7 @@ function createGoalsContent() {
                                 <span>40%</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-brand-primary h-2 rounded-full" style="width: 40%"></div>
+                                <div class="bg-brand-primary/60 h-2 rounded-full" style="width: 40%"></div>
                             </div>
                         </div>
                         
@@ -2693,9 +2684,6 @@ function createGoalsContent() {
                                 <p class="text-sm text-brand-text-secondary">Target: 3x weekly</p>
                             </div>
                             <div class="flex items-center">
-                                <div class="text-xs bg-brand-secondary/20 text-brand-secondary px-2 py-1 rounded-full mr-2">
-                                    On Track
-                                </div>
                                 <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(4)">
                                     <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
                                 </button>
@@ -2711,7 +2699,7 @@ function createGoalsContent() {
                                 <span>80%</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-brand-primary h-2 rounded-full" style="width: 80%"></div>
+                                <div class="bg-brand-primary/60 h-2 rounded-full" style="width: 80%"></div>
                             </div>
                         </div>
                         
@@ -2779,12 +2767,12 @@ function createAssessmentContent() {
                 </div>
                 
                 <div class="weight-chart h-44 sm:h-52 bg-brand-accent/10 rounded-lg mb-3 p-2 flex items-end">
-                    <div class="w-1/6 h-[50%] bg-brand-accent rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[55%] bg-brand-accent rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[60%] bg-brand-secondary rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[65%] bg-brand-secondary rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[70%] bg-brand-accent rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[75%] bg-brand-accent rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[50%] bg-brand-accent/50 rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[55%] bg-brand-accent/50 rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[60%] bg-brand-accent/50 rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[65%] bg-brand-accent/50 rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[70%] bg-brand-accent/50 rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[75%] bg-brand-accent/50 rounded-md mx-0.5"></div>
                 </div>
                 
                 <div class="flex flex-wrap justify-between text-xs text-brand-text-secondary mt-2">
@@ -2883,8 +2871,8 @@ function createAssessmentContent() {
                     </div>
                     
                     <!-- Add Custom Measurement Button -->
-                    <button class="bg-white border border-dashed border-gray-200 rounded-lg p-3 flex items-center justify-center text-brand-text-secondary hover:bg-gray-50 transition-colors group" onclick="addMeasurementModal()">
-                        <i data-lucide="plus-circle" class="w-5 h-5 mr-2 group-hover:text-brand-primary"></i>
+                    <button class="bg-white border border-dashed border-gray-200 rounded-lg p-3 flex items-center justify-center text-white bg-brand-primary hover:bg-brand-primary/90 transition-colors group" onclick="addMeasurementModal()">
+                        <i data-lucide="plus-circle" class="w-5 h-5 mr-2 text-white"></i>
                         <span class="text-sm">Add Custom</span>
                     </button>
                 </div>
