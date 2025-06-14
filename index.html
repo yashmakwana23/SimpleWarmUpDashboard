@@ -36,12 +36,14 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        'brand-lime': '#D4FF4F',
+                        'brand-primary': '#FF5595', /* Pink - Primary brand color */
+                        'brand-secondary': '#4CAF50', /* Green - Success actions */
+                        'brand-accent': '#4B8BFF', /* Blue - Links and accents */
+                        'brand-lime': '#D4FF4F', /* Lime - Keep for backward compatibility */
                         'brand-bg': '#F8FAFC',
                         'brand-surface': '#FFFFFF',
                         'brand-text-primary': '#1F2937',
                         'brand-text-secondary': '#6B7280',
-                        'brand-accent': '#3B82F6',
                     }
                 }
             }
@@ -55,7 +57,7 @@
             <!-- Logo/Brand Section -->
             <div class="h-16 md:h-20 flex items-center px-4 md:px-6">
                 <div class="logo-container w-full">
-                    <div class="w-10 h-10 bg-brand-lime rounded-xl flex items-center justify-center overflow-hidden">
+                    <div class="w-10 h-10 bg-brand-primary rounded-xl flex items-center justify-center overflow-hidden">
                         <img src="https://yt3.googleusercontent.com/H65VOc8pBxS3u1fbgyYOypUTfZQxFoDOk6yV5UUn2fugwGwfpneqyk3jQSuvqxhmL8QDMUDzNJ8" alt="SimpleWarmUp Logo" class="w-full h-full object-cover">
                     </div>
                     <div class="ml-3 logo-text">
@@ -68,9 +70,9 @@
             <nav class="flex-grow px-3 md:px-4">
                 <!-- Today's Plan Tab -->
                 <a href="#today" 
-                   class="nav-item flex items-center px-4 py-3 text-sm font-semibold bg-brand-lime rounded-full mb-2" 
+                   class="nav-item flex items-center px-4 py-3 text-sm font-semibold bg-brand-primary text-white rounded-full mb-2" 
                    data-tab="today">
-                    <i data-lucide="sun" class="w-5 h-5"></i>
+                    <i data-lucide="sun" class="w-5 h-5 text-white"></i>
                     <span class="ml-3 sidebar-text">Today's Plan</span>
                 </a>
                 

@@ -57,8 +57,8 @@ function switchTab(tabName) {
     // Remove active class from all nav items and set inactive state
     const navItems = document.querySelectorAll('.nav-item[data-tab]');
     navItems.forEach(item => {
-        // Remove active styles
-        item.classList.remove('bg-brand-lime', 'text-brand-text-primary', 'rounded-full');
+        // Remove all possible active styles
+        item.classList.remove('bg-brand-lime', 'text-brand-text-primary', 'bg-brand-primary', 'text-white', 'rounded-full');
         // Add inactive styles
         item.classList.add('text-brand-text-secondary', 'hover:bg-gray-100', 'rounded-lg');
     });
@@ -69,7 +69,7 @@ function switchTab(tabName) {
         // Remove inactive styles
         activeNavItem.classList.remove('text-brand-text-secondary', 'hover:bg-gray-100', 'rounded-lg');
         // Add active styles
-        activeNavItem.classList.add('bg-brand-lime', 'text-brand-text-primary', 'rounded-full');
+        activeNavItem.classList.add('bg-brand-primary', 'text-white', 'rounded-full');
     }
     
     // Hide all tab contents
@@ -477,8 +477,8 @@ function createWorkoutCard(workout, workoutIndex) {
         <!-- Workout Header -->
         <div class="flex flex-col mb-6">
             <div class="flex items-center">
-                <div class="w-10 h-10 bg-brand-lime rounded-lg flex items-center justify-center mr-3">
-                    <i data-lucide="${getWorkoutTypeIcon(workout.workoutType)}" class="w-5 h-5 text-brand-text-primary"></i>
+                <div class="w-10 h-10 bg-brand-primary rounded-lg flex items-center justify-center mr-3">
+                    <i data-lucide="${getWorkoutTypeIcon(workout.workoutType)}" class="w-5 h-5 text-white"></i>
                 </div>
                 <div class="flex-1">
                     <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary">${workout.workoutType}</h3>
@@ -524,7 +524,7 @@ function createWorkoutCard(workout, workoutIndex) {
             <div class="flex gap-2 mt-2">
                 <button 
                     onclick="saveWorkoutNotes(${workoutIndex})"
-                    class="px-3 py-1.5 bg-brand-lime text-brand-text-primary rounded-md text-sm hover:bg-opacity-90 transition-colors"
+                    class="px-3 py-1.5 bg-brand-primary text-white rounded-md text-sm hover:bg-opacity-90 transition-colors"
                 >
                     Save Notes
                 </button>
@@ -610,14 +610,14 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
 
                     <!-- Action Button -->
                     <div class="flex items-center gap-1 flex-shrink-0">
-                        <button 
-                            onclick="completeExercise('${exerciseId}', ${workoutIndex})"
-                            id="complete-btn-${exerciseId}"
-                            class="p-2 bg-brand-lime text-brand-text-primary rounded-md hover:bg-opacity-90 transition-colors"
-                            title="Complete Exercise"
-                        >
-                            <i data-lucide="check" class="w-4 h-4"></i>
-                        </button>
+                                                            <button 
+                                        onclick="completeExercise('${exerciseId}', ${workoutIndex})"
+                                        id="complete-btn-${exerciseId}"
+                                        class="p-2 bg-brand-secondary text-white rounded-md hover:bg-opacity-90 transition-colors"
+                                        title="Complete Exercise"
+                                    >
+                                        <i data-lucide="check" class="w-4 h-4"></i>
+                                    </button>
                     </div>
                 </div>
             </div>
@@ -656,7 +656,7 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
                         <button 
                             onclick="completeExercise('${exerciseId}', ${workoutIndex})"
                             id="complete-btn-${exerciseId}-tablet"
-                            class="p-2 bg-brand-lime text-brand-text-primary rounded-md hover:bg-opacity-90 transition-colors"
+                            class="p-2 bg-brand-secondary text-white rounded-md hover:bg-opacity-90 transition-colors"
                             title="Complete Exercise"
                         >
                             <i data-lucide="check" class="w-4 h-4"></i>
@@ -755,10 +755,10 @@ function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
                 <!-- Action Button -->
                 <div class="flex items-center">
                     <button 
-                        onclick="completeExercise('${exerciseId}', ${workoutIndex})"
-                        id="complete-btn-${exerciseId}-desktop"
-                        class="p-2 bg-brand-lime text-brand-text-primary rounded-md hover:bg-opacity-90 transition-colors"
-                        title="Complete Exercise"
+                                                                onclick="completeExercise('${exerciseId}', ${workoutIndex})"
+                                        id="complete-btn-${exerciseId}-desktop"
+                                        class="p-2 bg-brand-secondary text-white rounded-md hover:bg-opacity-90 transition-colors"
+                                        title="Complete Exercise"
                     >
                         <i data-lucide="check" class="w-4 h-4"></i>
                     </button>
@@ -874,7 +874,7 @@ function updateNotesButtonState(exerciseId, hasNotes) {
     
     if (hasNotes) {
         // Show filled/highlighted state when notes are present
-        const activeClass = 'p-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-md transition-colors';
+        const activeClass = 'p-2 bg-brand-accent/20 text-brand-accent hover:bg-brand-accent/30 rounded-md transition-colors';
         const activeTitle = 'View/Edit Notes (Notes Added)';
         
         if (notesBtnMobile) {
@@ -970,8 +970,8 @@ function updateWorkoutProgress(workoutIndex) {
     // Update progress circle
     const circle = document.getElementById(`workout-circle-${workoutIndex}`);
     if (percentage === 100) {
-        circle.className = 'w-12 h-12 rounded-full border-4 border-green-500 bg-green-50 flex items-center justify-center';
-        circle.querySelector('span').className = 'text-sm font-bold text-green-600';
+                    circle.className = 'w-12 h-12 rounded-full border-4 border-brand-secondary bg-brand-secondary/10 flex items-center justify-center';
+            circle.querySelector('span').className = 'text-sm font-bold text-brand-secondary';
     } else {
         const hue = (percentage / 100) * 120; // 0 = red, 120 = green
         circle.style.borderColor = `hsl(${hue}, 60%, 50%)`;
@@ -988,10 +988,10 @@ function completeWorkout(workoutIndex) {
     // Mark entire workout as completed
     workoutCard.classList.add('ring-2', 'ring-green-200', 'bg-green-50');
     
-    // Update button
-    const completeBtn = document.getElementById(`complete-workout-${workoutIndex}`);
-    completeBtn.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 mr-2 inline"></i>Workout Completed!';
-    completeBtn.className = 'w-full py-3 px-4 bg-green-600 text-white rounded-lg font-medium cursor-default';
+            // Update button
+        const completeBtn = document.getElementById(`complete-workout-${workoutIndex}`);
+        completeBtn.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 mr-2 inline"></i>Workout Completed!';
+        completeBtn.className = 'w-full py-3 px-4 bg-brand-secondary text-white rounded-lg font-medium cursor-default';
     completeBtn.disabled = true;
     
     console.log(`Workout ${workoutIndex} completed with notes: ${notes}`);
@@ -1088,9 +1088,9 @@ function createDayCard(dayData) {
     // Use theme color instead of type-based color
     card.innerHTML = `
         <div class="flex items-center space-x-2 mb-3">
-            <div class="w-8 h-8 bg-brand-lime rounded-lg flex items-center justify-center">
-                <span class="text-sm font-bold text-brand-text-primary">${dayData.day}</span>
-            </div>
+                    <div class="w-8 h-8 bg-brand-secondary rounded-lg flex items-center justify-center">
+            <span class="text-sm font-bold text-white">${dayData.day}</span>
+        </div>
             <div>
                 <h3 class="font-semibold text-brand-text-primary">${dayData.workoutType}</h3>
             </div>
@@ -1116,7 +1116,7 @@ function openWorkoutModal(dayData) {
     
     // Workout type
     const statusBadge = document.getElementById('modal-status-badge');
-    statusBadge.className = `flex items-center px-3 py-1 rounded-full text-sm font-medium bg-brand-lime text-brand-text-primary`;
+    statusBadge.className = `flex items-center px-3 py-1 rounded-full text-sm font-medium bg-brand-primary text-white`;
     document.getElementById('modal-status-icon').setAttribute('data-lucide', 'dumbbell');
     document.getElementById('modal-status-text').textContent = dayData.workoutType;
     
@@ -1124,7 +1124,7 @@ function openWorkoutModal(dayData) {
     const workoutPlanDiv = document.getElementById('modal-workout-plan');
     workoutPlanDiv.innerHTML = dayData.workoutPlan.map(exercise => 
         `<div class="flex items-center mb-2">
-            <i data-lucide="activity" class="w-4 h-4 text-brand-lime mr-2"></i>
+            <i data-lucide="activity" class="w-4 h-4 text-brand-primary mr-2"></i>
             <span class="text-sm">${exercise}</span>
         </div>`
     ).join('');
@@ -1662,7 +1662,7 @@ function togglePlanCard(planIndex) {
     if (planCard.classList.contains('hidden')) {
         // Expand the card
         planCard.classList.remove('hidden');
-        toggleBtn.classList.add('bg-brand-lime');
+        toggleBtn.classList.add('bg-brand-primary');
         toggleBtn.classList.remove('bg-gray-200');
         toggleIcon.setAttribute('data-lucide', 'chevron-up');
         
@@ -1673,7 +1673,7 @@ function togglePlanCard(planIndex) {
     } else {
         // Collapse the card
         planCard.classList.add('hidden');
-        toggleBtn.classList.remove('bg-brand-lime');
+        toggleBtn.classList.remove('bg-brand-primary');
         toggleBtn.classList.add('bg-gray-200');
         toggleIcon.setAttribute('data-lucide', 'chevron-down');
     }
@@ -2159,9 +2159,9 @@ function createGoalCard(goal) {
                     <span>Progress</span>
                     <span>${goal.progress}%</span>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-brand-lime h-2 rounded-full" style="width: ${goal.progress}%"></div>
-                </div>
+                                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-brand-primary h-2 rounded-full" style="width: ${goal.progress}%"></div>
+                                </div>
             </div>
             
             <div class="text-xs text-brand-text-secondary mt-3 flex justify-between">
@@ -2257,8 +2257,8 @@ function renderAssessmentSection(assessmentData) {
                 </div>
                 
                 <div class="flex items-center">
-                    <div class="w-16 h-16 rounded-full bg-brand-lime bg-opacity-20 flex items-center justify-center mr-4">
-                        <span class="text-xl font-bold text-brand-text-primary">${assessmentData.bodyFat[assessmentData.bodyFat.length - 1].value}%</span>
+                                                    <div class="w-16 h-16 rounded-full bg-brand-accent bg-opacity-20 flex items-center justify-center mr-4">
+                                    <span class="text-xl font-bold text-brand-accent">${assessmentData.bodyFat[assessmentData.bodyFat.length - 1].value}%</span>
                     </div>
                     <div class="text-sm text-brand-text-secondary">
                         <p>Current body fat percentage</p>
@@ -2563,8 +2563,8 @@ function createGoalsContent() {
         <!-- Goals & Targets Section (Now as separate card) -->
         <div class="bg-brand-surface rounded-xl p-5 shadow-lg border border-gray-100 mb-6">
             <div class="flex items-center mb-4">
-                <div class="bg-brand-lime/20 p-2 rounded-lg mr-3">
-                    <i data-lucide="target" class="w-5 h-5 text-brand-lime"></i>
+                <div class="bg-brand-primary/20 p-2 rounded-lg mr-3">
+                    <i data-lucide="target" class="w-5 h-5 text-brand-primary"></i>
                 </div>
                 <h2 class="text-lg font-semibold text-brand-text-primary">Goals & Targets</h2>
             </div>
@@ -2760,7 +2760,7 @@ function createGoalsContent() {
                 
                 <!-- Add Goal Button -->
                 <div class="add-goal-section mt-5 pt-4">
-                    <button class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium hover:bg-opacity-90 transition-colors flex items-center justify-center" onclick="addGoalModal()">
+                    <button class="w-full py-3 px-4 bg-brand-primary text-white rounded-lg font-medium hover:bg-opacity-90 transition-colors flex items-center justify-center" onclick="addGoalModal()">
                         <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
                         Add New Goal
                     </button>
@@ -2828,8 +2828,8 @@ function createAssessmentContent() {
         <!-- Body Assessment Section (With dedicated card) -->
         <div class="bg-brand-surface rounded-xl p-5 shadow-lg border border-gray-100 mb-6">
             <div class="flex items-center mb-4">
-                <div class="bg-blue-100 p-2 rounded-lg mr-3">
-                    <i data-lucide="activity" class="w-5 h-5 text-blue-600"></i>
+                <div class="bg-brand-accent/20 p-2 rounded-lg mr-3">
+                    <i data-lucide="activity" class="w-5 h-5 text-brand-accent"></i>
                 </div>
                 <h2 class="text-lg font-semibold text-brand-text-primary">Body Assessment</h2>
             </div>
@@ -2839,7 +2839,7 @@ function createAssessmentContent() {
                 <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
                     <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
                         <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-                            <i data-lucide="scale" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                            <i data-lucide="scale" class="w-4 h-4 mr-2 text-brand-primary"></i>
                             Weight Tracker
                         </h3>
                         <div class="flex items-center justify-between w-full sm:w-auto">
@@ -2847,19 +2847,19 @@ function createAssessmentContent() {
                                 <i data-lucide="history" class="w-3 h-3 mr-1 inline"></i> History
                             </button>
                             <span class="text-xs text-brand-text-secondary">Last: Mar 15</span>
-                            <button class="ml-3 text-xs bg-brand-lime text-brand-text-primary py-1 px-2 sm:px-3 rounded-lg" onclick="updateWeightModal()">
+                            <button class="ml-3 text-xs bg-brand-primary text-white py-1 px-2 sm:px-3 rounded-lg" onclick="updateWeightModal()">
                                 Update
                             </button>
                         </div>
                     </div>
                     
                     <div class="weight-chart h-24 sm:h-32 bg-gray-50 rounded-lg mb-3 p-2 flex items-end">
-                        <div class="w-1/6 h-[50%] bg-brand-lime rounded-md mx-0.5"></div>
-                        <div class="w-1/6 h-[55%] bg-brand-lime rounded-md mx-0.5"></div>
-                        <div class="w-1/6 h-[60%] bg-brand-lime rounded-md mx-0.5"></div>
-                        <div class="w-1/6 h-[65%] bg-brand-lime rounded-md mx-0.5"></div>
-                        <div class="w-1/6 h-[70%] bg-brand-lime rounded-md mx-0.5"></div>
-                        <div class="w-1/6 h-[75%] bg-brand-lime rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[50%] bg-brand-primary rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[55%] bg-brand-primary rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[60%] bg-brand-primary rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[65%] bg-brand-primary rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[70%] bg-brand-primary rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[75%] bg-brand-primary rounded-md mx-0.5"></div>
                     </div>
                     
                     <div class="flex justify-between items-center flex-wrap sm:flex-nowrap">
@@ -2869,9 +2869,9 @@ function createAssessmentContent() {
                         </div>
                         <div class="text-sm mb-2 sm:mb-0">
                             <span class="text-brand-text-secondary">Target:</span>
-                            <span class="font-medium text-green-600">165 lbs</span>
+                            <span class="font-medium text-brand-secondary">165 lbs</span>
                         </div>
-                        <div class="text-sm text-green-600">
+                        <div class="text-sm text-brand-secondary">
                             <span>-9 lbs</span>
                             <span class="text-xs text-brand-text-secondary">since Jan 1</span>
                         </div>
@@ -2882,14 +2882,14 @@ function createAssessmentContent() {
                 <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
                     <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
                         <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-                            <i data-lucide="ruler" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                            <i data-lucide="ruler" class="w-4 h-4 mr-2 text-brand-accent"></i>
                             Body Measurements
                         </h3>
                         <div class="flex items-center">
                             <button class="text-xs bg-gray-100 text-brand-text-secondary py-1 px-2 rounded-lg mr-2" onclick="viewMeasurementsHistory()">
                                 <i data-lucide="history" class="w-3 h-3 mr-1 inline"></i> History
                             </button>
-                            <button class="text-xs bg-brand-lime text-brand-text-primary py-1 px-2 sm:px-3 rounded-lg" onclick="updateMeasurementsModal()">
+                            <button class="text-xs bg-brand-accent text-white py-1 px-2 sm:px-3 rounded-lg" onclick="updateMeasurementsModal()">
                                 Update
                             </button>
                         </div>
@@ -3014,9 +3014,9 @@ function initializeGoalsModals() {
                                 </div>
                                 
                                 <div class="pt-4 border-t border-gray-200">
-                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveNewGoal()">
-                                        Add Goal
-                                    </button>
+                                                    <button type="button" class="w-full py-3 px-4 bg-brand-primary text-white rounded-lg font-medium" onclick="saveNewGoal()">
+                    Add Goal
+                </button>
                                 </div>
                             </form>
                         </div>
@@ -3088,9 +3088,9 @@ function initializeGoalsModals() {
                                 <!-- Progress info removed as requested -->
                                 
                                 <div class="pt-4 border-t border-gray-200">
-                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveEditedGoal()">
-                                        Save Changes
-                                    </button>
+                                                    <button type="button" class="w-full py-3 px-4 bg-brand-primary text-white rounded-lg font-medium" onclick="saveEditedGoal()">
+                    Save Changes
+                </button>
                                 </div>
                             </form>
                         </div>
@@ -3144,9 +3144,9 @@ function initializeGoalsModals() {
                                 </div>
                                 
                                 <div class="pt-4 border-t border-gray-200">
-                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveWeight()">
-                                        Save Weight
-                                    </button>
+                                                    <button type="button" class="w-full py-3 px-4 bg-brand-primary text-white rounded-lg font-medium" onclick="saveWeight()">
+                    Save Weight
+                </button>
                                 </div>
                             </form>
                         </div>
@@ -3250,9 +3250,9 @@ function initializeGoalsModals() {
                                 </div>
                                 
                                 <div class="pt-4 border-t border-gray-200">
-                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveMeasurements()">
-                                        Save Measurements
-                                    </button>
+                                                    <button type="button" class="w-full py-3 px-4 bg-brand-accent text-white rounded-lg font-medium" onclick="saveMeasurements()">
+                    Save Measurements
+                </button>
                                 </div>
                             </form>
                         </div>
@@ -3335,9 +3335,9 @@ function initializeGoalsModals() {
                                 </div>
                                 
                                 <div class="pt-4 border-t border-gray-200">
-                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveNewMeasurement()">
-                                        Add Measurement
-                                    </button>
+                                                    <button type="button" class="w-full py-3 px-4 bg-brand-accent text-white rounded-lg font-medium" onclick="saveNewMeasurement()">
+                    Add Measurement
+                </button>
                                 </div>
                             </form>
                         </div>
@@ -3928,7 +3928,7 @@ function saveWorkoutNotes(workoutIndex) {
             originalLabel.className = 'block text-sm font-medium text-green-600 mb-2';
             
             // Update notes button state to show notes are present
-            notesButton.className = 'text-xs text-blue-600 font-medium hover:text-blue-800 transition-colors absolute bottom-4 right-6';
+            notesButton.className = 'text-xs text-brand-accent font-medium hover:text-brand-accent/70 transition-colors absolute bottom-4 right-6';
             notesButton.innerHTML = '<i data-lucide="pencil" class="w-3 h-3 inline mr-1"></i>View/edit notes';
             lucide.createIcons();
             notesButton.title = 'View/Edit Workout Notes';

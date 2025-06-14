@@ -248,7 +248,7 @@ main {
     left: 0;
     width: 0;
     height: 100%;
-    background: linear-gradient(135deg, rgba(212, 255, 79, 0.1) 0%, rgba(212, 255, 79, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(255, 85, 149, 0.1) 0%, rgba(255, 85, 149, 0.05) 100%);
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: -1;
 }
@@ -258,9 +258,9 @@ main {
 }
 
 .nav-item.active {
-    background: #D4FF4F;
-    color: #1F2937;
-    box-shadow: 0 4px 12px rgba(212, 255, 79, 0.3);
+    background: #FF5595;
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 85, 149, 0.3);
 }
 
 .nav-item.active::before {
@@ -330,14 +330,14 @@ main {
 }
 
 .btn-primary {
-    background: #D4FF4F;
-    color: #1F2937;
+    background: #FF5595; /* Pink primary */
+    color: #FFFFFF;
 }
 
 .btn-primary:hover {
-    background: #c4ef3f;
+    background: #E0447E;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(212, 255, 79, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 85, 149, 0.3);
 }
 
 .btn-secondary {
@@ -395,18 +395,18 @@ main {
 }
 
 .status-active {
-    background: #10b981;
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    background: #4CAF50; /* Green secondary */
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
 .status-pending {
-    background: #f59e0b;
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+    background: #FF5595; /* Pink primary */
+    box-shadow: 0 0 0 2px rgba(255, 85, 149, 0.2);
 }
 
 .status-completed {
-    background: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    background: #4B8BFF; /* Blue accent */
+    box-shadow: 0 0 0 2px rgba(75, 139, 255, 0.2);
 }
 
 /* Workout Type Styles */
@@ -445,7 +445,7 @@ main {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #D4FF4F 0%, #a3e635 100%);
+    background: linear-gradient(90deg, #FF5595 0%, #E0447E 100%);
     border-radius: 4px;
     transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -498,8 +498,17 @@ main {
 /* Focus States */
 button:focus,
 a:focus {
-    outline: 2px solid #D4FF4F;
+    outline: 2px solid #4B8BFF; /* Blue accent for focus */
     outline-offset: 2px;
+}
+
+/* Form Input Focus States */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: transparent !important;
+    box-shadow: 0 0 0 2px #FF5595 !important; /* Pink primary color for form inputs */
 }
 
 /* Accessibility */
