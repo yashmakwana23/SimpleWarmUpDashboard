@@ -917,9 +917,9 @@ function loadCalendarContent() {
         {
             day: 3,
             date: new Date('2024-01-03'),
-            status: 'missed',
-            workoutPlan: ['Yoga flow: 20 minutes', 'Stretching routine: 10 minutes'],
-            notes: 'Missed due to work meeting.',
+            status: 'rest',
+            workoutPlan: ['Rest day - light stretching'],
+            notes: 'Recovery day.',
             stats: null
         },
         {
@@ -1023,16 +1023,6 @@ function getStatusConfig(status) {
             label: 'Completed',
             textColor: 'text-green-600'
         },
-        missed: {
-            bgColor: 'bg-red-100',
-            iconColor: 'text-red-600',
-            icon: 'x',
-            statusBg: 'bg-red-500',
-            statusIcon: 'x',
-            statusIconColor: 'text-white',
-            label: 'Missed',
-            textColor: 'text-red-600'
-        },
         upcoming: {
             bgColor: 'bg-yellow-100',
             iconColor: 'text-yellow-600',
@@ -1060,7 +1050,6 @@ function getStatusConfig(status) {
 function getStatusClass(status) {
     const classes = {
         completed: 'border-green-200 hover:border-green-300',
-        missed: 'border-red-200 hover:border-red-300',
         upcoming: 'border-yellow-200 hover:border-yellow-300',
         rest: 'border-gray-200 hover:border-gray-300'
     };
@@ -1249,21 +1238,15 @@ function getPlanData() {
     
     return plans.map((plan, planIndex) => {
         const dailyWorkouts = [];
-        const startDate = new Date(plan.startDate);
         
         // Generate workout days for the plan duration
         for (let day = 0; day < plan.duration; day++) {
-            const currentDate = new Date(startDate);
-            currentDate.setDate(startDate.getDate() + day);
-            
-            const dayOfWeek = currentDate.getDay();
-            const isRestDay = dayOfWeek === 0 || (day > 0 && day % 6 === 0); // Sundays and every 6th day
+            const currentDayNumber = day + 1;
+            const isRestDay = day === 0 || (day > 0 && day % 6 === 0); // Day 1 and every 6th day
             
             if (isRestDay) {
                 dailyWorkouts.push({
-                    day: day + 1,
-                    date: currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                    dayName: getDayName(dayOfWeek),
+                    day: currentDayNumber,
                     isRestDay: true,
                     workoutType: "Rest Day",
                     totalExercises: 0,
@@ -1275,16 +1258,11 @@ function getPlanData() {
                 const workoutTypes = getPlanWorkoutTypes(plan.name);
                 const workoutType = workoutTypes[Math.floor(Math.random() * workoutTypes.length)];
                 
-                // Determine status based on current date
-                const today = new Date();
-                const status = currentDate < today ? 
-                    (Math.random() > 0.2 ? "completed" : "missed") : 
-                    "upcoming";
+                // Determine status based on day number
+                const status = currentDayNumber < 8 ? "completed" : "upcoming";
                 
                 dailyWorkouts.push({
-                    day: day + 1,
-                    date: currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                    dayName: getDayName(dayOfWeek),
+                    day: currentDayNumber,
                     isRestDay: false,
                     workoutType: workoutType,
                     totalExercises: Math.floor(Math.random() * 3) + 3,
@@ -1303,7 +1281,6 @@ function getPlanData() {
             workoutDays: dailyWorkouts.filter(d => !d.isRestDay).length,
             restDays: dailyWorkouts.filter(d => d.isRestDay).length,
             completed: dailyWorkouts.filter(d => d.status === "completed").length,
-            missed: dailyWorkouts.filter(d => d.status === "missed").length,
             upcoming: dailyWorkouts.filter(d => d.status === "upcoming").length,
             dailyWorkouts: dailyWorkouts,
             currentFilter: 'all' // Default filter
@@ -1386,35 +1363,6 @@ function createPlanCard(planData, planIndex) {
                     <i data-lucide="chevron-up" class="w-4 md:w-5 h-4 md:h-5 plan-toggle-icon"></i>
                 </button>
             </div>
-            
-            <!-- Plan Stats (Clickable for filtering) -->
-            <div class="grid grid-cols-3 gap-2 md:gap-3 mb-4">
-                <div class="text-center p-2 md:p-3 bg-green-50 rounded-lg cursor-pointer hover:bg-green-100 transition-colors" 
-                     onclick="filterPlan(${planIndex}, 'completed')">
-                    <div class="text-sm md:text-lg font-bold text-green-600">${planData.completed}</div>
-                    <div class="text-xs text-green-600">Completed</div>
-                </div>
-                <div class="text-center p-2 md:p-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100 transition-colors" 
-                     onclick="filterPlan(${planIndex}, 'missed')">
-                    <div class="text-sm md:text-lg font-bold text-red-600">${planData.missed}</div>
-                    <div class="text-xs text-red-600">Missed</div>
-                </div>
-                <div class="text-center p-2 md:p-3 bg-yellow-50 rounded-lg cursor-pointer hover:bg-yellow-100 transition-colors" 
-                     onclick="filterPlan(${planIndex}, 'upcoming')">
-                    <div class="text-sm md:text-lg font-bold text-yellow-600">${planData.upcoming}</div>
-                    <div class="text-xs text-yellow-600">Upcoming</div>
-                </div>
-            </div>
-            
-            <!-- Filter indicator -->
-            <div class="filter-indicator hidden mb-3">
-                <div class="flex items-center justify-between bg-blue-50 rounded-lg p-2">
-                    <span class="text-xs md:text-sm text-blue-700">Filter: <span class="filter-text font-medium"></span></span>
-                    <button onclick="clearFilter(${planIndex})" class="text-blue-700 hover:text-blue-900">
-                        <i data-lucide="x" class="w-3 md:w-4 h-3 md:h-4"></i>
-                    </button>
-                </div>
-            </div>
         </div>
         
         <!-- Plan Content (Collapsible) -->
@@ -1448,10 +1396,8 @@ function createDayRow(dayData, planIndex, dayIndex) {
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between mb-2">
                             <div>
-                                <h4 class="text-sm font-medium text-brand-text-primary">${dayData.dayName}</h4>
-                                <p class="text-xs text-brand-text-secondary opacity-75">${dayData.date}</p>
+                                <h4 class="text-sm font-medium text-brand-text-primary">Day ${dayData.day}</h4>
                             </div>
-                            ${!dayData.isRestDay ? `<div class="text-xs ${statusConfig.textColor} font-medium">${statusConfig.label}</div>` : ''}
                         </div>
                         
                         ${!dayData.isRestDay ? `
@@ -1486,8 +1432,7 @@ function createDayRow(dayData, planIndex, dayIndex) {
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center space-x-2 mb-2">
-                                <h4 class="text-sm font-medium text-brand-text-primary">${dayData.dayName}</h4>
-                                <span class="text-xs text-brand-text-secondary opacity-75">${dayData.date}</span>
+                                <h4 class="text-sm font-medium text-brand-text-primary">Day ${dayData.day}</h4>
                                 ${!dayData.isRestDay ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)}">${dayData.workoutType}</span>` : ''}
                             </div>
                             
@@ -1499,9 +1444,6 @@ function createDayRow(dayData, planIndex, dayIndex) {
                                         </div>
                                     `).join('')}
                                 </div>
-                                <div class="mt-2 text-xs text-brand-text-secondary opacity-75">
-                                    Total: ${dayData.estimatedTime} • ${dayData.totalExercises} exercises
-                                </div>
                             ` : `
                                 <div class="text-sm text-brand-text-secondary">Rest & Recovery</div>
                             `}
@@ -1509,7 +1451,6 @@ function createDayRow(dayData, planIndex, dayIndex) {
                     </div>
                     <div class="flex items-center space-x-2 ml-4">
                         ${!dayData.isRestDay ? `
-                            <div class="text-xs ${statusConfig.textColor} font-medium">${statusConfig.label}</div>
                             <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
                         ` : ''}
                     </div>
@@ -1778,7 +1719,6 @@ function filterPlan(planIndex, status) {
     // Filter days
     const filteredDays = plan.dailyWorkouts.filter(day => {
         if (status === 'completed') return day.status === 'completed';
-        if (status === 'missed') return day.status === 'missed';
         if (status === 'upcoming') return day.status === 'upcoming';
         return true;
     });
@@ -1837,7 +1777,7 @@ function showDayDetailsModal(dayData) {
             <!-- Modal Header -->
             <div class="flex items-center justify-between p-6 border-b border-gray-200">
                 <div>
-                    <h3 class="text-xl font-bold text-brand-text-primary">${dayData.dayName}, ${dayData.date}</h3>
+                    <h3 class="text-xl font-bold text-brand-text-primary">Day ${dayData.day}</h3>
                     <p class="text-sm text-brand-text-secondary mt-1">${dayData.workoutType}</p>
                 </div>
                 <button onclick="closeDayDetailsModal()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
@@ -1847,24 +1787,6 @@ function showDayDetailsModal(dayData) {
 
             <!-- Modal Content -->
             <div class="p-6">
-                <!-- Workout Info -->
-                <div class="mb-6">
-                    <div class="flex items-center space-x-4 mb-4">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="clock" class="w-4 h-4 text-brand-text-secondary"></i>
-                            <span class="text-sm text-brand-text-secondary">${dayData.estimatedTime}</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="activity" class="w-4 h-4 text-brand-text-secondary"></i>
-                            <span class="text-sm text-brand-text-secondary">${dayData.totalExercises} exercises</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <div class="w-3 h-3 rounded-full ${getStatusConfig(dayData.status).bgColor.replace('bg-', '')} bg-opacity-20"></div>
-                            <span class="text-sm font-medium ${getStatusConfig(dayData.status).textColor}">${getStatusConfig(dayData.status).label}</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Exercise List -->
                 <div class="space-y-4">
                     <h4 class="font-semibold text-brand-text-primary mb-3">Exercise Details</h4>
@@ -1896,21 +1818,10 @@ function showDayDetailsModal(dayData) {
 
                 <!-- Action Buttons -->
                 <div class="flex space-x-3 mt-6 pt-4 border-t border-gray-200">
-                    ${dayData.status === 'upcoming' ? `
-                        <button class="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                            <i data-lucide="check" class="w-4 h-4 mr-2 inline"></i>
-                            Mark as Completed
-                        </button>
-                        <button class="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors">
-                            <i data-lucide="x" class="w-4 h-4 mr-2 inline"></i>
-                            Mark as Missed
-                        </button>
-                    ` : `
-                        <button class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                            <i data-lucide="edit" class="w-4 h-4 mr-2 inline"></i>
-                            Edit Workout
-                        </button>
-                    `}
+                    <button class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        <i data-lucide="edit" class="w-4 h-4 mr-2 inline"></i>
+                        Edit Workout
+                    </button>
                 </div>
             </div>
         </div>
