@@ -79,7 +79,7 @@
                    class="nav-item flex items-center px-4 py-3 mt-2 text-sm font-semibold text-brand-text-secondary hover:bg-gray-100 rounded-lg" 
                    data-tab="calendar">
                     <i data-lucide="calendar" class="w-5 h-5"></i>
-                    <span class="ml-3 sidebar-text">Calendar</span>
+                    <span class="ml-3 sidebar-text">Workout Logs</span>
                 </a>
                 
                 <!-- Complete Planner Tab -->
@@ -145,71 +145,13 @@
                     </div>
                 </div>
 
-                <!-- Calendar Content -->
+                <!-- Workout Logs Content -->
                 <div id="calendar-content" class="tab-content hidden p-4 md:p-6">
                     <div class="w-full">
-                        <!-- Filter Buttons -->
-                        <div class="flex justify-center md:justify-end mb-6">
-                            <div class="flex bg-brand-surface rounded-xl p-1 shadow-sm border border-gray-200 overflow-x-auto">
-                                <button class="filter-btn active px-3 md:px-4 py-2 text-sm font-medium rounded-lg bg-brand-lime text-brand-text-primary whitespace-nowrap" data-filter="all">All</button>
-                                <button class="filter-btn px-3 md:px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary whitespace-nowrap" data-filter="completed">Completed</button>
-                                <button class="filter-btn px-3 md:px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary whitespace-nowrap" data-filter="missed">Missed</button>
-                                <button class="filter-btn px-3 md:px-4 py-2 text-sm font-medium rounded-lg text-brand-text-secondary whitespace-nowrap" data-filter="upcoming">Upcoming</button>
-                            </div>
-                        </div>
-
-                        <!-- Summary Stats -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
-                            <div class="bg-brand-surface rounded-xl p-3 md:p-4 shadow-sm border border-gray-100">
-                                <div class="flex items-center">
-                                    <div class="w-8 md:w-10 h-8 md:h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                        <i data-lucide="check-circle" class="w-4 md:w-5 h-4 md:h-5 text-green-600"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-xs md:text-sm font-medium text-brand-text-secondary">Completed</p>
-                                        <p class="text-lg md:text-xl font-bold text-brand-text-primary" id="completed-count">0</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-brand-surface rounded-xl p-3 md:p-4 shadow-sm border border-gray-100">
-                                <div class="flex items-center">
-                                    <div class="w-8 md:w-10 h-8 md:h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                                        <i data-lucide="x-circle" class="w-4 md:w-5 h-4 md:h-5 text-red-600"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-xs md:text-sm font-medium text-brand-text-secondary">Missed</p>
-                                        <p class="text-lg md:text-xl font-bold text-brand-text-primary" id="missed-count">0</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-brand-surface rounded-xl p-3 md:p-4 shadow-sm border border-gray-100">
-                                <div class="flex items-center">
-                                    <div class="w-8 md:w-10 h-8 md:h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                        <i data-lucide="clock" class="w-4 md:w-5 h-4 md:h-5 text-yellow-600"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-xs md:text-sm font-medium text-brand-text-secondary">Upcoming</p>
-                                        <p class="text-lg md:text-xl font-bold text-brand-text-primary" id="upcoming-count">0</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-brand-surface rounded-xl p-3 md:p-4 shadow-sm border border-gray-100">
-                                <div class="flex items-center">
-                                    <div class="w-8 md:w-10 h-8 md:h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <i data-lucide="coffee" class="w-4 md:w-5 h-4 md:h-5 text-gray-600"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-xs md:text-sm font-medium text-brand-text-secondary">Rest Days</p>
-                                        <p class="text-lg md:text-xl font-bold text-brand-text-primary" id="rest-count">0</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Calendar Grid -->
+                        <!-- Completed Workouts Grid -->
                         <div class="bg-brand-surface rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100">
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4 lg:gap-6" id="calendar-grid">
-                                <!-- Days will be populated by JavaScript -->
+                                <!-- Only completed workouts will be populated by JavaScript -->
                             </div>
                         </div>
                     </div>
@@ -297,25 +239,6 @@
                                 <!-- Notes will be populated here -->
                             </div>
                         </div>
-
-                        <div id="modal-stats-section" class="hidden">
-                            <h4 class="font-medium text-brand-text-primary mb-2">Performance Stats</h4>
-                            <div id="modal-stats" class="bg-gray-50 rounded-lg p-4">
-                                <!-- Stats will be populated here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex space-x-3 mt-6 pt-4 border-t border-gray-200">
-                        <button id="mark-completed" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                            <i data-lucide="check" class="w-4 h-4 mr-2 inline"></i>
-                            Mark Complete
-                        </button>
-                        <button id="mark-missed" class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors">
-                            <i data-lucide="x" class="w-4 h-4 mr-2 inline"></i>
-                            Mark Missed
-                        </button>
                     </div>
                 </div>
             </div>
@@ -324,4 +247,4 @@
 
     <script src="script.js"></script>
 </body>
-</html> 
+</html>

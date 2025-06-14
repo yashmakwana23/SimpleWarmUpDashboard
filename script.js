@@ -1131,8 +1131,6 @@ function filterCalendarCards(filter) {
 function initializeWorkoutModal(workoutData) {
     const modal = document.getElementById('workout-modal');
     const closeBtn = document.getElementById('close-modal');
-    const markCompleted = document.getElementById('mark-completed');
-    const markMissed = document.getElementById('mark-missed');
 
     if (!modal || !closeBtn) return;
 
@@ -1140,9 +1138,6 @@ function initializeWorkoutModal(workoutData) {
     modal.addEventListener('click', function(e) {
         if (e.target === modal) closeWorkoutModal();
     });
-
-    if (markCompleted) markCompleted.addEventListener('click', () => updateWorkoutStatus('completed', workoutData));
-    if (markMissed) markMissed.addEventListener('click', () => updateWorkoutStatus('missed', workoutData));
 }
 
 function openWorkoutModal(dayData) {
@@ -1177,31 +1172,7 @@ function openWorkoutModal(dayData) {
         document.getElementById('modal-notes-section').classList.add('hidden');
     }
     
-    // Stats
-    if (dayData.stats) {
-        document.getElementById('modal-stats-section').classList.remove('hidden');
-        const statsDiv = document.getElementById('modal-stats');
-        statsDiv.innerHTML = `
-            <div class="grid grid-cols-3 gap-4 text-center">
-                <div>
-                    <div class="text-lg font-semibold text-brand-text-primary">${dayData.stats.duration}</div>
-                    <div class="text-xs text-brand-text-secondary">Duration</div>
-                </div>
-                <div>
-                    <div class="text-lg font-semibold text-brand-text-primary">${dayData.stats.calories}</div>
-                    <div class="text-xs text-brand-text-secondary">Calories</div>
-                </div>
-                <div>
-                    <div class="text-lg font-semibold text-brand-text-primary">${dayData.stats.heartRate}</div>
-                    <div class="text-xs text-brand-text-secondary">Heart Rate</div>
-                </div>
-            </div>
-        `;
-    } else {
-        document.getElementById('modal-stats-section').classList.add('hidden');
-    }
-    
-    // Store current day for status updates
+    // Store current day for status updates (not used now, but kept for future)
     modal.setAttribute('data-current-day', dayData.day);
     
     // Show modal
@@ -2306,4 +2277,4 @@ window.FitMove = {
     toggleSidebarCollapse,
     loadTabContent,
     showNotification
-}; 
+};
