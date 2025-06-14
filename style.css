@@ -527,4 +527,93 @@ a:focus {
     .card {
         border: 2px solid #e5e7eb;
     }
+}
+
+/* Additional Responsive Styles */
+@media (max-width: 768px) {
+    .main-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .content-area {
+        padding: 1rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1200px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+}
+
+/* Modal Styles */
+.modal-backdrop {
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.5; }
+}
+
+/* Goal Card Responsive Styles */
+.goal-card {
+    transition: all 0.2s ease-out;
+}
+
+.goal-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Notification Styles */
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* Responsive Layout for Goals Page */
+#goals-content .grid > div {
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    #goals-content .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    
+    #goals-content .grid > div {
+        margin-bottom: 0;
+    }
+}
+
+/* Measurement Input Fields */
+.measurement-input {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.content-area {
+    padding: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .content-area {
+        padding: 1rem;
+    }
 } 

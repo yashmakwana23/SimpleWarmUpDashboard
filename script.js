@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update date/time every minute
     setInterval(updateDateTime, 60000);
+    
+    // Initialize on page load
+    const activeTab = document.querySelector('.active-tab') || document.querySelector('.tab');
+    if (activeTab) {
+        // Simulate a click on the active tab to load its content
+        activeTab.click();
+    }
 });
 
 // Dashboard Initialization
@@ -83,6 +90,8 @@ function switchTab(tabName) {
         
         // Load content for the tab if needed
         loadTabContent(tabName);
+        
+        console.log(`Switched to tab: ${tabName}`);
     }
 }
 
@@ -359,7 +368,7 @@ function renderTodayWorkout(workoutData) {
 
 function createWorkoutCard(workout, workoutIndex) {
     const card = document.createElement('div');
-    card.className = 'bg-brand-surface rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6';
+    card.className = 'bg-brand-surface rounded-xl md:rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 h-auto';
     
     card.innerHTML = `
         <!-- Workout Header -->
@@ -382,8 +391,6 @@ function createWorkoutCard(workout, workoutIndex) {
         <div class="space-y-4" id="exercises-${workoutIndex}">
             ${workout.exercises.map((exercise, exerciseIndex) => createExerciseRow(exercise, workoutIndex, exerciseIndex)).join('')}
         </div>
-
-
     `;
 
     return card;
@@ -901,73 +908,62 @@ function loadCalendarContent() {
         {
             day: 1,
             date: new Date('2024-01-01'),
-            status: 'completed',
+            workoutType: "Upper Body",
             workoutPlan: ['Push-ups: 3 sets x 10 reps', 'Squats: 3 sets x 15 reps', 'Plank: 3 sets x 30 seconds'],
-            notes: 'Great workout! Felt strong today.',
-            stats: { duration: '25 minutes', calories: '150 cal', heartRate: '140 bpm avg' }
+            notes: 'Great workout! Felt strong today.'
         },
         {
             day: 2,
             date: new Date('2024-01-02'),
-            status: 'completed',
+            workoutType: "Core & Cardio",
             workoutPlan: ['Lunges: 3 sets x 10 each leg', 'Mountain climbers: 3 sets x 20 reps', 'Burpees: 2 sets x 8 reps'],
-            notes: 'Challenging but completed all sets.',
-            stats: { duration: '30 minutes', calories: '180 cal', heartRate: '145 bpm avg' }
+            notes: 'Challenging but completed all sets.'
         },
         {
             day: 3,
             date: new Date('2024-01-03'),
-            status: 'rest',
+            workoutType: "Rest Day",
             workoutPlan: ['Rest day - light stretching'],
-            notes: 'Recovery day.',
-            stats: null
+            notes: 'Recovery day.'
         },
         {
             day: 4,
             date: new Date('2024-01-04'),
-            status: 'rest',
+            workoutType: "Rest Day",
             workoutPlan: ['Rest day - light stretching'],
-            notes: 'Recovery day.',
-            stats: null
+            notes: 'Recovery day.'
         },
         {
             day: 5,
             date: new Date('2024-01-05'),
-            status: 'upcoming',
+            workoutType: "Upper Body",
             workoutPlan: ['Upper body strength: 4 exercises', 'Core workout: 15 minutes'],
-            notes: null,
-            stats: null
+            notes: 'Increased weight on bench press.'
         },
         {
             day: 6,
             date: new Date('2024-01-06'),
-            status: 'upcoming',
+            workoutType: "HIIT",
             workoutPlan: ['Full body HIIT: 20 minutes', 'Cool down: 5 minutes'],
-            notes: null,
-            stats: null
+            notes: 'Intense session, good energy throughout.'
         },
         {
             day: 7,
             date: new Date('2024-01-07'),
-            status: 'upcoming',
+            workoutType: "Cardio",
             workoutPlan: ['Swimming: 30 minutes', 'Stretching: 10 minutes'],
-            notes: null,
-            stats: null
+            notes: 'Recovery swim session.'
         },
         {
             day: 8,
             date: new Date('2024-01-08'),
-            status: 'upcoming',
+            workoutType: "Lower Body",
             workoutPlan: ['Strength training: 45 minutes', 'Cardio: 15 minutes'],
-            notes: null,
-            stats: null
+            notes: 'Focused on form for squats.'
         }
     ];
 
     renderCalendar(workoutData);
-    updateCalendarStats(workoutData);
-    initializeCalendarFilters(workoutData);
-    initializeWorkoutModal(workoutData);
 }
 
 function renderCalendar(workoutData) {
@@ -986,24 +982,22 @@ function renderCalendar(workoutData) {
 
 function createDayCard(dayData) {
     const card = document.createElement('div');
-    card.className = `day-card bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-200 cursor-pointer transition-all hover:shadow-lg ${getStatusClass(dayData.status)}`;
-    card.setAttribute('data-status', dayData.status);
+    card.className = `day-card bg-brand-surface rounded-xl p-4 shadow-sm border border-gray-100 cursor-pointer transition-all hover:shadow-lg`;
     card.setAttribute('data-day', dayData.day);
 
-    const statusConfig = getStatusConfig(dayData.status);
-    
+    // Use theme color instead of type-based color
     card.innerHTML = `
         <div class="flex items-center space-x-2 mb-3">
-            <div class="w-8 h-8 ${statusConfig.bgColor} rounded-lg flex items-center justify-center">
-                <i data-lucide="${statusConfig.icon}" class="w-4 h-4 ${statusConfig.iconColor}"></i>
+            <div class="w-8 h-8 bg-brand-lime rounded-lg flex items-center justify-center">
+                <span class="text-sm font-bold text-brand-text-primary">${dayData.day}</span>
             </div>
             <div>
-                <h3 class="font-semibold text-brand-text-primary">Day ${dayData.day}</h3>
+                <h3 class="font-semibold text-brand-text-primary">${dayData.workoutType}</h3>
             </div>
         </div>
         <p class="text-xs text-brand-text-secondary mb-2">${formatCalendarDate(dayData.date)}</p>
         <div class="text-xs text-brand-text-secondary">
-            <p class="mt-1 line-clamp-2">${dayData.workoutPlan[0] || 'No workout planned'}</p>
+            <p class="mt-1 line-clamp-2">${dayData.workoutPlan[0] || 'No workout details'}</p>
         </div>
     `;
 
@@ -1011,124 +1005,7 @@ function createDayCard(dayData) {
     return card;
 }
 
-function getStatusConfig(status) {
-    const configs = {
-        completed: {
-            bgColor: 'bg-green-100',
-            iconColor: 'text-green-600',
-            icon: 'check',
-            statusBg: 'bg-green-500',
-            statusIcon: 'check',
-            statusIconColor: 'text-white',
-            label: 'Completed',
-            textColor: 'text-green-600'
-        },
-        upcoming: {
-            bgColor: 'bg-yellow-100',
-            iconColor: 'text-yellow-600',
-            icon: 'clock',
-            statusBg: 'bg-yellow-500',
-            statusIcon: 'clock',
-            statusIconColor: 'text-white',
-            label: 'Upcoming',
-            textColor: 'text-yellow-600'
-        },
-        rest: {
-            bgColor: 'bg-gray-100',
-            iconColor: 'text-gray-600',
-            icon: 'coffee',
-            statusBg: 'bg-gray-500',
-            statusIcon: 'coffee',
-            statusIconColor: 'text-white',
-            label: 'Rest Day',
-            textColor: 'text-gray-600'
-        }
-    };
-    return configs[status] || configs.upcoming;
-}
-
-function getStatusClass(status) {
-    const classes = {
-        completed: 'border-green-200 hover:border-green-300',
-        upcoming: 'border-yellow-200 hover:border-yellow-300',
-        rest: 'border-gray-200 hover:border-gray-300'
-    };
-    return classes[status] || classes.upcoming;
-}
-
-function formatCalendarDate(date) {
-    return date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric',
-        year: 'numeric'
-    });
-}
-
-function updateCalendarStats(workoutData) {
-    const completed = workoutData.filter(d => d.status === 'completed').length;
-    const missed = workoutData.filter(d => d.status === 'missed').length;
-    const upcoming = workoutData.filter(d => d.status === 'upcoming').length;
-    const rest = workoutData.filter(d => d.status === 'rest').length;
-
-    const completedEl = document.getElementById('completed-count');
-    const missedEl = document.getElementById('missed-count');  
-    const upcomingEl = document.getElementById('upcoming-count');
-    const restEl = document.getElementById('rest-count');
-
-    if (completedEl) completedEl.textContent = completed;
-    if (missedEl) missedEl.textContent = missed;
-    if (upcomingEl) upcomingEl.textContent = upcoming;
-    if (restEl) restEl.textContent = rest;
-}
-
-function initializeCalendarFilters(workoutData) {
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Update active filter button
-            filterBtns.forEach(b => {
-                b.classList.remove('active', 'bg-brand-lime', 'text-brand-text-primary');
-                b.classList.add('text-brand-text-secondary');
-            });
-            this.classList.add('active', 'bg-brand-lime', 'text-brand-text-primary');
-            this.classList.remove('text-brand-text-secondary');
-
-            // Filter cards
-            const filter = this.getAttribute('data-filter');
-            filterCalendarCards(filter);
-        });
-    });
-}
-
-function filterCalendarCards(filter) {
-    const cards = document.querySelectorAll('.day-card');
-    
-    cards.forEach(card => {
-        const cardStatus = card.getAttribute('data-status');
-        
-        if (filter === 'all' || cardStatus === filter) {
-            card.style.display = 'block';
-            card.classList.add('fade-in');
-        } else {
-            card.style.display = 'none';
-            card.classList.remove('fade-in');
-        }
-    });
-}
-
-function initializeWorkoutModal(workoutData) {
-    const modal = document.getElementById('workout-modal');
-    const closeBtn = document.getElementById('close-modal');
-
-    if (!modal || !closeBtn) return;
-
-    closeBtn.addEventListener('click', closeWorkoutModal);
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) closeWorkoutModal();
-    });
-}
-
+// Open Workout Modal
 function openWorkoutModal(dayData) {
     const modal = document.getElementById('workout-modal');
     if (!modal) return;
@@ -1137,18 +1014,17 @@ function openWorkoutModal(dayData) {
     document.getElementById('modal-day-title').textContent = `Day ${dayData.day}`;
     document.getElementById('modal-date').textContent = formatCalendarDate(dayData.date);
     
-    // Status badge
-    const statusConfig = getStatusConfig(dayData.status);
+    // Workout type
     const statusBadge = document.getElementById('modal-status-badge');
-    statusBadge.className = `flex items-center px-3 py-1 rounded-full text-sm font-medium text-white ${statusConfig.statusBg}`;
-    document.getElementById('modal-status-icon').setAttribute('data-lucide', statusConfig.statusIcon);
-    document.getElementById('modal-status-text').textContent = statusConfig.label;
+    statusBadge.className = `flex items-center px-3 py-1 rounded-full text-sm font-medium bg-brand-lime text-brand-text-primary`;
+    document.getElementById('modal-status-icon').setAttribute('data-lucide', 'dumbbell');
+    document.getElementById('modal-status-text').textContent = dayData.workoutType;
     
     // Workout plan
     const workoutPlanDiv = document.getElementById('modal-workout-plan');
     workoutPlanDiv.innerHTML = dayData.workoutPlan.map(exercise => 
         `<div class="flex items-center mb-2">
-            <i data-lucide="activity" class="w-4 h-4 text-brand-accent mr-2"></i>
+            <i data-lucide="activity" class="w-4 h-4 text-brand-lime mr-2"></i>
             <span class="text-sm">${exercise}</span>
         </div>`
     ).join('');
@@ -1161,43 +1037,23 @@ function openWorkoutModal(dayData) {
         document.getElementById('modal-notes-section').classList.add('hidden');
     }
     
-    // Store current day for status updates (not used now, but kept for future)
-    modal.setAttribute('data-current-day', dayData.day);
-    
     // Show modal
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     
+    // Setup close button
+    const closeBtn = document.getElementById('close-modal');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeWorkoutModal);
+    }
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeWorkoutModal();
+    });
+    
     // Reinitialize icons
     lucide.createIcons();
-}
-
-function closeWorkoutModal() {
-    const modal = document.getElementById('workout-modal');
-    if (!modal) return;
-    
-    modal.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-function updateWorkoutStatus(newStatus, workoutData) {
-    const modal = document.getElementById('workout-modal');
-    if (!modal) return;
-    
-    const dayNumber = parseInt(modal.getAttribute('data-current-day'));
-    
-    // Find and update the workout data
-    const dayData = workoutData.find(d => d.day === dayNumber);
-    if (dayData) {
-        dayData.status = newStatus;
-        
-        // Update the UI
-        renderCalendar(workoutData);
-        updateCalendarStats(workoutData);
-        closeWorkoutModal();
-        
-        console.log(`Day ${dayNumber} marked as ${newStatus}`);
-    }
 }
 
 // Planner Content Loader
@@ -1211,13 +1067,18 @@ function loadPlannerContent() {
 // Load Plan Cards
 function loadPlanCards() {
     const planGrid = document.getElementById('plan-cards-grid');
-    if (!planGrid) return;
+    if (!planGrid) {
+        console.error('Plan grid element not found!');
+        return;
+    }
     
+    console.log('Getting plan data...');
     // Get plan data
     const planData = getPlanData();
     
     planGrid.innerHTML = '';
     
+    console.log(`Creating ${planData.length} plan cards...`);
     // Create plan cards
     planData.forEach((plan, planIndex) => {
         const planCard = createPlanCard(plan, planIndex);
@@ -1225,6 +1086,7 @@ function loadPlanCards() {
     });
     
     lucide.createIcons();
+    console.log('Plan cards created and added to the grid.');
 }
 
 // Get Plan Data (Multiple plans with varying durations)
@@ -1346,17 +1208,24 @@ function getRandomExercises(workoutType) {
 
 // Create Plan Card
 function createPlanCard(planData, planIndex) {
+    console.log(`Creating plan card ${planIndex}: ${planData.planName}`);
+    
     const planCard = document.createElement('div');
-    planCard.className = 'bg-brand-surface rounded-2xl shadow-sm border border-gray-100 overflow-hidden';
+    planCard.className = 'bg-brand-surface rounded-2xl shadow-sm border border-gray-100 overflow-hidden h-auto';
     planCard.id = `plan-card-${planIndex}`;
     
     planCard.innerHTML = `
-        <div class="p-4 md:p-6">
+        <div class="p-4 md:p-6 bg-gray-50 border-b border-gray-200">
             <!-- Plan Header -->
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h3 class="text-base md:text-lg font-bold text-brand-text-primary">${planData.planName}</h3>
-                    <p class="text-xs md:text-sm text-brand-text-secondary">${planData.duration} days • ${planData.workoutDays} workout days • ${planData.restDays} rest days</p>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-brand-lime rounded-lg flex items-center justify-center mr-3">
+                        <i data-lucide="calendar" class="w-5 h-5 text-brand-text-primary"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base md:text-lg font-bold text-brand-text-primary">${planData.planName}</h3>
+                        <p class="text-xs md:text-sm text-brand-text-secondary">${planData.duration} days • ${planData.workoutDays} workout days • ${planData.restDays} rest days</p>
+                    </div>
                 </div>
                 <button class="plan-toggle-btn p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors bg-brand-lime" 
                         onclick="togglePlanCard(${planIndex})">
@@ -1366,8 +1235,8 @@ function createPlanCard(planData, planIndex) {
         </div>
         
         <!-- Plan Content (Collapsible) -->
-        <div class="plan-card-content border-t border-gray-100">
-            <div class="p-2 md:p-3 space-y-1 md:space-y-2 max-h-96 md:max-h-[500px] overflow-y-auto plan-days-container">
+        <div class="plan-card-content">
+            <div class="p-3 md:p-4 space-y-2 max-h-96 md:max-h-[500px] overflow-y-auto plan-days-container">
                 ${planData.dailyWorkouts.map((day, dayIndex) => createDayRow(day, planIndex, dayIndex)).join('')}
             </div>
         </div>
@@ -1394,28 +1263,24 @@ function createDayRow(dayData, planIndex, dayIndex) {
                         </div>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between mb-2">
-                            <div>
-                                <h4 class="text-sm font-medium text-brand-text-primary">Day ${dayData.day}</h4>
-                            </div>
-                        </div>
-                        
                         ${!dayData.isRestDay ? `
                             <div class="mb-2">
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)} mb-2">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)}">
                                     ${dayData.workoutType}
                                 </span>
                             </div>
                             <div class="space-y-1">
-                                ${dayData.exercises.slice(0, 4).map(exercise => `
+                                ${dayData.exercises.slice(0, 3).map(exercise => `
                                     <div class="text-xs text-brand-text-secondary">
                                         • ${exercise.name}
                                     </div>
                                 `).join('')}
-                                ${dayData.exercises.length > 4 ? `<div class="text-xs text-brand-text-secondary opacity-75">+${dayData.exercises.length - 4} more...</div>` : ''}
+                                ${dayData.exercises.length > 3 ? `<div class="text-xs text-brand-text-secondary opacity-75">+${dayData.exercises.length - 3} more...</div>` : ''}
                             </div>
                         ` : `
-                            <div class="text-sm text-brand-text-secondary">Rest & Recovery</div>
+                            <div class="flex items-center h-full">
+                                <span class="text-sm text-brand-text-secondary font-medium">Rest & Recovery</span>
+                            </div>
                         `}
                     </div>
                 </div>
@@ -1431,25 +1296,32 @@ function createDayRow(dayData, planIndex, dayIndex) {
                             </div>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center space-x-2 mb-2">
-                                <h4 class="text-sm font-medium text-brand-text-primary">Day ${dayData.day}</h4>
-                                ${!dayData.isRestDay ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)}">${dayData.workoutType}</span>` : ''}
-                            </div>
-                            
                             ${!dayData.isRestDay ? `
+                                <div class="mb-2">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getWorkoutTypeClass(dayData.workoutType)}">
+                                        ${dayData.workoutType}
+                                    </span>
+                                </div>
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-1 text-xs text-brand-text-secondary">
-                                    ${dayData.exercises.map(exercise => `
+                                    ${dayData.exercises.map((exercise, idx) => idx < 4 ? `
                                         <div class="flex items-center">
                                             <span class="truncate">• ${exercise.name}</span>
                                         </div>
-                                    `).join('')}
+                                    ` : '').join('')}
+                                    ${dayData.exercises.length > 4 ? `
+                                        <div class="flex items-center text-xs text-brand-text-secondary opacity-75">
+                                            <span class="truncate">• +${dayData.exercises.length - 4} more exercises...</span>
+                                        </div>
+                                    ` : ''}
                                 </div>
                             ` : `
-                                <div class="text-sm text-brand-text-secondary">Rest & Recovery</div>
+                                <div class="flex items-center h-full py-2">
+                                    <span class="text-sm text-brand-text-secondary font-medium">Rest & Recovery</span>
+                                </div>
                             `}
                         </div>
                     </div>
-                    <div class="flex items-center space-x-2 ml-4">
+                    <div class="flex items-center ml-4">
                         ${!dayData.isRestDay ? `
                             <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
                         ` : ''}
@@ -1688,12 +1560,21 @@ function togglePlanCard(planIndex) {
     const toggleIcon = document.querySelectorAll('.plan-toggle-icon')[planIndex];
     
     if (planCard.classList.contains('hidden')) {
+        // Expand the card
         planCard.classList.remove('hidden');
         toggleBtn.classList.add('bg-brand-lime');
+        toggleBtn.classList.remove('bg-gray-200');
         toggleIcon.setAttribute('data-lucide', 'chevron-up');
+        
+        // Smooth animation to scroll the newly opened content into view
+        setTimeout(() => {
+            planCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
     } else {
+        // Collapse the card
         planCard.classList.add('hidden');
         toggleBtn.classList.remove('bg-brand-lime');
+        toggleBtn.classList.add('bg-gray-200');
         toggleIcon.setAttribute('data-lucide', 'chevron-down');
     }
     
@@ -1775,10 +1656,15 @@ function showDayDetailsModal(dayData) {
         <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onclick="closeDayDetailsModal()"></div>
         <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative z-10">
             <!-- Modal Header -->
-            <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                <div>
-                    <h3 class="text-xl font-bold text-brand-text-primary">Day ${dayData.day}</h3>
-                    <p class="text-sm text-brand-text-secondary mt-1">${dayData.workoutType}</p>
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-brand-lime rounded-lg flex items-center justify-center mr-4">
+                        <span class="text-xl font-bold text-brand-text-primary">${dayData.day}</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-brand-text-primary">${dayData.workoutType}</h3>
+                        <p class="text-sm text-brand-text-secondary mt-1">${dayData.exercises.length} exercises</p>
+                    </div>
                 </div>
                 <button onclick="closeDayDetailsModal()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
@@ -1788,27 +1674,29 @@ function showDayDetailsModal(dayData) {
             <!-- Modal Content -->
             <div class="p-6">
                 <!-- Exercise List -->
-                <div class="space-y-4">
-                    <h4 class="font-semibold text-brand-text-primary mb-3">Exercise Details</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     ${dayData.exercises.map((exercise, index) => `
-                        <div class="bg-gray-50 rounded-xl p-4">
+                        <div class="bg-gray-50 rounded-xl p-4 hover:shadow-md transition-all">
                             <div class="flex items-start justify-between mb-3">
                                 <div class="flex-1">
-                                    <h5 class="font-medium text-brand-text-primary">${exercise.name}</h5>
-                                    <p class="text-sm text-brand-text-secondary">${exercise.subtitle}</p>
+                                    <h5 class="font-medium text-brand-text-primary flex items-center">
+                                        <span class="inline-flex items-center justify-center bg-brand-lime w-5 h-5 rounded-full text-xs font-bold mr-2">${index + 1}</span>
+                                        ${exercise.name}
+                                    </h5>
+                                    <p class="text-xs text-brand-text-secondary mt-1">${exercise.subtitle}</p>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-3 gap-4 text-sm">
-                                <div>
-                                    <span class="text-brand-text-secondary block">Sets</span>
+                            <div class="grid grid-cols-3 gap-2 text-sm">
+                                <div class="bg-white p-2 rounded-lg">
+                                    <span class="text-xs text-brand-text-secondary block">Sets</span>
                                     <span class="font-medium text-brand-text-primary">${exercise.targetSets}</span>
                                 </div>
-                                <div>
-                                    <span class="text-brand-text-secondary block">Reps</span>
+                                <div class="bg-white p-2 rounded-lg">
+                                    <span class="text-xs text-brand-text-secondary block">Reps</span>
                                     <span class="font-medium text-brand-text-primary">${exercise.targetReps}</span>
                                 </div>
-                                <div>
-                                    <span class="text-brand-text-secondary block">Weight</span>
+                                <div class="bg-white p-2 rounded-lg">
+                                    <span class="text-xs text-brand-text-secondary block">Weight</span>
                                     <span class="font-medium text-brand-text-primary">${exercise.targetWeight}</span>
                                 </div>
                             </div>
@@ -2021,8 +1909,323 @@ function switchPlannerView(viewType) {
 // Goals Content Loader
 function loadGoalsContent() {
     console.log('Loading goals content...');
-    // Placeholder for goals and assessment features
-    // This will include progress tracking and goal setting
+    
+    // Goal tracking section
+    const goalsContainer = document.querySelector('#goals-content .grid > div:first-child');
+    if (goalsContainer) {
+        goalsContainer.innerHTML = createGoalsContent();
+    }
+    
+    // Body assessment section
+    const assessmentContainer = document.querySelector('#goals-content .grid > div:last-child');
+    if (assessmentContainer) {
+        assessmentContainer.innerHTML = createAssessmentContent();
+    }
+    
+    // Initialize icons
+    lucide.createIcons();
+    
+    // Initialize modals
+    initializeGoalsModals();
+}
+
+// Get Mock Goals Data
+function getMockGoalsData() {
+    return {
+        currentGoals: [
+            {
+                id: 1,
+                title: "Lose Weight",
+                target: "10 lbs",
+                progress: 40,
+                deadline: "June 30, 2024",
+                startDate: "January 15, 2024"
+            },
+            {
+                id: 2,
+                title: "Run 5K",
+                target: "Under 30 min",
+                progress: 65,
+                deadline: "May 15, 2024",
+                startDate: "February 1, 2024"
+            },
+            {
+                id: 3,
+                title: "Strength Training",
+                target: "3x weekly",
+                progress: 80,
+                deadline: "Ongoing",
+                startDate: "January 5, 2024"
+            }
+        ],
+        completedGoals: [
+            {
+                id: 4,
+                title: "Drink More Water",
+                target: "2L daily",
+                completedDate: "March 1, 2024"
+            }
+        ]
+    };
+}
+
+// Get Mock Assessment Data
+function getMockAssessmentData() {
+    return {
+        weight: [
+            { date: new Date('2024-01-01'), value: 185 },
+            { date: new Date('2024-01-15'), value: 183 },
+            { date: new Date('2024-02-01'), value: 181 },
+            { date: new Date('2024-02-15'), value: 180 },
+            { date: new Date('2024-03-01'), value: 178 },
+            { date: new Date('2024-03-15'), value: 176 }
+        ],
+        bodyFat: [
+            { date: new Date('2024-01-01'), value: 22 },
+            { date: new Date('2024-02-01'), value: 21 },
+            { date: new Date('2024-03-01'), value: 20 }
+        ],
+        metrics: {
+            chest: 40,
+            waist: 34,
+            hips: 38,
+            thighs: 22,
+            arms: 14
+        },
+        lastUpdated: new Date('2024-03-15')
+    };
+}
+
+// Render Goals Section
+function renderGoalsSection(goalsData) {
+    const goalsContainer = document.querySelector('#goals-content .grid > div:first-child');
+    if (!goalsContainer) return;
+    
+    goalsContainer.innerHTML = `
+        <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Goals & Targets</h2>
+        <div class="space-y-5">
+            <div class="current-goals">
+                ${goalsData.currentGoals.map(goal => createGoalCard(goal)).join('')}
+            </div>
+            
+            <div class="completed-goals mt-6 pt-4 border-t border-gray-200">
+                <h3 class="text-md font-medium text-brand-text-primary mb-3 flex items-center">
+                    <i data-lucide="check-circle" class="w-4 h-4 mr-2 text-green-500"></i>
+                    Completed Goals
+                </h3>
+                ${goalsData.completedGoals.length > 0 ? 
+                    goalsData.completedGoals.map(goal => createCompletedGoalItem(goal)).join('') : 
+                    '<p class="text-sm text-brand-text-secondary">No completed goals yet.</p>'
+                }
+            </div>
+            
+            <div class="add-goal-section mt-5 pt-5">
+                <button class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium hover:bg-opacity-90 transition-colors flex items-center justify-center" onclick="showAddGoalModal()">
+                    <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                    Add New Goal
+                </button>
+            </div>
+        </div>
+    `;
+    
+    lucide.createIcons();
+}
+
+// Create Goal Card
+function createGoalCard(goal) {
+    return `
+        <div class="goal-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="font-medium text-brand-text-primary">${goal.title}</h3>
+                    <p class="text-sm text-brand-text-secondary">Target: ${goal.target}</p>
+                </div>
+                <div class="dropdown">
+                    <button class="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded" onclick="toggleGoalOptions(${goal.id})">
+                        <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
+                    <span>Progress</span>
+                    <span>${goal.progress}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-brand-lime h-2 rounded-full" style="width: ${goal.progress}%"></div>
+                </div>
+            </div>
+            
+            <div class="text-xs text-brand-text-secondary mt-3 flex justify-between">
+                <span>Started: ${goal.startDate}</span>
+                <span>Target: ${goal.deadline}</span>
+            </div>
+        </div>
+    `;
+}
+
+// Create Completed Goal Item
+function createCompletedGoalItem(goal) {
+    return `
+        <div class="completed-goal flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg mb-2">
+            <div class="flex items-center">
+                <i data-lucide="trophy" class="w-4 h-4 text-yellow-500 mr-2"></i>
+                <div>
+                    <h4 class="text-sm font-medium text-brand-text-primary">${goal.title}</h4>
+                    <p class="text-xs text-brand-text-secondary">Target: ${goal.target}</p>
+                </div>
+            </div>
+            <div class="text-xs text-brand-text-secondary">
+                Completed on ${goal.completedDate}
+            </div>
+        </div>
+    `;
+}
+
+// Render Assessment Section
+function renderAssessmentSection(assessmentData) {
+    const assessmentContainer = document.querySelector('#goals-content .grid > div:last-child');
+    if (!assessmentContainer) return;
+    
+    assessmentContainer.innerHTML = `
+        <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Body Assessment</h2>
+        <div class="space-y-5">
+            <!-- Weight Tracker Card -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-medium text-brand-text-primary flex items-center">
+                        <i data-lucide="scale" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                        Weight Tracker
+                    </h3>
+                    <span class="text-xs text-brand-text-secondary">Last updated: ${formatDate(assessmentData.lastUpdated)}</span>
+                </div>
+                
+                <div class="weight-chart h-32 bg-gray-50 rounded-lg mb-3 relative overflow-hidden">
+                    ${createWeightChart(assessmentData.weight)}
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <div class="text-sm">
+                        <span class="text-brand-text-secondary">Current:</span>
+                        <span class="font-medium text-brand-text-primary">${assessmentData.weight[assessmentData.weight.length - 1].value} lbs</span>
+                    </div>
+                    <button class="text-xs bg-brand-lime text-brand-text-primary py-1 px-3 rounded-lg" onclick="showUpdateWeightModal()">
+                        Update
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Body Metrics Card -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-medium text-brand-text-primary flex items-center">
+                        <i data-lucide="ruler" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                        Body Measurements
+                    </h3>
+                    <button class="text-xs bg-brand-lime text-brand-text-primary py-1 px-3 rounded-lg" onclick="showUpdateMeasurementsModal()">
+                        Update
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    ${createMeasurementsGrid(assessmentData.metrics)}
+                </div>
+            </div>
+            
+            <!-- Body Fat Card -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-medium text-brand-text-primary flex items-center">
+                        <i data-lucide="activity" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                        Body Fat Percentage
+                    </h3>
+                    <button class="text-xs bg-brand-lime text-brand-text-primary py-1 px-3 rounded-lg" onclick="showUpdateBodyFatModal()">
+                        Update
+                    </button>
+                </div>
+                
+                <div class="flex items-center">
+                    <div class="w-16 h-16 rounded-full bg-brand-lime bg-opacity-20 flex items-center justify-center mr-4">
+                        <span class="text-xl font-bold text-brand-text-primary">${assessmentData.bodyFat[assessmentData.bodyFat.length - 1].value}%</span>
+                    </div>
+                    <div class="text-sm text-brand-text-secondary">
+                        <p>Current body fat percentage</p>
+                        <p class="mt-1">Down ${assessmentData.bodyFat[0].value - assessmentData.bodyFat[assessmentData.bodyFat.length - 1].value}% from initial measurement</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    lucide.createIcons();
+}
+
+// Create Weight Chart
+function createWeightChart(weightData) {
+    // Simple visual representation of weight data
+    const minWeight = Math.min(...weightData.map(d => d.value));
+    const maxWeight = Math.max(...weightData.map(d => d.value));
+    const range = maxWeight - minWeight;
+    
+    let lines = '';
+    for (let i = 0; i < weightData.length - 1; i++) {
+        const x1 = (i / (weightData.length - 1)) * 100;
+        const x2 = ((i + 1) / (weightData.length - 1)) * 100;
+        const y1 = 100 - (((weightData[i].value - minWeight) / (range || 1)) * 80 + 10);
+        const y2 = 100 - (((weightData[i+1].value - minWeight) / (range || 1)) * 80 + 10);
+        
+        lines += `<line x1="${x1}%" y1="${y1}%" x2="${x2}%" y2="${y2}%" stroke="#D4FF4F" stroke-width="2" />`;
+    }
+    
+    let points = '';
+    weightData.forEach((d, i) => {
+        const x = (i / (weightData.length - 1)) * 100;
+        const y = 100 - (((d.value - minWeight) / (range || 1)) * 80 + 10);
+        points += `
+            <circle cx="${x}%" cy="${y}%" r="3" fill="#D4FF4F" stroke="white" stroke-width="1" />
+        `;
+    });
+    
+    return `
+        <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+            ${lines}
+            ${points}
+        </svg>
+        <div class="absolute bottom-1 left-2 text-xs text-gray-400">${minWeight} lbs</div>
+        <div class="absolute top-1 left-2 text-xs text-gray-400">${maxWeight} lbs</div>
+    `;
+}
+
+// Create Measurements Grid
+function createMeasurementsGrid(metrics) {
+    return Object.entries(metrics).map(([key, value]) => `
+        <div class="bg-gray-50 rounded-lg p-3 text-center">
+            <div class="text-xs text-brand-text-secondary mb-1">${key.charAt(0).toUpperCase() + key.slice(1)}</div>
+            <div class="font-medium text-brand-text-primary">${value} in</div>
+        </div>
+    `).join('');
+}
+
+// Modal Functions - These would be connected to actual modals in a real implementation
+function showAddGoalModal() {
+    showNotification('Add Goal feature coming soon!', 'info');
+}
+
+function toggleGoalOptions(goalId) {
+    showNotification(`Options for goal #${goalId}`, 'info');
+}
+
+function showUpdateWeightModal() {
+    showNotification('Update Weight feature coming soon!', 'info');
+}
+
+function showUpdateMeasurementsModal() {
+    showNotification('Update Measurements feature coming soon!', 'info');
+}
+
+function showUpdateBodyFatModal() {
+    showNotification('Update Body Fat feature coming soon!', 'info');
 }
 
 // Mobile Features
@@ -2189,3 +2392,836 @@ window.FitMove = {
     loadTabContent,
     showNotification
 };
+
+// Format calendar date
+function formatCalendarDate(date) {
+    return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: 'numeric'
+    });
+}
+
+// Close workout modal
+function closeWorkoutModal() {
+    const modal = document.getElementById('workout-modal');
+    if (!modal) return;
+    
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Status configuration for planner cards
+function getStatusConfig(status) {
+    const configs = {
+        completed: {
+            bgColor: 'bg-green-100',
+            iconColor: 'text-green-600',
+            label: 'Completed',
+            textColor: 'text-green-600'
+        },
+        upcoming: {
+            bgColor: 'bg-yellow-100',
+            iconColor: 'text-yellow-600',
+            label: 'Upcoming', 
+            textColor: 'text-yellow-600'
+        },
+        rest: {
+            bgColor: 'bg-gray-100',
+            iconColor: 'text-gray-600',
+            label: 'Rest Day',
+            textColor: 'text-gray-600'
+        }
+    };
+    return configs[status] || configs.upcoming;
+}
+
+// Get status-based class for styling
+function getStatusClass(status) {
+    const classes = {
+        completed: 'border-green-200 hover:border-green-300',
+        upcoming: 'border-yellow-200 hover:border-yellow-300',
+        rest: 'border-gray-200 hover:border-gray-300'
+    };
+    return classes[status] || classes.upcoming;
+}
+
+// Create Goals Content
+function createGoalsContent() {
+    return `
+        <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Goals & Targets</h2>
+        <div class="space-y-5">
+            <!-- Current Goals -->
+            <div class="mb-6">
+                <h3 class="text-md font-medium mb-3">Current Goals</h3>
+                
+                <div class="space-y-3 md:space-y-4">
+                    <!-- Goal 1 -->
+                    <div class="goal-card bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                        <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
+                            <div class="w-full sm:w-auto mb-2 sm:mb-0">
+                                <h4 class="font-medium text-brand-text-primary">Lose Weight</h4>
+                                <p class="text-sm text-brand-text-secondary">Target: 10 lbs</p>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full mr-2">
+                                    In Progress
+                                </div>
+                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(1)">
+                                    <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
+                                </button>
+                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="deleteGoalModal(1)">
+                                    <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
+                                <span>Progress</span>
+                                <span>40%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-brand-lime h-2 rounded-full" style="width: 40%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-xs text-brand-text-secondary mt-3 flex flex-wrap justify-between">
+                            <span>Started: January 15, 2024</span>
+                            <span>Target: June 30, 2024</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Goal 2 -->
+                    <div class="goal-card bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                        <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
+                            <div class="w-full sm:w-auto mb-2 sm:mb-0">
+                                <h4 class="font-medium text-brand-text-primary">Run 5K</h4>
+                                <p class="text-sm text-brand-text-secondary">Target: Under 30 min</p>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mr-2">
+                                    On Track
+                                </div>
+                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(2)">
+                                    <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
+                                </button>
+                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="deleteGoalModal(2)">
+                                    <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
+                                <span>Progress</span>
+                                <span>65%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-brand-lime h-2 rounded-full" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-xs text-brand-text-secondary mt-3 flex flex-wrap justify-between">
+                            <span>Started: February 1, 2024</span>
+                            <span>Target: May 15, 2024</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Goal 3 -->
+                    <div class="goal-card bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                        <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
+                            <div class="w-full sm:w-auto mb-2 sm:mb-0">
+                                <h4 class="font-medium text-brand-text-primary">Strength Training</h4>
+                                <p class="text-sm text-brand-text-secondary">Target: 3x weekly</p>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mr-2">
+                                    On Track
+                                </div>
+                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(3)">
+                                    <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
+                                </button>
+                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="deleteGoalModal(3)">
+                                    <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
+                                <span>Progress</span>
+                                <span>80%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-brand-lime h-2 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-xs text-brand-text-secondary mt-3 flex flex-wrap justify-between">
+                            <span>Started: January 5, 2024</span>
+                            <span>Target: Ongoing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Completed Goals -->
+            <div class="completed-goals mt-5 pt-4 border-t border-gray-200">
+                <h3 class="text-md font-medium mb-3 flex items-center">
+                    <i data-lucide="check-circle" class="w-4 h-4 mr-2 text-green-500"></i>
+                    Completed Goals
+                </h3>
+                <div class="completed-goal flex flex-wrap sm:flex-nowrap items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center w-full sm:w-auto mb-2 sm:mb-0">
+                        <i data-lucide="trophy" class="w-4 h-4 text-yellow-500 mr-2"></i>
+                        <div>
+                            <h4 class="text-sm font-medium text-brand-text-primary">Drink More Water</h4>
+                            <p class="text-xs text-brand-text-secondary">Target: 2L daily</p>
+                        </div>
+                    </div>
+                    <div class="flex w-full sm:w-auto justify-between sm:justify-end items-center">
+                        <div class="text-xs text-brand-text-secondary">
+                            Completed on March 1, 2024
+                        </div>
+                        <button class="p-1.5 hover:bg-gray-100 rounded-full ml-2" onclick="deleteCompletedGoalModal(4)">
+                            <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add Goal Button -->
+            <div class="add-goal-section mt-5 pt-4">
+                <button class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium hover:bg-opacity-90 transition-colors flex items-center justify-center" onclick="addGoalModal()">
+                    <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                    Add New Goal
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// Show notification
+function showNotification(message, type = 'success') {
+    // Create notification element
+    const notification = document.createElement('div');
+    
+    // Set classes based on type
+    let bgColor = 'bg-green-500';
+    let icon = 'check-circle';
+    
+    switch(type) {
+        case 'error':
+            bgColor = 'bg-red-500';
+            icon = 'alert-circle';
+            break;
+        case 'info':
+            bgColor = 'bg-blue-500';
+            icon = 'info';
+            break;
+        case 'warning':
+            bgColor = 'bg-yellow-500';
+            icon = 'alert-triangle';
+            break;
+    }
+    
+    notification.className = `fixed top-4 right-4 ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg flex items-center z-50 transform transition-all duration-300 translate-x-full opacity-0`;
+    
+    // Set HTML content
+    notification.innerHTML = `
+        <i data-lucide="${icon}" class="w-5 h-5 mr-2"></i>
+        <span>${message}</span>
+    `;
+    
+    // Add to document
+    document.body.appendChild(notification);
+    
+    // Initialize icon
+    lucide.createIcons();
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full', 'opacity-0');
+    }, 10);
+    
+    // Animate out after 3 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Create Assessment Content
+function createAssessmentContent() {
+    return `
+        <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Body Assessment</h2>
+        <div class="space-y-5">
+            <!-- Weight Tracker Card -->
+            <div class="bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
+                    <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
+                        <i data-lucide="scale" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                        Weight Tracker
+                    </h3>
+                    <div class="flex items-center justify-between w-full sm:w-auto">
+                        <span class="text-xs text-brand-text-secondary">Last updated: March 15, 2024</span>
+                        <button class="ml-3 text-xs bg-brand-lime text-brand-text-primary py-1 px-2 sm:px-3 rounded-lg" onclick="updateWeightModal()">
+                            Update
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="weight-chart h-24 sm:h-32 bg-gray-50 rounded-lg mb-3 p-2 flex items-end">
+                    <div class="w-1/6 h-[50%] bg-brand-lime rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[55%] bg-brand-lime rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[60%] bg-brand-lime rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[65%] bg-brand-lime rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[70%] bg-brand-lime rounded-md mx-0.5"></div>
+                    <div class="w-1/6 h-[75%] bg-brand-lime rounded-md mx-0.5"></div>
+                </div>
+                
+                <div class="flex justify-between items-center flex-wrap sm:flex-nowrap">
+                    <div class="text-sm mb-2 sm:mb-0">
+                        <span class="text-brand-text-secondary">Current:</span>
+                        <span class="font-medium text-brand-text-primary">176 lbs</span>
+                    </div>
+                    <div class="text-sm text-green-600">
+                        <span>-9 lbs</span>
+                        <span class="text-xs text-brand-text-secondary">since Jan 1</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Body Metrics Card -->
+            <div class="bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
+                    <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
+                        <i data-lucide="ruler" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                        Body Measurements
+                    </h3>
+                    <button class="text-xs bg-brand-lime text-brand-text-primary py-1 px-2 sm:px-3 rounded-lg" onclick="updateMeasurementsModal()">
+                        Update
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                    <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                        <div class="text-xs text-brand-text-secondary mb-1">Chest</div>
+                        <div class="font-medium text-brand-text-primary">40 in</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                        <div class="text-xs text-brand-text-secondary mb-1">Waist</div>
+                        <div class="font-medium text-brand-text-primary">34 in</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                        <div class="text-xs text-brand-text-secondary mb-1">Hips</div>
+                        <div class="font-medium text-brand-text-primary">38 in</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                        <div class="text-xs text-brand-text-secondary mb-1">Thighs</div>
+                        <div class="font-medium text-brand-text-primary">22 in</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                        <div class="text-xs text-brand-text-secondary mb-1">Arms</div>
+                        <div class="font-medium text-brand-text-primary">14 in</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Body Fat Card -->
+            <div class="bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
+                    <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
+                        <i data-lucide="activity" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                        Body Fat Percentage
+                    </h3>
+                    <button class="text-xs bg-brand-lime text-brand-text-primary py-1 px-2 sm:px-3 rounded-lg" onclick="updateBodyFatModal()">
+                        Update
+                    </button>
+                </div>
+                
+                <div class="flex flex-wrap sm:flex-nowrap items-center">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-brand-lime bg-opacity-20 flex items-center justify-center mr-3 sm:mr-4">
+                        <span class="text-lg sm:text-xl font-bold text-brand-text-primary">20%</span>
+                    </div>
+                    <div class="text-sm text-brand-text-secondary mt-2 sm:mt-0">
+                        <p>Current body fat percentage</p>
+                        <p class="mt-1">Down 2% since January</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Initialize Goal Modals
+function initializeGoalsModals() {
+    // Add HTML for modals to the page
+    if (!document.getElementById('goal-modals-container')) {
+        const modalsContainer = document.createElement('div');
+        modalsContainer.id = 'goal-modals-container';
+        document.body.appendChild(modalsContainer);
+        
+        // Add modal HTML
+        modalsContainer.innerHTML = `
+            <!-- Add Goal Modal -->
+            <div id="add-goal-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+                <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+                <div class="fixed inset-0 flex items-center justify-center p-4">
+                    <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                        <!-- Modal Header -->
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-brand-text-primary">Add New Goal</h3>
+                            <button class="close-modal p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Content -->
+                        <div class="p-6">
+                            <form id="add-goal-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Goal Title</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., Lose Weight">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., 10 lbs">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target Date</label>
+                                    <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                </div>
+                                
+                                <div class="pt-4 border-t border-gray-200">
+                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveNewGoal()">
+                                        Add Goal
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Delete Goal Modal -->
+            <div id="delete-goal-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+                <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+                <div class="fixed inset-0 flex items-center justify-center p-4">
+                    <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                        <!-- Modal Header -->
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-brand-text-primary">Delete Goal</h3>
+                            <button class="close-modal p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Content -->
+                        <div class="p-6">
+                            <p class="text-center mb-6">Are you sure you want to delete this goal? This action cannot be undone.</p>
+                            
+                            <div class="flex space-x-4">
+                                <button class="w-1/2 py-3 px-4 bg-gray-200 text-gray-700 rounded-lg font-medium close-modal">
+                                    Cancel
+                                </button>
+                                <button class="w-1/2 py-3 px-4 bg-red-500 text-white rounded-lg font-medium" onclick="confirmDeleteGoal()">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Edit Goal Modal -->
+            <div id="edit-goal-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+                <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+                <div class="fixed inset-0 flex items-center justify-center p-4">
+                    <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                        <!-- Modal Header -->
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-brand-text-primary">Edit Goal</h3>
+                            <button class="close-modal p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Content -->
+                        <div class="p-6">
+                            <form id="edit-goal-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Goal Title</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" id="edit-goal-title">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" id="edit-goal-target">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target Date</label>
+                                    <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg" id="edit-goal-date">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Progress</label>
+                                    <input type="range" min="0" max="100" class="w-full" id="edit-goal-progress">
+                                    <div class="flex justify-between text-xs text-brand-text-secondary mt-1">
+                                        <span>0%</span>
+                                        <span id="edit-goal-progress-value">50%</span>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="pt-4 border-t border-gray-200">
+                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveEditedGoal()">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Update Weight Modal -->
+            <div id="update-weight-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+                <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+                <div class="fixed inset-0 flex items-center justify-center p-4">
+                    <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                        <!-- Modal Header -->
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-brand-text-primary">Update Weight</h3>
+                            <button class="close-modal p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Content -->
+                        <div class="p-6">
+                            <form class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Current Weight (lbs)</label>
+                                    <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="176">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Date</label>
+                                    <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                </div>
+                                
+                                <div class="pt-4 border-t border-gray-200">
+                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveWeight()">
+                                        Save Weight
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Update Measurements Modal -->
+            <div id="update-measurements-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+                <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+                <div class="fixed inset-0 flex items-center justify-center p-4">
+                    <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                        <!-- Modal Header -->
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-brand-text-primary">Update Body Measurements</h3>
+                            <button class="close-modal p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Content -->
+                        <div class="p-6">
+                            <form class="space-y-4">
+                                <div class="measurement-input">
+                                    <div>
+                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Chest</label>
+                                        <div class="flex">
+                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="40">
+                                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="measurement-input">
+                                    <div>
+                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Waist</label>
+                                        <div class="flex">
+                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="34">
+                                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="measurement-input">
+                                    <div>
+                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Hips</label>
+                                        <div class="flex">
+                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="38">
+                                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="measurement-input">
+                                    <div>
+                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Thighs</label>
+                                        <div class="flex">
+                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="22">
+                                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="measurement-input">
+                                    <div>
+                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Arms</label>
+                                        <div class="flex">
+                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="14">
+                                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Date</label>
+                                    <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                </div>
+                                
+                                <div class="pt-4 border-t border-gray-200">
+                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveMeasurements()">
+                                        Save Measurements
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Update Body Fat Modal -->
+            <div id="update-bodyfat-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+                <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+                <div class="fixed inset-0 flex items-center justify-center p-4">
+                    <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                        <!-- Modal Header -->
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-brand-text-primary">Update Body Fat Percentage</h3>
+                            <button class="close-modal p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Content -->
+                        <div class="p-6">
+                            <form class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Current Body Fat (%)</label>
+                                    <input type="number" step="0.1" min="1" max="50" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="20.0">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Date</label>
+                                    <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                </div>
+                                
+                                <div class="pt-4 border-t border-gray-200">
+                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveBodyFat()">
+                                        Save Body Fat
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Initialize icons in modals
+        lucide.createIcons();
+        
+        // Add event listeners for closing modals
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', closeAllModals);
+        });
+    }
+}
+
+// Modal Functions
+function addGoalModal() {
+    const modal = document.getElementById('add-goal-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function editGoalModal(goalId) {
+    const modal = document.getElementById('edit-goal-modal');
+    if (modal) {
+        // In a real app, you would fetch the goal data based on goalId
+        // For now, we'll prefill with some mock data
+        switch(goalId) {
+            case 1:
+                document.getElementById('edit-goal-title').value = "Lose Weight";
+                document.getElementById('edit-goal-target').value = "10 lbs";
+                document.getElementById('edit-goal-date').value = "2024-06-30";
+                document.getElementById('edit-goal-progress').value = 40;
+                document.getElementById('edit-goal-progress-value').textContent = "40%";
+                break;
+            case 2:
+                document.getElementById('edit-goal-title').value = "Run 5K";
+                document.getElementById('edit-goal-target').value = "Under 30 min";
+                document.getElementById('edit-goal-date').value = "2024-05-15";
+                document.getElementById('edit-goal-progress').value = 65;
+                document.getElementById('edit-goal-progress-value').textContent = "65%";
+                break;
+            case 3:
+                document.getElementById('edit-goal-title').value = "Strength Training";
+                document.getElementById('edit-goal-target').value = "3x weekly";
+                document.getElementById('edit-goal-date').value = "2024-12-31";
+                document.getElementById('edit-goal-progress').value = 80;
+                document.getElementById('edit-goal-progress-value').textContent = "80%";
+                break;
+        }
+        
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function deleteGoalModal(goalId) {
+    const modal = document.getElementById('delete-goal-modal');
+    if (modal) {
+        // Store the goalId to use when confirming delete
+        modal.setAttribute('data-goal-id', goalId);
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function deleteCompletedGoalModal(goalId) {
+    deleteGoalModal(goalId); // Reuse the same modal
+}
+
+function updateWeightModal() {
+    const modal = document.getElementById('update-weight-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function updateMeasurementsModal() {
+    const modal = document.getElementById('update-measurements-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function updateBodyFatModal() {
+    const modal = document.getElementById('update-bodyfat-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeAllModals() {
+    const modals = document.querySelectorAll('[id$="-modal"]');
+    modals.forEach(modal => {
+        modal.classList.add('hidden');
+    });
+    document.body.style.overflow = '';
+}
+
+// Save Functions (for demonstration)
+function saveNewGoal() {
+    showNotification('New goal added successfully!', 'success');
+    closeAllModals();
+}
+
+function saveEditedGoal() {
+    showNotification('Goal updated successfully!', 'success');
+    closeAllModals();
+}
+
+function confirmDeleteGoal() {
+    const modal = document.getElementById('delete-goal-modal');
+    const goalId = modal.getAttribute('data-goal-id');
+    
+    showNotification(`Goal deleted successfully!`, 'success');
+    closeAllModals();
+}
+
+function saveWeight() {
+    showNotification('Weight updated successfully!', 'success');
+    closeAllModals();
+}
+
+function saveMeasurements() {
+    showNotification('Measurements updated successfully!', 'success');
+    closeAllModals();
+}
+
+function saveBodyFat() {
+    showNotification('Body fat percentage updated successfully!', 'success');
+    closeAllModals();
+}
+
+// Progress bar update for edit form
+document.addEventListener('DOMContentLoaded', function() {
+    const progressSlider = document.getElementById('edit-goal-progress');
+    const progressValue = document.getElementById('edit-goal-progress-value');
+    
+    if (progressSlider && progressValue) {
+        progressSlider.addEventListener('input', function() {
+            progressValue.textContent = this.value + '%';
+        });
+    }
+});
+
+// Tab Navigation
+const tabs = document.querySelectorAll('.tab');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        tabs.forEach(t => t.classList.remove('active-tab'));
+        
+        // Add active class to clicked tab
+        tab.classList.add('active-tab');
+        
+        // Get the target content id
+        const target = tab.getAttribute('data-tab');
+        
+        // Hide all tab contents
+        tabContents.forEach(content => content.classList.add('hidden'));
+        
+        // Show selected content
+        const selectedContent = document.getElementById(target);
+        selectedContent.classList.remove('hidden');
+        
+        // Load appropriate content based on the tab
+        if (target === 'planner-content') {
+            loadPlannerContent();
+        } else if (target === 'logs-content') {
+            loadLogsContent();
+        } else if (target === 'goals-content') {
+            loadGoalsContent();
+        }
+    });
+});
