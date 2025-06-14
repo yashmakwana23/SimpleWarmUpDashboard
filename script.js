@@ -1319,17 +1319,17 @@ function createPlanCard(planData, planIndex) {
             <!-- Plan Header -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <div class="w-10 h-10 bg-brand-lime rounded-lg flex items-center justify-center mr-3">
-                        <i data-lucide="calendar" class="w-5 h-5 text-brand-text-primary"></i>
+                    <div class="w-10 h-10 bg-brand-primary rounded-lg flex items-center justify-center mr-3">
+                        <i data-lucide="calendar" class="w-5 h-5 text-white"></i>
                     </div>
                     <div>
                         <h3 class="text-base md:text-lg font-bold text-brand-text-primary">${planData.planName}</h3>
-                        <p class="text-xs md:text-sm text-brand-text-secondary">${planData.duration} days • ${planData.workoutDays} workout days • ${planData.restDays} rest days</p>
+                        <p class="text-xs md:text-sm text-brand-text-secondary"><span class="text-brand-secondary font-medium">${planData.duration}</span> days • <span class="text-brand-secondary font-medium">${planData.workoutDays}</span> workout days • <span class="text-brand-secondary font-medium">${planData.restDays}</span> rest days</p>
                     </div>
                 </div>
-                <button class="plan-toggle-btn p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors bg-brand-lime" 
+                <button class="plan-toggle-btn p-2 rounded-lg border border-brand-primary hover:bg-brand-primary/10 transition-colors" 
                         onclick="togglePlanCard(${planIndex})">
-                    <i data-lucide="chevron-up" class="w-4 md:w-5 h-4 md:h-5 plan-toggle-icon"></i>
+                    <i data-lucide="chevron-up" class="w-4 md:w-5 h-4 md:h-5 text-brand-primary plan-toggle-icon"></i>
                 </button>
             </div>
         </div>
@@ -1358,8 +1358,8 @@ function createDayRow(dayData, planIndex, dayIndex) {
             <div class="md:hidden p-3">
                 <div class="flex items-start space-x-3">
                     <div class="flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full ${statusConfig.bgColor} flex items-center justify-center">
-                            <span class="text-sm font-bold ${statusConfig.textColor}">${dayData.day}</span>
+                        <div class="w-8 h-8 rounded-full bg-brand-secondary flex items-center justify-center">
+                            <span class="text-sm font-bold text-white">${dayData.day}</span>
                         </div>
                     </div>
                     <div class="flex-1 min-w-0">
@@ -1391,8 +1391,8 @@ function createDayRow(dayData, planIndex, dayIndex) {
                 <div class="flex items-start justify-between">
                     <div class="flex items-start space-x-3 flex-1">
                         <div class="flex-shrink-0">
-                            <div class="w-8 h-8 rounded-full ${statusConfig.bgColor} flex items-center justify-center">
-                                <span class="text-sm font-bold ${statusConfig.textColor}">${dayData.day}</span>
+                            <div class="w-8 h-8 rounded-full bg-brand-secondary flex items-center justify-center">
+                                <span class="text-sm font-bold text-white">${dayData.day}</span>
                             </div>
                         </div>
                         <div class="flex-1 min-w-0">
@@ -1662,8 +1662,8 @@ function togglePlanCard(planIndex) {
     if (planCard.classList.contains('hidden')) {
         // Expand the card
         planCard.classList.remove('hidden');
-        toggleBtn.classList.add('bg-brand-primary');
-        toggleBtn.classList.remove('bg-gray-200');
+        toggleBtn.classList.add('bg-brand-primary/10');
+        toggleBtn.classList.remove('bg-white');
         toggleIcon.setAttribute('data-lucide', 'chevron-up');
         
         // Smooth animation to scroll the newly opened content into view
@@ -1673,8 +1673,8 @@ function togglePlanCard(planIndex) {
     } else {
         // Collapse the card
         planCard.classList.add('hidden');
-        toggleBtn.classList.remove('bg-brand-primary');
-        toggleBtn.classList.add('bg-gray-200');
+        toggleBtn.classList.remove('bg-brand-primary/10');
+        toggleBtn.classList.add('bg-white');
         toggleIcon.setAttribute('data-lucide', 'chevron-down');
     }
     
@@ -1758,12 +1758,12 @@ function showDayDetailsModal(dayData) {
             <!-- Modal Header -->
             <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-brand-lime rounded-lg flex items-center justify-center mr-4">
-                        <span class="text-xl font-bold text-brand-text-primary">${dayData.day}</span>
+                    <div class="w-12 h-12 bg-brand-secondary rounded-lg flex items-center justify-center mr-4">
+                        <span class="text-xl font-bold text-white">${dayData.day}</span>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-brand-text-primary">${dayData.workoutType}</h3>
-                        <p class="text-sm text-brand-text-secondary mt-1">${dayData.exercises.length} exercises</p>
+                        <p class="text-sm text-brand-text-secondary mt-1"><span class="text-brand-secondary font-medium">${dayData.exercises.length}</span> exercises</p>
                     </div>
                 </div>
                 <button onclick="closeDayDetailsModal()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
@@ -1780,7 +1780,7 @@ function showDayDetailsModal(dayData) {
                             <div class="flex items-start justify-between mb-3">
                                 <div class="flex-1">
                                     <h5 class="font-medium text-brand-text-primary flex items-center">
-                                        <span class="inline-flex items-center justify-center bg-brand-lime w-5 h-5 rounded-full text-xs font-bold mr-2">${index + 1}</span>
+                                        <span class="inline-flex items-center justify-center bg-brand-secondary w-5 h-5 rounded-full text-xs font-bold text-white mr-2">${index + 1}</span>
                                         ${exercise.name}
                                     </h5>
                                     <p class="text-xs text-brand-text-secondary mt-1">${exercise.subtitle}</p>
@@ -1806,7 +1806,7 @@ function showDayDetailsModal(dayData) {
 
                 <!-- Action Buttons -->
                 <div class="flex space-x-3 mt-6 pt-4 border-t border-gray-200">
-                    <button class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                    <button class="flex-1 bg-brand-primary text-white py-3 px-4 rounded-lg font-medium hover:bg-brand-primary/90 transition-colors">
                         <i data-lucide="edit" class="w-4 h-4 mr-2 inline"></i>
                         Edit Workout
                     </button>
@@ -1837,8 +1837,8 @@ function createPlannerWorkoutCard(dailyPlan, planIndex) {
             <!-- Workout Header -->
             <div class="flex items-center justify-between mb-4 md:mb-6">
                 <div class="flex items-center">
-                    <div class="w-10 h-10 bg-brand-lime rounded-xl flex items-center justify-center mr-3 md:mr-4">
-                        <span class="text-sm font-bold text-brand-text-primary">${dailyPlan.day}</span>
+                    <div class="w-10 h-10 bg-brand-secondary rounded-xl flex items-center justify-center mr-3 md:mr-4">
+                        <span class="text-sm font-bold text-white">${dailyPlan.day}</span>
                     </div>
                     <div>
                         <h3 class="text-lg md:text-xl font-semibold text-brand-text-primary">${dailyPlan.date}</h3>
@@ -1846,7 +1846,7 @@ function createPlannerWorkoutCard(dailyPlan, planIndex) {
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="text-sm font-medium text-brand-text-primary">${dailyPlan.totalExercises} exercises</div>
+                    <div class="text-sm font-medium text-brand-text-primary"><span class="text-brand-secondary font-semibold">${dailyPlan.totalExercises}</span> exercises</div>
                     <div class="text-sm text-brand-text-secondary">${dailyPlan.estimatedTime}</div>
                 </div>
             </div>
@@ -1947,19 +1947,23 @@ function getPlannerWorkouts(year, month, day) {
 
 // Get Workout Type Class
 function getWorkoutTypeClass(type) {
+    // Use consistent border styling for all workout types
+    const baseClass = 'border border-brand-primary text-brand-primary bg-white';
+    
+    // All workout types will have the same consistent design
     const classes = {
-        'Upper Body Strength': 'bg-brand-primary/20 text-brand-primary',
-        'Core & Cardio': 'bg-brand-accent/20 text-brand-accent',
-        'Lower Body Power': 'bg-brand-secondary/20 text-brand-secondary',
-        'HIIT & Conditioning': 'bg-orange-100 text-orange-700',
-        'Full Body Circuit': 'bg-purple-100 text-purple-700',
-        'strength': 'bg-brand-primary/20 text-brand-primary',
-        'cardio': 'bg-brand-accent/20 text-brand-accent',
-        'hiit': 'bg-orange-100 text-orange-700',
-        'flexibility': 'bg-brand-secondary/20 text-brand-secondary',
-        'core': 'bg-purple-100 text-purple-700'
+        'Upper Body Strength': baseClass,
+        'Core & Cardio': baseClass,
+        'Lower Body Power': baseClass,
+        'HIIT & Conditioning': baseClass,
+        'Full Body Circuit': baseClass,
+        'strength': baseClass,
+        'cardio': baseClass,
+        'hiit': baseClass,
+        'flexibility': baseClass,
+        'core': baseClass
     };
-    return classes[type] || 'bg-gray-100 text-gray-700';
+    return classes[type] || baseClass;
 }
 
 
@@ -2526,16 +2530,16 @@ function closeWorkoutModal() {
 function getStatusConfig(status) {
     const configs = {
         completed: {
-            bgColor: 'bg-brand-secondary/20',
-                          iconColor: 'text-brand-secondary',
+            bgColor: 'bg-brand-secondary',
+            iconColor: 'text-white',
             label: 'Completed',
-                          textColor: 'text-brand-secondary'
+            textColor: 'text-white'
         },
         upcoming: {
-            bgColor: 'bg-yellow-100',
-            iconColor: 'text-yellow-600',
+            bgColor: 'bg-brand-accent',
+            iconColor: 'text-white',
             label: 'Upcoming', 
-            textColor: 'text-yellow-600'
+            textColor: 'text-white'
         },
         rest: {
             bgColor: 'bg-gray-100',
@@ -2550,8 +2554,8 @@ function getStatusConfig(status) {
 // Get status-based class for styling
 function getStatusClass(status) {
     const classes = {
-        completed: 'border-green-200 hover:border-green-300',
-        upcoming: 'border-yellow-200 hover:border-yellow-300',
+        completed: 'border-brand-secondary/30 hover:border-brand-secondary/50',
+        upcoming: 'border-brand-accent/30 hover:border-brand-accent/50',
         rest: 'border-gray-200 hover:border-gray-300'
     };
     return classes[status] || classes.upcoming;

@@ -6,28 +6,27 @@
 |-------|----------|-------|
 | **Pink Primary** | `#FF5595` | Main brand color used for primary actions, active navigation, logo background, and progress indicators |
 | **Green Secondary** | `#4CAF50` | Used for success states, completion actions, and active status indicators |
-| **Blue Accent** | `#4B8BFF` | Used for links, focus states, and completed status indicators |
+| **Blue Accent** | `#4B8BFF` | Used for links, focus states, and charts/visualizations |
 
 ## Color Application Guidelines
 
 ### Pink Primary (`#FF5595`)
-- **Primary buttons and CTAs**
-- **Active navigation items**
-- **Logo background**
-- **Progress bars**
-- **Notes save buttons**
+- **Primary buttons and CTAs** - Save buttons, Add New Goal
+- **Active navigation items** - Selected tabs
+- **Goal icons** - Consistent "target" icon for all goals
+- **Progress bars** - Used at 60% opacity for softer appearance
 - **Form input focus states**
+- **Icon containers** - Used at 10% opacity as background
 
 ### Green Secondary (`#4CAF50`)
-- **Completion buttons** (exercise completion)
-- **Active status indicators**
-- **Success states**
+- **Completion indicators** - "Completed Goals" section icon
+- **Success states** - Completed exercises
+- **Secondary buttons** - Used at 10% opacity with text in full color
 
 ### Blue Accent (`#4B8BFF`)
-- **Links**
-- **Focus outlines**
-- **Completed status indicators**
-- **Note indicators**
+- **Charts and visualizations** - Weight tracking bars at 70% opacity
+- **Data visualization elements** - Graphs and charts
+- **Secondary indicators** - Used for complementary information
 
 ## Supporting Colors
 
@@ -38,12 +37,26 @@
 | **Background** | `#F8FAFC` | Page background |
 | **Surface** | `#FFFFFF` | Card backgrounds |
 
+## Opacity Guidelines
+
+We use opacity variants to create visual hierarchy:
+
+| Element | Opacity | Usage |
+|---------|---------|-------|
+| Primary buttons | 100% | Main calls to action |
+| Progress bars | 60% | Softer visual for progress indicators |
+| Chart bars | 70% | Visible but not overwhelming |
+| Icon backgrounds | 10% | Subtle container backgrounds |
+| Button hover states | 80-90% | Subtle feedback on interaction |
+
 ## Implementation Notes
 
-- The color system is implemented using Tailwind CSS custom colors
-- Legacy lime color (`#D4FF4F`) has been maintained for backward compatibility
-- Form inputs use the primary pink color for focus states
-- All interactive elements have appropriate hover and focus states
+- Status tags have been removed in favor of progress bars for cleaner UI
+- Consistent icons are used across similar elements (target icon for goals, ruler for measurements)
+- All measurement cards use the same styling with primary brand color
+- Modal action buttons use the primary brand color
+- Weight tracking uses a light gray background with accent color bars
+- Add Custom button uses subtle styling with hover effect
 - Text colors maintain proper contrast against backgrounds for accessibility
 
 ## CSS Variables
