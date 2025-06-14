@@ -71,42 +71,102 @@ We'll organize data using multiple sheets within a single Google Sheets workbook
 
 ### Structure
 
-Since Apps Script only supports HTML and GS files (not separate JS or CSS files), we'll implement:
+Since Apps Script only supports HTML and GS files (not separate JS or CSS files), we'll implement a multi-file structure:
 
-1. **HTML Files**:
-   - `index.html`: Main application HTML with embedded CSS and JS
-   - No separate CSS or JS files
+1. **HTML Files (Frontend Pages)**:
+   - `index.html`: Main entry point with navigation and shared UI components
+   - `todayWorkout.html`: Today's workout plan page
+   - `workoutLogs.html`: Workout logs and calendar page
+   - `planner.html`: Complete workout planner
+   - `goals.html`: Assessment and goals tracking
 
-2. **GS Files**:
-   - `Code.gs`: Main backend logic and API endpoints
-   - `DataService.gs`: Data access functions for Google Sheets
+2. **GS Files (Backend Logic)**:
+   - `Code.gs`: Main controller handling routing between pages and entry points
+   - `Common.gs`: Shared utility functions and API communication logic
+   - `TodayService.gs`: Functions related to today's workout
+   - `LogsService.gs`: Functions for workout history and logs
+   - `PlannerService.gs`: Planning and scheduling functions
+   - `GoalsService.gs`: Goal setting and measurement tracking
+   - `DataService.gs`: Core data access layer for Google Sheets
 
-### API Endpoints in Code.gs
+3. **HTML Includes**:
+   - `SharedStyles.html`: Common CSS styles included in all pages
+   - `SharedScripts.html`: Common JavaScript functions included in all pages
+   - `Navigation.html`: Navigation menu included in all pages
+
+### Page Navigation and Routing
 
 ```javascript
+// In Code.gs
 function doGet(e) {
-  return HtmlService.createHtmlOutputFromFile('index')
-    .setTitle('InMotion Dashboard');
+  const page = e.parameter.page || 'today';
+  
+  switch(page) {
+    case 'today':
+      return HtmlService.createTemplateFromFile('todayWorkout')
+        .evaluate()
+        .setTitle('Today\'s Workout | InMotion Dashboard');
+    case 'logs':
+      return HtmlService.createTemplateFromFile('workoutLogs')
+        .evaluate()
+        .setTitle('Workout Logs | InMotion Dashboard');
+    case 'planner':
+      return HtmlService.createTemplateFromFile('planner')
+        .evaluate()
+        .setTitle('Workout Planner | InMotion Dashboard');
+    case 'goals':
+      return HtmlService.createTemplateFromFile('goals')
+        .evaluate()
+        .setTitle('Goals & Measurements | InMotion Dashboard');
+    default:
+      return HtmlService.createTemplateFromFile('todayWorkout')
+        .evaluate()
+        .setTitle('Today\'s Workout | InMotion Dashboard');
+  }
 }
 
+// Include function for shared HTML components
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+```
+
+### Common API Endpoints in Code.gs
+
+```javascript
 function doPost(e) {
   const action = e.parameter.action;
   const data = JSON.parse(e.postData.contents);
   
   switch (action) {
-    case 'getWorkouts':
-      return getWorkouts();
+    // Today's workout
     case 'getTodayWorkouts':
-      return getTodayWorkouts();
-    case 'getPlans':
-      return getPlans();
-    case 'saveWorkout':
-      return saveWorkout(data);
+      return TodayService.getTodayWorkouts();
     case 'completeExercise':
-      return completeExercise(data);
+      return TodayService.completeExercise(data);
     case 'saveNotes':
-      return saveNotes(data);
-    // Other endpoints...
+      return TodayService.saveNotes(data);
+      
+    // Workout logs
+    case 'getWorkouts':
+      return LogsService.getWorkouts(data.month, data.year);
+    case 'getWorkoutDetails':
+      return LogsService.getWorkoutDetails(data.workoutId);
+    
+    // Planner
+    case 'getPlans':
+      return PlannerService.getPlans();
+    case 'savePlan':
+      return PlannerService.savePlan(data);
+    
+    // Goals & measurements
+    case 'getGoals':
+      return GoalsService.getGoals();
+    case 'getMeasurements':
+      return GoalsService.getMeasurements();
+    case 'saveMeasurement':
+      return GoalsService.saveMeasurement(data);
+    
     default:
       return ContentService.createTextOutput(JSON.stringify({
         error: 'Invalid action'
@@ -117,10 +177,12 @@ function doPost(e) {
 
 ## Frontend Integration
 
-Since all code will be in the HTML file with embedded JS, we'll include the API communication functions directly in the HTML file:
+Each HTML file includes shared components and page-specific logic:
 
-```javascript
-// In index.html
+### Shared Components Example
+
+```html
+<!-- In SharedScripts.html -->
 <script>
   // API Communication functions
   function callServerFunction(functionName, params) {
@@ -132,279 +194,340 @@ Since all code will be in the HTML file with embedded JS, we'll include the API 
     });
   }
   
-  // Page-specific functions for each tab
-  async function loadTodayContent() {
-    showLoadingIndicator();
-    try {
-      const workoutData = await callServerFunction('getTodayWorkouts');
-      renderTodayWorkout(workoutData);
-    } catch (error) {
-      showError('Failed to load today\'s workouts');
-      console.error(error);
-    } finally {
-      hideLoadingIndicator();
-    }
+  // Common UI functions
+  function showLoadingIndicator() {
+    document.getElementById('loading').style.display = 'flex';
   }
   
-  // Add similar functions for other pages
+  function hideLoadingIndicator() {
+    document.getElementById('loading').style.display = 'none';
+  }
+  
+  function showError(message) {
+    const errorEl = document.getElementById('error-message');
+    errorEl.textContent = message;
+    errorEl.style.display = 'block';
+    setTimeout(() => {
+      errorEl.style.display = 'none';
+    }, 5000);
+  }
+  
+  // Navigation functions
+  function navigateTo(page) {
+    window.location.href = '?page=' + page;
+  }
 </script>
+```
+
+### Page-specific Implementation Example
+
+```html
+<!-- In todayWorkout.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include('SharedStyles'); ?>
+    <title>Today's Workout</title>
+  </head>
+  <body>
+    <div id="loading" style="display: none;">Loading...</div>
+    <div id="error-message" style="display: none;"></div>
+    
+    <?!= include('Navigation'); ?>
+    
+    <div class="container">
+      <h1>Today's Workout</h1>
+      <div id="today-content"></div>
+    </div>
+    
+    <?!= include('SharedScripts'); ?>
+    
+    <script>
+      // Page-specific functions
+      async function loadTodayContent() {
+        showLoadingIndicator();
+        try {
+          const workoutData = await callServerFunction('getTodayWorkouts');
+          renderTodayWorkout(workoutData);
+        } catch (error) {
+          showError('Failed to load today\'s workouts');
+          console.error(error);
+        } finally {
+          hideLoadingIndicator();
+        }
+      }
+      
+      function renderTodayWorkout(workoutData) {
+        const container = document.getElementById('today-content');
+        // Render workout data
+      }
+      
+      // Initialize page
+      document.addEventListener('DOMContentLoaded', loadTodayContent);
+    </script>
+  </body>
+</html>
 ```
 
 ## Page-by-Page Integration
 
 ### 1. Today's Plan Page
 
-**Integration Functions:**
+**Backend Functions (TodayService.gs):**
 
 ```javascript
-// In Code.gs
-function getTodayWorkouts() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Workouts');
-  const today = new Date();
-  const todayStr = Utilities.formatDate(today, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-  
-  // Get today's workouts
-  const workouts = getWorkoutsByDate(todayStr);
-  
-  // For each workout, get its exercises
-  workouts.forEach(workout => {
-    workout.exercises = getExercises(workout.workoutId);
-  });
-  
-  return workouts;
-}
-
-function completeExercise(data) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Exercises');
-  const exerciseId = data.exerciseId;
-  
-  // Find the row with this exercise
-  const dataRange = sheet.getDataRange();
-  const values = dataRange.getValues();
-  
-  for (let i = 0; i < values.length; i++) {
-    if (values[i][0] === exerciseId) {
-      // Update completion status
-      sheet.getRange(i + 1, 12).setValue(data.completed);
-      
-      // Update sets, reps, weight if provided
-      if (data.completedSets) sheet.getRange(i + 1, 8).setValue(data.completedSets);
-      if (data.completedReps) sheet.getRange(i + 1, 9).setValue(data.completedReps);
-      if (data.actualWeight) sheet.getRange(i + 1, 10).setValue(data.actualWeight);
-      break;
-    }
+// In TodayService.gs
+var TodayService = (function() {
+  // Private functions
+  function getWorkoutsByDate(dateStr) {
+    return DataService.getWorkoutsByDate(dateStr);
   }
   
-  return {success: true};
-}
+  function getExercises(workoutId) {
+    return DataService.getExercisesByWorkoutId(workoutId);
+  }
+  
+  // Public API
+  return {
+    getTodayWorkouts: function() {
+      const today = new Date();
+      const todayStr = Utilities.formatDate(today, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+      
+      // Get today's workouts
+      const workouts = getWorkoutsByDate(todayStr);
+      
+      // For each workout, get its exercises
+      workouts.forEach(workout => {
+        workout.exercises = getExercises(workout.workoutId);
+      });
+      
+      return workouts;
+    },
+    
+    completeExercise: function(data) {
+      return DataService.updateExercise(data);
+    },
+    
+    saveNotes: function(data) {
+      return DataService.saveWorkoutNotes(data.workoutId, data.notes);
+    }
+  };
+})();
 ```
 
 ### 2. Workout Logs / Calendar Page
 
-**Integration Functions:**
+**Backend Functions (LogsService.gs):**
 
 ```javascript
-// In Code.gs
-function getWorkouts(month, year) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Workouts');
-  const data = sheet.getDataRange().getValues();
-  const header = data.shift(); // Remove header row
-  
-  // Filter by date range if provided
-  const filteredData = data.filter(row => {
-    if (!month && !year) return true;
+// In LogsService.gs
+var LogsService = (function() {
+  // Public API
+  return {
+    getWorkouts: function(month, year) {
+      return DataService.getWorkouts(month, year);
+    },
     
-    const workoutDate = new Date(row[1]); // Assuming column B is WorkoutDate
-    if (month && workoutDate.getMonth() + 1 !== month) return false;
-    if (year && workoutDate.getFullYear() !== year) return false;
-    
-    return true;
-  });
-  
-  // Map to response structure
-  const workouts = filteredData.map(row => ({
-    workoutId: row[0],
-    date: row[1],
-    workoutType: row[2],
-    completed: row[3],
-    notes: row[4]
-  }));
-  
-  return workouts;
-}
+    getWorkoutDetails: function(workoutId) {
+      const workout = DataService.getWorkoutById(workoutId);
+      if (workout) {
+        workout.exercises = DataService.getExercisesByWorkoutId(workoutId);
+      }
+      return workout;
+    }
+  };
+})();
 ```
 
 ### 3. Complete Planner Page
 
-**Integration Functions:**
+**Backend Functions (PlannerService.gs):**
 
 ```javascript
-// In Code.gs
-function getPlans() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Plans');
-  const data = sheet.getDataRange().getValues();
-  const header = data.shift(); // Remove header row
+// In PlannerService.gs
+var PlannerService = (function() {
+  // Private functions
+  function getPlanWorkouts(planId) {
+    return DataService.getPlanWorkouts(planId);
+  }
   
-  // Map to response structure
-  const plans = data.map(row => {
-    const planId = row[0];
-    const plan = {
-      planId: planId,
-      planName: row[1],
-      startDate: row[2],
-      duration: row[3],
-      status: row[4]
-    };
+  // Public API
+  return {
+    getPlans: function() {
+      const plans = DataService.getPlans();
+      
+      // Get workouts for each plan
+      plans.forEach(plan => {
+        plan.dailyWorkouts = getPlanWorkouts(plan.planId);
+      });
+      
+      return plans;
+    },
     
-    // Get plan workouts
-    plan.dailyWorkouts = getPlanWorkouts(planId);
-    
-    return plan;
-  });
-  
-  return plans;
-}
-
-function getPlanWorkouts(planId) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('PlanWorkouts');
-  const data = sheet.getDataRange().getValues();
-  const header = data.shift(); // Remove header row
-  
-  // Filter by planId
-  const filteredData = data.filter(row => row[1] === planId);
-  
-  // Map to response structure
-  const planWorkouts = filteredData.map(row => ({
-    planWorkoutId: row[0],
-    day: row[2],
-    workoutType: row[3],
-    isRestDay: row[4],
-    status: row[5],
-    exercises: getRandomExercises(row[3]) // Generate sample exercises based on type
-  }));
-  
-  return planWorkouts;
-}
+    savePlan: function(planData) {
+      // Save plan and its workouts
+      const planId = DataService.savePlan(planData);
+      
+      if (planData.dailyWorkouts && planData.dailyWorkouts.length > 0) {
+        DataService.savePlanWorkouts(planId, planData.dailyWorkouts);
+      }
+      
+      return { success: true, planId: planId };
+    }
+  };
+})();
 ```
 
 ### 4. Assessment & Goals Page 
 
-**Integration Functions:**
+**Backend Functions (GoalsService.gs):**
 
 ```javascript
-// In Code.gs
-function getGoals() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Goals');
-  const data = sheet.getDataRange().getValues();
-  const header = data.shift(); // Remove header row
-  
-  // Map to response structure
-  const goals = data.map(row => ({
-    goalId: row[0],
-    goalType: row[1],
-    targetValue: row[2],
-    currentValue: row[3],
-    startDate: row[4],
-    targetDate: row[5],
-    status: row[6]
-  }));
-  
-  return goals;
-}
-
-function getMeasurements() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Measurements');
-  const data = sheet.getDataRange().getValues();
-  const header = data.shift(); // Remove header row
-  
-  // Map to response structure
-  const measurements = data.map(row => ({
-    measurementId: row[0],
-    date: row[1],
-    weight: row[2],
-    bodyFat: row[3],
-    chest: row[4],
-    waist: row[5],
-    hips: row[6],
-    biceps: row[7],
-    thighs: row[8],
-    customMeasurements: row[9] ? JSON.parse(row[9]) : {}
-  }));
-  
-  return measurements;
-}
-
-function saveMeasurement(data) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Measurements');
-  
-  // Generate ID if new measurement
-  const measurementId = data.measurementId || Utilities.getUuid();
-  
-  // Format the data for sheet insertion
-  let rowData = [
-    measurementId,
-    data.date || new Date(),
-    data.weight || '',
-    data.bodyFat || '',
-    data.chest || '',
-    data.waist || '',
-    data.hips || '',
-    data.biceps || '',
-    data.thighs || '',
-    data.customMeasurements ? JSON.stringify(data.customMeasurements) : ''
-  ];
-  
-  // If existing measurement, update the row
-  if (data.measurementId) {
-    const dataRange = sheet.getDataRange();
-    const values = dataRange.getValues();
+// In GoalsService.gs
+var GoalsService = (function() {
+  // Public API
+  return {
+    getGoals: function() {
+      return DataService.getGoals();
+    },
     
-    for (let i = 0; i < values.length; i++) {
-      if (values[i][0] === measurementId) {
-        // Update row
-        for (let j = 0; j < rowData.length; j++) {
-          if (rowData[j] !== '') {
-            sheet.getRange(i + 1, j + 1).setValue(rowData[j]);
-          }
-        }
-        break;
-      }
+    getMeasurements: function() {
+      return DataService.getMeasurements();
+    },
+    
+    saveMeasurement: function(data) {
+      return DataService.saveMeasurement(data);
+    },
+    
+    saveGoal: function(data) {
+      return DataService.saveGoal(data);
+    },
+    
+    updateGoalProgress: function(data) {
+      return DataService.updateGoalProgress(data.goalId, data.currentValue);
     }
-  } else {
-    // Add new row
-    sheet.appendRow(rowData);
+  };
+})();
+```
+
+## Data Service Layer
+
+```javascript
+// In DataService.gs
+var DataService = (function() {
+  // Private utility functions
+  function getSpreadsheet() {
+    return SpreadsheetApp.getActiveSpreadsheet();
   }
   
-  return {success: true, measurementId: measurementId};
-}
+  function getSheet(sheetName) {
+    return getSpreadsheet().getSheetByName(sheetName);
+  }
+  
+  function generateId() {
+    return Utilities.getUuid();
+  }
+  
+  // Public API
+  return {
+    // Workout related functions
+    getWorkoutsByDate: function(dateStr) {
+      // Implementation...
+    },
+    
+    getWorkouts: function(month, year) {
+      // Implementation...
+    },
+    
+    getWorkoutById: function(workoutId) {
+      // Implementation...
+    },
+    
+    getExercisesByWorkoutId: function(workoutId) {
+      // Implementation...
+    },
+    
+    updateExercise: function(data) {
+      // Implementation...
+    },
+    
+    saveWorkoutNotes: function(workoutId, notes) {
+      // Implementation...
+    },
+    
+    // Plan related functions
+    getPlans: function() {
+      // Implementation...
+    },
+    
+    getPlanWorkouts: function(planId) {
+      // Implementation...
+    },
+    
+    savePlan: function(planData) {
+      // Implementation...
+    },
+    
+    savePlanWorkouts: function(planId, workouts) {
+      // Implementation...
+    },
+    
+    // Goals and measurements related functions
+    getGoals: function() {
+      // Implementation...
+    },
+    
+    getMeasurements: function() {
+      // Implementation...
+    },
+    
+    saveMeasurement: function(data) {
+      // Implementation...
+    },
+    
+    saveGoal: function(data) {
+      // Implementation...
+    },
+    
+    updateGoalProgress: function(goalId, currentValue) {
+      // Implementation...
+    }
+  };
+})();
 ```
 
 ## Implementation Roadmap
 
 ### Phase 1: Setup and Data Structure
 1. Create Google Sheets with the defined structure
-2. Implement basic Apps Script endpoints
-3. Setup HTML template with embedded CSS/JS
+2. Create file structure for HTML and GS files
+3. Implement shared components and navigation
+4. Setup DataService with core data access functions
 
 ### Phase 2: Today's Plan Integration
-1. Create data access functions for workouts
-2. Implement exercise completion API
-3. Add notes functionality
+1. Implement todayWorkout.html page
+2. Create TodayService.gs with required functions
+3. Implement exercise completion functionality
+4. Add notes functionality
 
 ### Phase 3: Calendar/Logs Integration
-1. Implement workout history retrieval
-2. Add date filtering functionality
-3. Enable past workout viewing
+1. Implement workoutLogs.html page
+2. Create LogsService.gs with required functions
+3. Add date filtering and workout history viewing
+4. Implement workout details view
 
 ### Phase 4: Planner Integration
-1. Setup plan data structure
-2. Implement plan retrieval and display
-3. Add plan day details functionality
+1. Implement planner.html page
+2. Create PlannerService.gs with required functions
+3. Add plan creation and editing functionality
+4. Implement workout scheduling features
 
 ### Phase 5: Goals & Assessments Integration
-1. Implement measurement tracking
-2. Add goal setting and progress tracking
-3. Create visualization for body metrics
+1. Implement goals.html page
+2. Create GoalsService.gs with required functions
+3. Add measurement tracking and visualization
+4. Implement goal progress tracking
 
 ## Testing
 
@@ -430,4 +553,4 @@ Create a testing protocol for each feature:
 
 ## Conclusion
 
-This integration plan provides a roadmap for connecting the InMotion Dashboard frontend with Google Apps Script and Sheets backend, specifically designed for a single user without authentication requirements. The implementation respects Apps Script limitations by using only HTML and GS files.
+This integration plan provides a roadmap for connecting the InMotion Dashboard frontend with Google Apps Script and Sheets backend, specifically designed for a single user without authentication requirements. The implementation uses a modular structure with separate HTML pages and GS service files for better organization and maintainability.
