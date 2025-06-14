@@ -364,6 +364,97 @@ function renderTodayWorkout(workoutData) {
     });
 
     lucide.createIcons();
+    
+    // Initialize workout card timers
+    initializeWorkoutCardTimers();
+}
+
+// Function to initialize workout card timers
+function initializeWorkoutCardTimers() {
+    const workoutTimers = document.querySelectorAll('.workout-timer');
+    
+    // Store timer data for each workout
+    window.workoutTimers = window.workoutTimers || {};
+    
+    workoutTimers.forEach(timerEl => {
+        const workoutIndex = timerEl.dataset.workoutIndex;
+        const timeDisplay = document.getElementById(`workout-time-${workoutIndex}`);
+        
+        // Initialize timer data for this workout
+        window.workoutTimers[workoutIndex] = {
+            startTime: null,
+            elapsedTime: 0,
+            timerInterval: null,
+            isRunning: false
+        };
+        
+        // Add click event listener
+        timerEl.addEventListener('click', function() {
+            const timer = window.workoutTimers[workoutIndex];
+            
+            if (timer.isRunning) {
+                // Stop the timer
+                clearInterval(timer.timerInterval);
+                timer.isRunning = false;
+                
+                // Calculate elapsed time
+                if (timer.startTime) {
+                    timer.elapsedTime += Date.now() - timer.startTime;
+                }
+                
+                // Update UI
+                timerEl.dataset.status = 'stopped';
+                timerEl.classList.remove('bg-brand-lime/10');
+                timerEl.classList.add('hover:bg-brand-lime/10');
+            } else {
+                // Start the timer
+                timer.startTime = Date.now();
+                timer.isRunning = true;
+                
+                // Update UI
+                timerEl.dataset.status = 'running';
+                timerEl.classList.add('bg-brand-lime/10');
+                timerEl.classList.remove('hover:bg-brand-lime/10');
+                
+                // Update the timer display
+                timer.timerInterval = setInterval(function() {
+                    const currentTime = Date.now();
+                    const totalElapsed = timer.elapsedTime + (currentTime - timer.startTime);
+                    timeDisplay.textContent = formatTimeForDisplay(totalElapsed);
+                }, 1000);
+            }
+        });
+        
+        // Add double-click event to reset
+        timerEl.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+            
+            const timer = window.workoutTimers[workoutIndex];
+            
+            // Clear any running interval
+            clearInterval(timer.timerInterval);
+            
+            // Reset timer data
+            timer.startTime = null;
+            timer.elapsedTime = 0;
+            timer.isRunning = false;
+            
+            // Update UI
+            timerEl.dataset.status = 'stopped';
+            timeDisplay.textContent = '00:00';
+            timerEl.classList.remove('bg-brand-lime/10');
+            timerEl.classList.add('hover:bg-brand-lime/10');
+        });
+    });
+}
+
+// Helper function to format time in MM:SS format
+function formatTimeForDisplay(timeInMs) {
+    const totalSeconds = Math.floor(timeInMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 function createWorkoutCard(workout, workoutIndex) {
@@ -382,8 +473,13 @@ function createWorkoutCard(workout, workoutIndex) {
                     <p class="text-sm text-brand-text-secondary" id="workout-progress-${workoutIndex}">0/${workout.exercises.length} exercises</p>
                 </div>
             </div>
-            <div class="w-12 h-12 rounded-full border-4 border-gray-200 flex items-center justify-center" id="workout-circle-${workoutIndex}">
-                <span class="text-sm font-bold text-brand-text-secondary" id="workout-percentage-${workoutIndex}">0%</span>
+            <div class="w-16 h-16 rounded-full border-2 border-brand-lime hover:bg-brand-lime/10 flex flex-col items-center justify-center transition-all cursor-pointer workout-timer" 
+                id="workout-timer-${workoutIndex}" 
+                data-workout-index="${workoutIndex}" 
+                data-status="stopped"
+                title="Click to start/stop timer">
+                <span class="text-sm font-medium text-brand-text-secondary">TIMER</span>
+                <span class="text-sm font-bold text-brand-text-primary" id="workout-time-${workoutIndex}">00:00</span>
             </div>
         </div>
 
@@ -2985,12 +3081,7 @@ function initializeGoalsModals() {
                                     <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg" id="edit-goal-date">
                                 </div>
                                 
-                                <div>
-                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Progress</label>
-                                    <div class="px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-brand-text-secondary text-sm">
-                                        Progress is calculated automatically from your measurement history
-                                    </div>
-                                </div>
+                                <!-- Progress info removed as requested -->
                                 
                                 <div class="pt-4 border-t border-gray-200">
                                     <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveEditedGoal()">
