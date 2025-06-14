@@ -388,63 +388,74 @@ function initializeWorkoutCardTimers() {
             isRunning: false
         };
         
-        // Add click event listener
-        timerEl.addEventListener('click', function() {
-            const timer = window.workoutTimers[workoutIndex];
-            
-            if (timer.isRunning) {
-                // Stop the timer
-                clearInterval(timer.timerInterval);
-                timer.isRunning = false;
-                
-                // Calculate elapsed time
-                if (timer.startTime) {
-                    timer.elapsedTime += Date.now() - timer.startTime;
-                }
-                
-                // Update UI
-                timerEl.dataset.status = 'stopped';
-                timerEl.classList.remove('bg-brand-lime/10');
-                timerEl.classList.add('hover:bg-brand-lime/10');
-            } else {
-                // Start the timer
-                timer.startTime = Date.now();
-                timer.isRunning = true;
-                
-                // Update UI
-                timerEl.dataset.status = 'running';
-                timerEl.classList.add('bg-brand-lime/10');
-                timerEl.classList.remove('hover:bg-brand-lime/10');
-                
-                // Update the timer display
-                timer.timerInterval = setInterval(function() {
-                    const currentTime = Date.now();
-                    const totalElapsed = timer.elapsedTime + (currentTime - timer.startTime);
-                    timeDisplay.textContent = formatTimeForDisplay(totalElapsed);
-                }, 1000);
-            }
-        });
+                 // Add click event listener
+         timerEl.addEventListener('click', function() {
+             const timer = window.workoutTimers[workoutIndex];
+             
+             if (timer.isRunning) {
+                 // Stop the timer
+                 clearInterval(timer.timerInterval);
+                 timer.isRunning = false;
+                 
+                 // Calculate elapsed time
+                 if (timer.startTime) {
+                     timer.elapsedTime += Date.now() - timer.startTime;
+                 }
+                 
+                 // Update UI
+                 timerEl.dataset.status = 'stopped';
+                 timerEl.classList.remove('bg-brand-lime/10');
+                 timerEl.classList.add('hover:bg-brand-lime/10');
+                 timerEl.title = "Click: start/stop | Double-click: reset";
+             } else {
+                 // Start the timer
+                 timer.startTime = Date.now();
+                 timer.isRunning = true;
+                 
+                 // Update UI
+                 timerEl.dataset.status = 'running';
+                 timerEl.classList.add('bg-brand-lime/10');
+                 timerEl.classList.remove('hover:bg-brand-lime/10');
+                 timerEl.title = "Click to pause | Double-click to reset";
+                 
+                 // Update the timer display
+                 timer.timerInterval = setInterval(function() {
+                     const currentTime = Date.now();
+                     const totalElapsed = timer.elapsedTime + (currentTime - timer.startTime);
+                     timeDisplay.textContent = formatTimeForDisplay(totalElapsed);
+                 }, 1000);
+             }
+         });
         
-        // Add double-click event to reset
-        timerEl.addEventListener('dblclick', function(e) {
-            e.preventDefault();
-            
-            const timer = window.workoutTimers[workoutIndex];
-            
-            // Clear any running interval
-            clearInterval(timer.timerInterval);
-            
-            // Reset timer data
-            timer.startTime = null;
-            timer.elapsedTime = 0;
-            timer.isRunning = false;
-            
-            // Update UI
-            timerEl.dataset.status = 'stopped';
-            timeDisplay.textContent = '00:00';
-            timerEl.classList.remove('bg-brand-lime/10');
-            timerEl.classList.add('hover:bg-brand-lime/10');
-        });
+                 // Add double-click event to reset
+         timerEl.addEventListener('dblclick', function(e) {
+             e.preventDefault();
+             
+             const timer = window.workoutTimers[workoutIndex];
+             
+             // Clear any running interval
+             clearInterval(timer.timerInterval);
+             
+             // Reset timer data
+             timer.startTime = null;
+             timer.elapsedTime = 0;
+             timer.isRunning = false;
+             
+             // Update UI
+             timerEl.dataset.status = 'stopped';
+             timeDisplay.textContent = '00:00';
+             timerEl.classList.remove('bg-brand-lime/10');
+             timerEl.classList.add('hover:bg-brand-lime/10');
+             
+             // Add flash animation to indicate reset
+             timerEl.classList.add('bg-brand-lime/30');
+             setTimeout(() => {
+                 timerEl.classList.remove('bg-brand-lime/30');
+             }, 300);
+             
+             // Show reset tooltip
+             showNotification('Timer reset', 'info');
+         });
     });
 }
 
@@ -473,13 +484,13 @@ function createWorkoutCard(workout, workoutIndex) {
                     <p class="text-sm text-brand-text-secondary" id="workout-progress-${workoutIndex}">0/${workout.exercises.length} exercises</p>
                 </div>
             </div>
-            <div class="w-16 h-16 rounded-full border-2 border-brand-lime hover:bg-brand-lime/10 flex flex-col items-center justify-center transition-all cursor-pointer workout-timer" 
+            <div class="w-14 h-14 rounded-full border-2 border-brand-lime hover:bg-brand-lime/10 flex flex-col items-center justify-center transition-all cursor-pointer workout-timer" 
                 id="workout-timer-${workoutIndex}" 
                 data-workout-index="${workoutIndex}" 
                 data-status="stopped"
-                title="Click to start/stop timer">
-                <span class="text-sm font-medium text-brand-text-secondary">TIMER</span>
-                <span class="text-sm font-bold text-brand-text-primary" id="workout-time-${workoutIndex}">00:00</span>
+                title="Click: start/stop | Double-click: reset">
+                <span class="text-xs font-medium text-brand-text-secondary">TIMER</span>
+                <span class="text-xs font-bold text-brand-text-primary" id="workout-time-${workoutIndex}">00:00</span>
             </div>
         </div>
 
