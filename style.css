@@ -586,12 +586,13 @@ a:focus {
 /* Responsive Layout for Goals Page */
 #goals-content .grid > div {
     margin-bottom: 1.5rem;
+    width: 100%;
 }
 
 @media (min-width: 768px) {
     #goals-content .grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        display: flex;
+        flex-direction: column;
         gap: 2rem;
     }
     

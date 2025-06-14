@@ -1910,16 +1910,23 @@ function switchPlannerView(viewType) {
 function loadGoalsContent() {
     console.log('Loading goals content...');
     
-    // Goal tracking section
-    const goalsContainer = document.querySelector('#goals-content .grid > div:first-child');
-    if (goalsContainer) {
-        goalsContainer.innerHTML = createGoalsContent();
-    }
-    
-    // Body assessment section
-    const assessmentContainer = document.querySelector('#goals-content .grid > div:last-child');
-    if (assessmentContainer) {
+    // Get the main content container
+    const contentContainer = document.querySelector('#goals-content .grid');
+    if (contentContainer) {
+        // Clear existing content
+        contentContainer.innerHTML = '';
+        
+        // Add assessment section
+        const assessmentContainer = document.createElement('div');
+        assessmentContainer.className = 'assessment-section';
         assessmentContainer.innerHTML = createAssessmentContent();
+        contentContainer.appendChild(assessmentContainer);
+        
+        // Add goals section
+        const goalsContainer = document.createElement('div');
+        goalsContainer.className = 'goals-section';
+        goalsContainer.innerHTML = createGoalsContent();
+        contentContainer.appendChild(goalsContainer);
     }
     
     // Initialize icons
@@ -2110,6 +2117,10 @@ function renderAssessmentSection(assessmentData) {
                         <span class="text-brand-text-secondary">Current:</span>
                         <span class="font-medium text-brand-text-primary">${assessmentData.weight[assessmentData.weight.length - 1].value} lbs</span>
                     </div>
+                    <div class="text-sm">
+                        <span class="text-brand-text-secondary">Target:</span>
+                        <span class="font-medium text-green-600">165 lbs</span>
+                    </div>
                     <button class="text-xs bg-brand-lime text-brand-text-primary py-1 px-3 rounded-lg" onclick="showUpdateWeightModal()">
                         Update
                     </button>
@@ -2209,7 +2220,7 @@ function createMeasurementsGrid(metrics) {
 
 // Modal Functions - These would be connected to actual modals in a real implementation
 function showAddGoalModal() {
-    showNotification('Add Goal feature coming soon!', 'info');
+    addGoalModal(); // Use the actual modal function
 }
 
 function toggleGoalOptions(goalId) {
@@ -2446,157 +2457,214 @@ function getStatusClass(status) {
     return classes[status] || classes.upcoming;
 }
 
-// Create Goals Content
+// Create Goals Content with Linked Measurements
 function createGoalsContent() {
     return `
-        <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Goals & Targets</h2>
-        <div class="space-y-5">
-            <!-- Current Goals -->
-            <div class="mb-6">
-                <h3 class="text-md font-medium mb-3">Current Goals</h3>
+        <!-- Goals & Targets Section (Now as separate card) -->
+        <div class="bg-brand-surface rounded-xl p-5 shadow-lg border border-gray-100 mb-6">
+            <div class="flex items-center mb-4">
+                <div class="bg-brand-lime/20 p-2 rounded-lg mr-3">
+                    <i data-lucide="target" class="w-5 h-5 text-brand-lime"></i>
+                </div>
+                <h2 class="text-lg font-semibold text-brand-text-primary">Goals & Targets</h2>
+            </div>
+            
+            <div class="space-y-5">
+                <!-- Current Goals -->
+                <div class="mb-6">
+                    <h3 class="text-md font-medium mb-3">Current Goals</h3>
+                    
+                    <div class="space-y-3 md:space-y-4">
+                        <!-- Goal 1: Weight Loss -->
+                        <div class="goal-card bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                            <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
+                                <div class="w-full sm:w-auto mb-2 sm:mb-0">
+                                    <div class="flex items-center">
+                                        <i data-lucide="scale" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                                        <h4 class="font-medium text-brand-text-primary">Weight Loss</h4>
+                                    </div>
+                                    <p class="text-sm text-brand-text-secondary">Target: 165 lbs</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full mr-2">
+                                        In Progress
+                                    </div>
+                                    <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(1)">
+                                        <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
+                                    </button>
+                                    <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="deleteGoalModal(1)">
+                                        <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
+                                    <span>Progress</span>
+                                    <span>45%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-brand-lime h-2 rounded-full" style="width: 45%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-xs text-brand-text-secondary mt-3 flex flex-wrap justify-between">
+                                <span>Current: 176 lbs</span>
+                                <span>Target: June 30, 2024</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Goal 2: Waist Measurement -->
+                        <div class="goal-card bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                            <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
+                                <div class="w-full sm:w-auto mb-2 sm:mb-0">
+                                    <div class="flex items-center">
+                                        <i data-lucide="ruler" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                                        <h4 class="font-medium text-brand-text-primary">Waist Measurement</h4>
+                                    </div>
+                                    <p class="text-sm text-brand-text-secondary">Target: 32 inches</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mr-2">
+                                        On Track
+                                    </div>
+                                    <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(2)">
+                                        <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
+                                    </button>
+                                    <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="deleteGoalModal(2)">
+                                        <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
+                                    <span>Progress</span>
+                                    <span>50%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-brand-lime h-2 rounded-full" style="width: 50%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-xs text-brand-text-secondary mt-3 flex flex-wrap justify-between">
+                                <span>Current: 34 inches</span>
+                                <span>Target: May 15, 2024</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Goal 3: Weight Gain (Muscle) -->
+                        <div class="goal-card bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                            <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
+                                <div class="w-full sm:w-auto mb-2 sm:mb-0">
+                                    <div class="flex items-center">
+                                        <i data-lucide="dumbbell" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                                        <h4 class="font-medium text-brand-text-primary">Arm Size</h4>
+                                    </div>
+                                    <p class="text-sm text-brand-text-secondary">Target: 16 inches</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full mr-2">
+                                        Muscle Gain
+                                    </div>
+                                    <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(3)">
+                                        <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
+                                    </button>
+                                    <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="deleteGoalModal(3)">
+                                        <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
+                                    <span>Progress</span>
+                                    <span>40%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-xs text-brand-text-secondary mt-3 flex flex-wrap justify-between">
+                                <span>Current: 14 inches</span>
+                                <span>Target: August 15, 2024</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Goal 4: Custom Goal -->
+                        <div class="goal-card bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                            <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
+                                <div class="w-full sm:w-auto mb-2 sm:mb-0">
+                                    <div class="flex items-center">
+                                        <i data-lucide="timer" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                                        <h4 class="font-medium text-brand-text-primary">Strength Training</h4>
+                                    </div>
+                                    <p class="text-sm text-brand-text-secondary">Target: 3x weekly</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mr-2">
+                                        On Track
+                                    </div>
+                                    <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(4)">
+                                        <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
+                                    </button>
+                                    <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="deleteGoalModal(4)">
+                                        <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
+                                    <span>Progress</span>
+                                    <span>80%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-brand-lime h-2 rounded-full" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-xs text-brand-text-secondary mt-3 flex flex-wrap justify-between">
+                                <span>Started: January 5, 2024</span>
+                                <span>Target: Ongoing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
-                <div class="space-y-3 md:space-y-4">
-                    <!-- Goal 1 -->
-                    <div class="goal-card bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
-                        <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
-                            <div class="w-full sm:w-auto mb-2 sm:mb-0">
-                                <h4 class="font-medium text-brand-text-primary">Lose Weight</h4>
-                                <p class="text-sm text-brand-text-secondary">Target: 10 lbs</p>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full mr-2">
-                                    In Progress
-                                </div>
-                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(1)">
-                                    <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
-                                </button>
-                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="deleteGoalModal(1)">
-                                    <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
-                                </button>
+                <!-- Completed Goals -->
+                <div class="completed-goals mt-5 pt-4 border-t border-gray-200">
+                    <h3 class="text-md font-medium mb-3 flex items-center">
+                        <i data-lucide="check-circle" class="w-4 h-4 mr-2 text-green-500"></i>
+                        Completed Goals
+                    </h3>
+                    <div class="completed-goal flex flex-wrap sm:flex-nowrap items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center w-full sm:w-auto mb-2 sm:mb-0">
+                            <i data-lucide="trophy" class="w-4 h-4 text-yellow-500 mr-2"></i>
+                            <div>
+                                <h4 class="text-sm font-medium text-brand-text-primary">Drink More Water</h4>
+                                <p class="text-xs text-brand-text-secondary">Target: 2L daily</p>
                             </div>
                         </div>
-                        
-                        <div class="mt-3">
-                            <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
-                                <span>Progress</span>
-                                <span>40%</span>
+                        <div class="flex w-full sm:w-auto justify-between sm:justify-end items-center">
+                            <div class="text-xs text-brand-text-secondary">
+                                Completed on March 1, 2024
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-brand-lime h-2 rounded-full" style="width: 40%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="text-xs text-brand-text-secondary mt-3 flex flex-wrap justify-between">
-                            <span>Started: January 15, 2024</span>
-                            <span>Target: June 30, 2024</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Goal 2 -->
-                    <div class="goal-card bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
-                        <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
-                            <div class="w-full sm:w-auto mb-2 sm:mb-0">
-                                <h4 class="font-medium text-brand-text-primary">Run 5K</h4>
-                                <p class="text-sm text-brand-text-secondary">Target: Under 30 min</p>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mr-2">
-                                    On Track
-                                </div>
-                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(2)">
-                                    <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
-                                </button>
-                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="deleteGoalModal(2)">
-                                    <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-3">
-                            <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
-                                <span>Progress</span>
-                                <span>65%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-brand-lime h-2 rounded-full" style="width: 65%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="text-xs text-brand-text-secondary mt-3 flex flex-wrap justify-between">
-                            <span>Started: February 1, 2024</span>
-                            <span>Target: May 15, 2024</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Goal 3 -->
-                    <div class="goal-card bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
-                        <div class="flex flex-wrap sm:flex-nowrap justify-between items-start">
-                            <div class="w-full sm:w-auto mb-2 sm:mb-0">
-                                <h4 class="font-medium text-brand-text-primary">Strength Training</h4>
-                                <p class="text-sm text-brand-text-secondary">Target: 3x weekly</p>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mr-2">
-                                    On Track
-                                </div>
-                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="editGoalModal(3)">
-                                    <i data-lucide="pencil" class="w-3.5 h-3.5 text-gray-500"></i>
-                                </button>
-                                <button class="p-1.5 hover:bg-gray-100 rounded-full" onclick="deleteGoalModal(3)">
-                                    <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-3">
-                            <div class="flex justify-between items-center text-xs text-brand-text-secondary mb-1">
-                                <span>Progress</span>
-                                <span>80%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-brand-lime h-2 rounded-full" style="width: 80%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="text-xs text-brand-text-secondary mt-3 flex flex-wrap justify-between">
-                            <span>Started: January 5, 2024</span>
-                            <span>Target: Ongoing</span>
+                            <button class="p-1.5 hover:bg-gray-100 rounded-full ml-2" onclick="deleteCompletedGoalModal(4)">
+                                <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Completed Goals -->
-            <div class="completed-goals mt-5 pt-4 border-t border-gray-200">
-                <h3 class="text-md font-medium mb-3 flex items-center">
-                    <i data-lucide="check-circle" class="w-4 h-4 mr-2 text-green-500"></i>
-                    Completed Goals
-                </h3>
-                <div class="completed-goal flex flex-wrap sm:flex-nowrap items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
-                    <div class="flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-                        <i data-lucide="trophy" class="w-4 h-4 text-yellow-500 mr-2"></i>
-                        <div>
-                            <h4 class="text-sm font-medium text-brand-text-primary">Drink More Water</h4>
-                            <p class="text-xs text-brand-text-secondary">Target: 2L daily</p>
-                        </div>
-                    </div>
-                    <div class="flex w-full sm:w-auto justify-between sm:justify-end items-center">
-                        <div class="text-xs text-brand-text-secondary">
-                            Completed on March 1, 2024
-                        </div>
-                        <button class="p-1.5 hover:bg-gray-100 rounded-full ml-2" onclick="deleteCompletedGoalModal(4)">
-                            <i data-lucide="trash" class="w-3.5 h-3.5 text-gray-500"></i>
-                        </button>
-                    </div>
+                
+                <!-- Add Goal Button -->
+                <div class="add-goal-section mt-5 pt-4">
+                    <button class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium hover:bg-opacity-90 transition-colors flex items-center justify-center" onclick="addGoalModal()">
+                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                        Add New Goal
+                    </button>
                 </div>
-            </div>
-            
-            <!-- Add Goal Button -->
-            <div class="add-goal-section mt-5 pt-4">
-                <button class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium hover:bg-opacity-90 transition-colors flex items-center justify-center" onclick="addGoalModal()">
-                    <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
-                    Add New Goal
-                </button>
             </div>
         </div>
     `;
@@ -2657,99 +2725,102 @@ function showNotification(message, type = 'success') {
 // Create Assessment Content
 function createAssessmentContent() {
     return `
-        <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Body Assessment</h2>
-        <div class="space-y-5">
-            <!-- Weight Tracker Card -->
-            <div class="bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
-                <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
-                    <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-                        <i data-lucide="scale" class="w-4 h-4 mr-2 text-brand-lime"></i>
-                        Weight Tracker
-                    </h3>
-                    <div class="flex items-center justify-between w-full sm:w-auto">
-                        <span class="text-xs text-brand-text-secondary">Last updated: March 15, 2024</span>
-                        <button class="ml-3 text-xs bg-brand-lime text-brand-text-primary py-1 px-2 sm:px-3 rounded-lg" onclick="updateWeightModal()">
-                            Update
-                        </button>
-                    </div>
+        <!-- Body Assessment Section (With dedicated card) -->
+        <div class="bg-brand-surface rounded-xl p-5 shadow-lg border border-gray-100 mb-6">
+            <div class="flex items-center mb-4">
+                <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                    <i data-lucide="activity" class="w-5 h-5 text-blue-600"></i>
                 </div>
-                
-                <div class="weight-chart h-24 sm:h-32 bg-gray-50 rounded-lg mb-3 p-2 flex items-end">
-                    <div class="w-1/6 h-[50%] bg-brand-lime rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[55%] bg-brand-lime rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[60%] bg-brand-lime rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[65%] bg-brand-lime rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[70%] bg-brand-lime rounded-md mx-0.5"></div>
-                    <div class="w-1/6 h-[75%] bg-brand-lime rounded-md mx-0.5"></div>
-                </div>
-                
-                <div class="flex justify-between items-center flex-wrap sm:flex-nowrap">
-                    <div class="text-sm mb-2 sm:mb-0">
-                        <span class="text-brand-text-secondary">Current:</span>
-                        <span class="font-medium text-brand-text-primary">176 lbs</span>
-                    </div>
-                    <div class="text-sm text-green-600">
-                        <span>-9 lbs</span>
-                        <span class="text-xs text-brand-text-secondary">since Jan 1</span>
-                    </div>
-                </div>
+                <h2 class="text-lg font-semibold text-brand-text-primary">Body Assessment</h2>
             </div>
             
-            <!-- Body Metrics Card -->
-            <div class="bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
-                <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
-                    <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-                        <i data-lucide="ruler" class="w-4 h-4 mr-2 text-brand-lime"></i>
-                        Body Measurements
-                    </h3>
-                    <button class="text-xs bg-brand-lime text-brand-text-primary py-1 px-2 sm:px-3 rounded-lg" onclick="updateMeasurementsModal()">
-                        Update
-                    </button>
+            <div class="space-y-5">
+                <!-- Weight Tracker Card -->
+                <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                    <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
+                        <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
+                            <i data-lucide="scale" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                            Weight Tracker
+                        </h3>
+                        <div class="flex items-center justify-between w-full sm:w-auto">
+                            <button class="text-xs bg-gray-100 text-brand-text-secondary py-1 px-2 rounded-lg mr-2" onclick="viewWeightHistory()">
+                                <i data-lucide="history" class="w-3 h-3 mr-1 inline"></i> History
+                            </button>
+                            <span class="text-xs text-brand-text-secondary">Last: Mar 15</span>
+                            <button class="ml-3 text-xs bg-brand-lime text-brand-text-primary py-1 px-2 sm:px-3 rounded-lg" onclick="updateWeightModal()">
+                                Update
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="weight-chart h-24 sm:h-32 bg-gray-50 rounded-lg mb-3 p-2 flex items-end">
+                        <div class="w-1/6 h-[50%] bg-brand-lime rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[55%] bg-brand-lime rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[60%] bg-brand-lime rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[65%] bg-brand-lime rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[70%] bg-brand-lime rounded-md mx-0.5"></div>
+                        <div class="w-1/6 h-[75%] bg-brand-lime rounded-md mx-0.5"></div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center flex-wrap sm:flex-nowrap">
+                        <div class="text-sm mb-2 sm:mb-0">
+                            <span class="text-brand-text-secondary">Current:</span>
+                            <span class="font-medium text-brand-text-primary">176 lbs</span>
+                        </div>
+                        <div class="text-sm mb-2 sm:mb-0">
+                            <span class="text-brand-text-secondary">Target:</span>
+                            <span class="font-medium text-green-600">165 lbs</span>
+                        </div>
+                        <div class="text-sm text-green-600">
+                            <span>-9 lbs</span>
+                            <span class="text-xs text-brand-text-secondary">since Jan 1</span>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-                    <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
-                        <div class="text-xs text-brand-text-secondary mb-1">Chest</div>
-                        <div class="font-medium text-brand-text-primary">40 in</div>
+                <!-- Body Metrics Card -->
+                <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+                    <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
+                        <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
+                            <i data-lucide="ruler" class="w-4 h-4 mr-2 text-brand-lime"></i>
+                            Body Measurements
+                        </h3>
+                        <div class="flex items-center">
+                            <button class="text-xs bg-gray-100 text-brand-text-secondary py-1 px-2 rounded-lg mr-2" onclick="viewMeasurementsHistory()">
+                                <i data-lucide="history" class="w-3 h-3 mr-1 inline"></i> History
+                            </button>
+                            <button class="text-xs bg-brand-lime text-brand-text-primary py-1 px-2 sm:px-3 rounded-lg" onclick="updateMeasurementsModal()">
+                                Update
+                            </button>
+                        </div>
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
-                        <div class="text-xs text-brand-text-secondary mb-1">Waist</div>
-                        <div class="font-medium text-brand-text-primary">34 in</div>
-                    </div>
-                    <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
-                        <div class="text-xs text-brand-text-secondary mb-1">Hips</div>
-                        <div class="font-medium text-brand-text-primary">38 in</div>
-                    </div>
-                    <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
-                        <div class="text-xs text-brand-text-secondary mb-1">Thighs</div>
-                        <div class="font-medium text-brand-text-primary">22 in</div>
-                    </div>
-                    <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
-                        <div class="text-xs text-brand-text-secondary mb-1">Arms</div>
-                        <div class="font-medium text-brand-text-primary">14 in</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Body Fat Card -->
-            <div class="bg-brand-surface rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
-                <div class="flex flex-wrap sm:flex-nowrap justify-between items-start mb-3 sm:mb-4">
-                    <h3 class="font-medium text-brand-text-primary flex items-center w-full sm:w-auto mb-2 sm:mb-0">
-                        <i data-lucide="activity" class="w-4 h-4 mr-2 text-brand-lime"></i>
-                        Body Fat Percentage
-                    </h3>
-                    <button class="text-xs bg-brand-lime text-brand-text-primary py-1 px-2 sm:px-3 rounded-lg" onclick="updateBodyFatModal()">
-                        Update
-                    </button>
-                </div>
-                
-                <div class="flex flex-wrap sm:flex-nowrap items-center">
-                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-brand-lime bg-opacity-20 flex items-center justify-center mr-3 sm:mr-4">
-                        <span class="text-lg sm:text-xl font-bold text-brand-text-primary">20%</span>
-                    </div>
-                    <div class="text-sm text-brand-text-secondary mt-2 sm:mt-0">
-                        <p>Current body fat percentage</p>
-                        <p class="mt-1">Down 2% since January</p>
+                    
+                    <div id="measurements-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                            <div class="text-xs text-brand-text-secondary mb-1">Chest</div>
+                            <div class="font-medium text-brand-text-primary">40 in</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                            <div class="text-xs text-brand-text-secondary mb-1">Waist</div>
+                            <div class="font-medium text-brand-text-primary">34 in</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                            <div class="text-xs text-brand-text-secondary mb-1">Hips</div>
+                            <div class="font-medium text-brand-text-primary">38 in</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                            <div class="text-xs text-brand-text-secondary mb-1">Thighs</div>
+                            <div class="font-medium text-brand-text-primary">22 in</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                            <div class="text-xs text-brand-text-secondary mb-1">Arms</div>
+                            <div class="font-medium text-brand-text-primary">14 in</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-2 sm:p-3 text-center cursor-pointer hover:bg-gray-100" onclick="addMeasurementModal()">
+                            <div class="h-full flex items-center justify-center">
+                                <i data-lucide="plus" class="w-5 h-5 text-brand-text-secondary"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2784,18 +2855,68 @@ function initializeGoalsModals() {
                         <div class="p-6">
                             <form id="add-goal-form" class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Goal Title</label>
-                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., Lose Weight">
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Goal Type</label>
+                                    <select id="goal-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                        <option value="custom">Custom Goal</option>
+                                        <option value="weight">Weight Goal</option>
+                                        <option value="measurement">Measurement Goal</option>
+                                    </select>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target</label>
-                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., 10 lbs">
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Goal Title</label>
+                                    <input type="text" id="goal-title" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., Lose Weight">
+                                </div>
+                                
+                                <div id="weight-goal-fields" class="hidden">
+                                    <div class="flex space-x-2 mb-3">
+                                        <div class="w-1/2">
+                                            <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target Weight</label>
+                                            <input type="number" id="target-weight" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="170">
+                                        </div>
+                                        <div class="w-1/2">
+                                            <label class="block text-sm font-medium text-brand-text-secondary mb-2">Goal Type</label>
+                                            <select id="weight-goal-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                                <option value="lose">Weight Loss</option>
+                                                <option value="gain">Weight Gain</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="measurement-goal-fields" class="hidden">
+                                    <div class="flex space-x-2 mb-3">
+                                        <div class="w-1/2">
+                                            <label class="block text-sm font-medium text-brand-text-secondary mb-2">Measurement</label>
+                                            <select id="measurement-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                                <option value="">Select a measurement</option>
+                                                <option value="chest">Chest</option>
+                                                <option value="waist">Waist</option>
+                                                <option value="hips">Hips</option>
+                                                <option value="thighs">Thighs</option>
+                                                <option value="arms">Arms</option>
+                                            </select>
+                                        </div>
+                                        <div class="w-1/2">
+                                            <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target Value</label>
+                                            <div class="flex">
+                                                <input type="number" id="target-measurement" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" placeholder="32">
+                                                <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="custom-goal-fields">
+                                    <div>
+                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target</label>
+                                        <input type="text" id="custom-target" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., 10 lbs">
+                                    </div>
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target Date</label>
-                                    <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    <input type="date" id="goal-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                                 </div>
                                 
                                 <div class="pt-4 border-t border-gray-200">
@@ -2909,7 +3030,26 @@ function initializeGoalsModals() {
                             <form class="space-y-4">
                                 <div>
                                     <label class="block text-sm font-medium text-brand-text-secondary mb-2">Current Weight (lbs)</label>
-                                    <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="176">
+                                    <input type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="176">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Weight Goal Type</label>
+                                    <div class="flex space-x-2">
+                                        <label class="flex items-center flex-1 p-3 border rounded-lg cursor-pointer">
+                                            <input type="radio" name="weight-goal" value="lose" class="mr-2" checked>
+                                            <span>Weight Loss</span>
+                                        </label>
+                                        <label class="flex items-center flex-1 p-3 border rounded-lg cursor-pointer">
+                                            <input type="radio" name="weight-goal" value="gain" class="mr-2">
+                                            <span>Weight Gain</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target Weight (lbs)</label>
+                                    <input type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="165">
                                 </div>
                                 
                                 <div>
@@ -2923,6 +3063,69 @@ function initializeGoalsModals() {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Weight History Modal -->
+            <div id="weight-history-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+                <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+                <div class="fixed inset-0 flex items-center justify-center p-4">
+                    <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <!-- Modal Header -->
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-brand-text-primary">Weight History</h3>
+                            <button class="close-modal p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Content -->
+                        <div class="p-6">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead>
+                                        <tr>
+                                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Weight</th>
+                                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Change</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 15, 2024</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">176 lbs</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">-2 lbs</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 1, 2024</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">178 lbs</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">-3 lbs</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Feb 15, 2024</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">181 lbs</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">-2 lbs</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Feb 1, 2024</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">183 lbs</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">-2 lbs</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 15, 2024</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">185 lbs</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">+0 lbs</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 1, 2024</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">185 lbs</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2943,55 +3146,16 @@ function initializeGoalsModals() {
                         
                         <!-- Modal Content -->
                         <div class="p-6">
-                            <form class="space-y-4">
-                                <div class="measurement-input">
-                                    <div>
-                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Chest</label>
-                                        <div class="flex">
-                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="40">
-                                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
-                                        </div>
-                                    </div>
+                            <form id="measurements-form" class="space-y-4">
+                                <div id="measurement-fields">
+                                    <!-- Existing measurements will be added here -->
                                 </div>
                                 
-                                <div class="measurement-input">
-                                    <div>
-                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Waist</label>
-                                        <div class="flex">
-                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="34">
-                                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="measurement-input">
-                                    <div>
-                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Hips</label>
-                                        <div class="flex">
-                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="38">
-                                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="measurement-input">
-                                    <div>
-                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Thighs</label>
-                                        <div class="flex">
-                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="22">
-                                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="measurement-input">
-                                    <div>
-                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Arms</label>
-                                        <div class="flex">
-                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="14">
-                                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
-                                        </div>
-                                    </div>
+                                <div class="pt-2">
+                                    <button type="button" class="w-full py-2 px-4 border border-dashed border-gray-300 text-brand-text-secondary rounded-lg font-medium flex items-center justify-center" onclick="addMeasurementField()">
+                                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                                        Add New Measurement
+                                    </button>
                                 </div>
                                 
                                 <div>
@@ -3010,14 +3174,59 @@ function initializeGoalsModals() {
                 </div>
             </div>
             
-            <!-- Update Body Fat Modal -->
-            <div id="update-bodyfat-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+            <!-- Measurements History Modal -->
+            <div id="measurements-history-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+                <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+                <div class="fixed inset-0 flex items-center justify-center p-4">
+                    <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <!-- Modal Header -->
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-brand-text-primary">Measurements History</h3>
+                            <button class="close-modal p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Content -->
+                        <div class="p-6">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-brand-text-secondary mb-2">Select Measurement</label>
+                                <select id="history-measurement-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg" onchange="showMeasurementHistory(this.value)">
+                                    <option value="chest">Chest</option>
+                                    <option value="waist">Waist</option>
+                                    <option value="hips">Hips</option>
+                                    <option value="thighs">Thighs</option>
+                                    <option value="arms">Arms</option>
+                                </select>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead>
+                                        <tr>
+                                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Measurement</th>
+                                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Change</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="measurement-history-table" class="bg-white divide-y divide-gray-200">
+                                        <!-- History data will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add New Measurement Modal -->
+            <div id="add-measurement-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
                 <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
                 <div class="fixed inset-0 flex items-center justify-center p-4">
                     <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
                         <!-- Modal Header -->
                         <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                            <h3 class="text-lg font-semibold text-brand-text-primary">Update Body Fat Percentage</h3>
+                            <h3 class="text-lg font-semibold text-brand-text-primary">Add New Measurement</h3>
                             <button class="close-modal p-2 hover:bg-gray-100 rounded-lg transition-colors">
                                 <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
                             </button>
@@ -3027,18 +3236,21 @@ function initializeGoalsModals() {
                         <div class="p-6">
                             <form class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Current Body Fat (%)</label>
-                                    <input type="number" step="0.1" min="1" max="50" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="20.0">
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Measurement Name</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., Calves, Neck, etc.">
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Date</label>
-                                    <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    <label class="block text-sm font-medium text-brand-text-secondary mb-2">Initial Value</label>
+                                    <div class="flex">
+                                        <input type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" placeholder="0">
+                                        <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                                    </div>
                                 </div>
                                 
                                 <div class="pt-4 border-t border-gray-200">
-                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveBodyFat()">
-                                        Save Body Fat
+                                    <button type="button" class="w-full py-3 px-4 bg-brand-lime text-brand-text-primary rounded-lg font-medium" onclick="saveNewMeasurement()">
+                                        Add Measurement
                                     </button>
                                 </div>
                             </form>
@@ -3055,6 +3267,30 @@ function initializeGoalsModals() {
         document.querySelectorAll('.close-modal').forEach(btn => {
             btn.addEventListener('click', closeAllModals);
         });
+        
+        // Add event listener for goal type selection
+        const goalTypeSelect = document.getElementById('goal-type');
+        if (goalTypeSelect) {
+            goalTypeSelect.addEventListener('change', function() {
+                const weightFields = document.getElementById('weight-goal-fields');
+                const measurementFields = document.getElementById('measurement-goal-fields');
+                const customFields = document.getElementById('custom-goal-fields');
+                
+                // Hide all fields first
+                weightFields.classList.add('hidden');
+                measurementFields.classList.add('hidden');
+                customFields.classList.add('hidden');
+                
+                // Show fields based on selection
+                if (this.value === 'weight') {
+                    weightFields.classList.remove('hidden');
+                } else if (this.value === 'measurement') {
+                    measurementFields.classList.remove('hidden');
+                } else {
+                    customFields.classList.remove('hidden');
+                }
+            });
+        }
     }
 }
 
@@ -3062,6 +3298,24 @@ function initializeGoalsModals() {
 function addGoalModal() {
     const modal = document.getElementById('add-goal-modal');
     if (modal) {
+        // Populate the measurement dropdown with available measurements
+        const measurementSelect = document.getElementById('measurement-type');
+        if (measurementSelect) {
+            // Get assessment data to populate with actual measurements
+            const assessmentData = getMockAssessmentData();
+            
+            // Clear existing options
+            measurementSelect.innerHTML = '<option value="">Select a measurement</option>';
+            
+            // Add options based on available metrics
+            for (const [key, value] of Object.entries(assessmentData.metrics)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+                measurementSelect.appendChild(option);
+            }
+        }
+        
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -3118,6 +3372,33 @@ function deleteCompletedGoalModal(goalId) {
 function updateWeightModal() {
     const modal = document.getElementById('update-weight-modal');
     if (modal) {
+        // Pre-select weight loss by default
+        const weightLossRadio = modal.querySelector('input[value="lose"]');
+        if (weightLossRadio) {
+            weightLossRadio.checked = true;
+        }
+        
+        // Get the current weight and target fields
+        const currentWeightInput = modal.querySelector('input[type="number"]:first-of-type');
+        const targetWeightInput = modal.querySelector('input[placeholder="165"]');
+        
+        // Populate with current values
+        if (currentWeightInput) {
+            currentWeightInput.value = 176; // In a real app, this would come from actual data
+        }
+        
+        if (targetWeightInput) {
+            targetWeightInput.value = 165; // In a real app, this would come from actual data
+        }
+        
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function viewWeightHistory() {
+    const modal = document.getElementById('weight-history-modal');
+    if (modal) {
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -3126,14 +3407,180 @@ function updateWeightModal() {
 function updateMeasurementsModal() {
     const modal = document.getElementById('update-measurements-modal');
     if (modal) {
+        // Populate measurement fields
+        const measurementFields = document.getElementById('measurement-fields');
+        if (measurementFields) {
+            measurementFields.innerHTML = `
+                <div class="measurement-input mb-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-sm font-medium text-brand-text-secondary">Chest</label>
+                        <button type="button" class="text-xs text-red-500 hover:text-red-700" onclick="removeMeasurementField(this)">Remove</button>
+                    </div>
+                    <div class="flex">
+                        <input type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="40">
+                        <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                    </div>
+                </div>
+                
+                <div class="measurement-input mb-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-sm font-medium text-brand-text-secondary">Waist</label>
+                        <button type="button" class="text-xs text-red-500 hover:text-red-700" onclick="removeMeasurementField(this)">Remove</button>
+                    </div>
+                    <div class="flex">
+                        <input type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="34">
+                        <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                    </div>
+                </div>
+                
+                <div class="measurement-input mb-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-sm font-medium text-brand-text-secondary">Hips</label>
+                        <button type="button" class="text-xs text-red-500 hover:text-red-700" onclick="removeMeasurementField(this)">Remove</button>
+                    </div>
+                    <div class="flex">
+                        <input type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="38">
+                        <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                    </div>
+                </div>
+                
+                <div class="measurement-input mb-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-sm font-medium text-brand-text-secondary">Thighs</label>
+                        <button type="button" class="text-xs text-red-500 hover:text-red-700" onclick="removeMeasurementField(this)">Remove</button>
+                    </div>
+                    <div class="flex">
+                        <input type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="22">
+                        <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                    </div>
+                </div>
+                
+                <div class="measurement-input mb-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-sm font-medium text-brand-text-secondary">Arms</label>
+                        <button type="button" class="text-xs text-red-500 hover:text-red-700" onclick="removeMeasurementField(this)">Remove</button>
+                    </div>
+                    <div class="flex">
+                        <input type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" value="14">
+                        <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+                    </div>
+                </div>
+            `;
+        }
+        
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
 }
 
-function updateBodyFatModal() {
-    const modal = document.getElementById('update-bodyfat-modal');
+// Show Measurement History
+function viewMeasurementsHistory() {
+    const modal = document.getElementById('measurements-history-modal');
     if (modal) {
+        // Show history for the first measurement by default
+        showMeasurementHistory('chest');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Show measurement history data
+function showMeasurementHistory(measurementType) {
+    const historyTable = document.getElementById('measurement-history-table');
+    if (historyTable) {
+        // Clear current history
+        historyTable.innerHTML = '';
+        
+        // Add mock data based on measurement type
+        let mockData;
+        switch(measurementType) {
+            case 'chest':
+                mockData = [
+                    { date: 'Mar 15, 2024', value: '40 in', change: '-0.5 in' },
+                    { date: 'Mar 1, 2024', value: '40.5 in', change: '-0.5 in' },
+                    { date: 'Feb 15, 2024', value: '41 in', change: '-0.5 in' },
+                    { date: 'Feb 1, 2024', value: '41.5 in', change: '-0.5 in' },
+                    { date: 'Jan 15, 2024', value: '42 in', change: '-0 in' },
+                    { date: 'Jan 1, 2024', value: '42 in', change: '-' }
+                ];
+                break;
+            case 'waist':
+                mockData = [
+                    { date: 'Mar 15, 2024', value: '34 in', change: '-0.5 in' },
+                    { date: 'Mar 1, 2024', value: '34.5 in', change: '-0.5 in' },
+                    { date: 'Feb 15, 2024', value: '35 in', change: '-0.5 in' },
+                    { date: 'Feb 1, 2024', value: '35.5 in', change: '-0.5 in' },
+                    { date: 'Jan 15, 2024', value: '36 in', change: '-0 in' },
+                    { date: 'Jan 1, 2024', value: '36 in', change: '-' }
+                ];
+                break;
+            case 'hips':
+                mockData = [
+                    { date: 'Mar 15, 2024', value: '38 in', change: '-0.5 in' },
+                    { date: 'Mar 1, 2024', value: '38.5 in', change: '-0.5 in' },
+                    { date: 'Feb 15, 2024', value: '39 in', change: '-0 in' },
+                    { date: 'Feb 1, 2024', value: '39 in', change: '-0 in' },
+                    { date: 'Jan 15, 2024', value: '39 in', change: '-0 in' },
+                    { date: 'Jan 1, 2024', value: '39 in', change: '-' }
+                ];
+                break;
+            case 'thighs':
+                mockData = [
+                    { date: 'Mar 15, 2024', value: '22 in', change: '-0.25 in' },
+                    { date: 'Mar 1, 2024', value: '22.25 in', change: '-0.25 in' },
+                    { date: 'Feb 15, 2024', value: '22.5 in', change: '-0 in' },
+                    { date: 'Feb 1, 2024', value: '22.5 in', change: '-0.25 in' },
+                    { date: 'Jan 15, 2024', value: '22.75 in', change: '-0 in' },
+                    { date: 'Jan 1, 2024', value: '22.75 in', change: '-' }
+                ];
+                break;
+            case 'arms':
+                mockData = [
+                    { date: 'Mar 15, 2024', value: '14 in', change: '+0.25 in' },
+                    { date: 'Mar 1, 2024', value: '13.75 in', change: '+0.25 in' },
+                    { date: 'Feb 15, 2024', value: '13.5 in', change: '+0.25 in' },
+                    { date: 'Feb 1, 2024', value: '13.25 in', change: '+0 in' },
+                    { date: 'Jan 15, 2024', value: '13.25 in', change: '+0 in' },
+                    { date: 'Jan 1, 2024', value: '13.25 in', change: '-' }
+                ];
+                break;
+            default:
+                mockData = [];
+        }
+        
+        // Add rows to the table
+        mockData.forEach(item => {
+            const row = document.createElement('tr');
+            
+            // Format the change cell
+            let changeClass = 'text-gray-500';
+            if (item.change.startsWith('+')) {
+                changeClass = 'text-blue-600'; // Blue for muscle growth
+            } else if (item.change.startsWith('-') && item.change !== '-') {
+                changeClass = 'text-green-600'; // Green for fat loss
+            }
+            
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.date}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.value}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm ${changeClass}">${item.change}</td>
+            `;
+            
+            historyTable.appendChild(row);
+        });
+    }
+}
+
+function addMeasurementModal() {
+    const modal = document.getElementById('add-measurement-modal');
+    if (modal) {
+        // Reset form fields
+        const nameInput = modal.querySelector('input[type="text"]');
+        const valueInput = modal.querySelector('input[type="number"]');
+        
+        if (nameInput) nameInput.value = '';
+        if (valueInput) valueInput.value = '';
+        
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -3145,6 +3592,121 @@ function closeAllModals() {
         modal.classList.add('hidden');
     });
     document.body.style.overflow = '';
+}
+
+// Helper functions for measurements
+function addMeasurementField() {
+    const measurementFields = document.getElementById('measurement-fields');
+    if (measurementFields) {
+        const newField = document.createElement('div');
+        newField.className = 'measurement-input mb-3';
+        newField.innerHTML = `
+            <div class="flex justify-between items-center mb-1">
+                <label class="text-sm font-medium text-brand-text-secondary">
+                    <input type="text" class="px-2 py-1 border border-gray-300 rounded text-sm" placeholder="Measurement name">
+                </label>
+                <button type="button" class="text-xs text-red-500 hover:text-red-700" onclick="removeMeasurementField(this)">Remove</button>
+            </div>
+            <div class="flex">
+                <input type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-l-lg" placeholder="0">
+                <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-500 rounded-r-lg">in</span>
+            </div>
+        `;
+        measurementFields.appendChild(newField);
+    }
+}
+
+function removeMeasurementField(button) {
+    const field = button.closest('.measurement-input');
+    if (field) {
+        field.remove();
+    }
+}
+
+function showMeasurementHistory(measurementType) {
+    const historyTable = document.getElementById('measurement-history-table');
+    if (historyTable) {
+        // Clear current history
+        historyTable.innerHTML = '';
+        
+        // Add mock data based on measurement type
+        let mockData;
+        switch(measurementType) {
+            case 'chest':
+                mockData = [
+                    { date: 'Mar 15, 2024', value: '40 in', change: '-0.5 in' },
+                    { date: 'Mar 1, 2024', value: '40.5 in', change: '-0.5 in' },
+                    { date: 'Feb 15, 2024', value: '41 in', change: '-0.5 in' },
+                    { date: 'Feb 1, 2024', value: '41.5 in', change: '-0.5 in' },
+                    { date: 'Jan 15, 2024', value: '42 in', change: '-0 in' },
+                    { date: 'Jan 1, 2024', value: '42 in', change: '-' }
+                ];
+                break;
+            case 'waist':
+                mockData = [
+                    { date: 'Mar 15, 2024', value: '34 in', change: '-0.5 in' },
+                    { date: 'Mar 1, 2024', value: '34.5 in', change: '-0.5 in' },
+                    { date: 'Feb 15, 2024', value: '35 in', change: '-0.5 in' },
+                    { date: 'Feb 1, 2024', value: '35.5 in', change: '-0.5 in' },
+                    { date: 'Jan 15, 2024', value: '36 in', change: '-0 in' },
+                    { date: 'Jan 1, 2024', value: '36 in', change: '-' }
+                ];
+                break;
+            case 'hips':
+                mockData = [
+                    { date: 'Mar 15, 2024', value: '38 in', change: '-0.5 in' },
+                    { date: 'Mar 1, 2024', value: '38.5 in', change: '-0.5 in' },
+                    { date: 'Feb 15, 2024', value: '39 in', change: '-0 in' },
+                    { date: 'Feb 1, 2024', value: '39 in', change: '-0 in' },
+                    { date: 'Jan 15, 2024', value: '39 in', change: '-0 in' },
+                    { date: 'Jan 1, 2024', value: '39 in', change: '-' }
+                ];
+                break;
+            case 'thighs':
+                mockData = [
+                    { date: 'Mar 15, 2024', value: '22 in', change: '-0.25 in' },
+                    { date: 'Mar 1, 2024', value: '22.25 in', change: '-0.25 in' },
+                    { date: 'Feb 15, 2024', value: '22.5 in', change: '-0 in' },
+                    { date: 'Feb 1, 2024', value: '22.5 in', change: '-0.25 in' },
+                    { date: 'Jan 15, 2024', value: '22.75 in', change: '-0 in' },
+                    { date: 'Jan 1, 2024', value: '22.75 in', change: '-' }
+                ];
+                break;
+            case 'arms':
+                mockData = [
+                    { date: 'Mar 15, 2024', value: '14 in', change: '+0.25 in' },
+                    { date: 'Mar 1, 2024', value: '13.75 in', change: '+0.25 in' },
+                    { date: 'Feb 15, 2024', value: '13.5 in', change: '+0.25 in' },
+                    { date: 'Feb 1, 2024', value: '13.25 in', change: '+0 in' },
+                    { date: 'Jan 15, 2024', value: '13.25 in', change: '+0 in' },
+                    { date: 'Jan 1, 2024', value: '13.25 in', change: '-' }
+                ];
+                break;
+            default:
+                mockData = [];
+        }
+        
+        // Add rows to the table
+        mockData.forEach(item => {
+            const row = document.createElement('tr');
+            
+            // Format the change cell
+            let changeClass = 'text-gray-500';
+            if (item.change.startsWith('+')) {
+                changeClass = 'text-blue-600'; // Blue for muscle growth
+            } else if (item.change.startsWith('-') && item.change !== '-') {
+                changeClass = 'text-green-600'; // Green for fat loss
+            }
+            
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.date}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.value}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm ${changeClass}">${item.change}</td>
+            `;
+            
+            historyTable.appendChild(row);
+        });
+    }
 }
 
 // Save Functions (for demonstration)
@@ -3167,6 +3729,32 @@ function confirmDeleteGoal() {
 }
 
 function saveWeight() {
+    const modal = document.getElementById('update-weight-modal');
+    if (modal) {
+        // In a real app, you would get these values and save them to your data store
+        const currentWeight = modal.querySelector('input[type="number"]:first-of-type').value;
+        const targetWeight = modal.querySelector('input[placeholder="165"]').value;
+        const goalType = modal.querySelector('input[name="weight-goal"]:checked').value;
+        
+        console.log('Saving weight data:', { currentWeight, targetWeight, goalType });
+        
+        // Update UI with new values (in a real app)
+        const currentWeightElements = document.querySelectorAll('.weight-chart + div .text-brand-text-primary');
+        const targetWeightElements = document.querySelectorAll('.weight-chart + div .text-green-600');
+        
+        currentWeightElements.forEach(el => {
+            if (el.textContent.includes('lbs')) {
+                el.textContent = `${currentWeight} lbs`;
+            }
+        });
+        
+        targetWeightElements.forEach(el => {
+            if (el.textContent.includes('lbs')) {
+                el.textContent = `${targetWeight} lbs`;
+            }
+        });
+    }
+    
     showNotification('Weight updated successfully!', 'success');
     closeAllModals();
 }
@@ -3176,9 +3764,13 @@ function saveMeasurements() {
     closeAllModals();
 }
 
-function saveBodyFat() {
-    showNotification('Body fat percentage updated successfully!', 'success');
+function saveNewMeasurement() {
+    showNotification('New measurement added successfully!', 'success');
     closeAllModals();
+    
+    // In a real app, you would refresh the measurements display
+    // For now, we'll just reload the goals content
+    loadGoalsContent();
 }
 
 // Progress bar update for edit form
