@@ -2857,7 +2857,6 @@ function initializeGoalsModals() {
                                 <div>
                                     <label class="block text-sm font-medium text-brand-text-secondary mb-2">Goal Type</label>
                                     <select id="goal-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                                        <option value="custom">Custom Goal</option>
                                         <option value="weight">Weight Goal</option>
                                         <option value="measurement">Measurement Goal</option>
                                     </select>
@@ -2907,12 +2906,7 @@ function initializeGoalsModals() {
                                     </div>
                                 </div>
                                 
-                                <div id="custom-goal-fields">
-                                    <div>
-                                        <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target</label>
-                                        <input type="text" id="custom-target" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., 10 lbs">
-                                    </div>
-                                </div>
+                                <!-- Custom goal fields removed -->
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-brand-text-secondary mb-2">Target Date</label>
@@ -2961,7 +2955,7 @@ function initializeGoalsModals() {
             </div>
             
             <!-- Edit Goal Modal -->
-            <div id="edit-goal-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+                                        <div id="edit-goal-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
                 <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
                 <div class="fixed inset-0 flex items-center justify-center p-4">
                     <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
@@ -2993,11 +2987,8 @@ function initializeGoalsModals() {
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-brand-text-secondary mb-2">Progress</label>
-                                    <input type="range" min="0" max="100" class="w-full" id="edit-goal-progress">
-                                    <div class="flex justify-between text-xs text-brand-text-secondary mt-1">
-                                        <span>0%</span>
-                                        <span id="edit-goal-progress-value">50%</span>
-                                        <span>100%</span>
+                                    <div class="px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-brand-text-secondary text-sm">
+                                        Progress is calculated automatically from your measurement history
                                     </div>
                                 </div>
                                 
@@ -3274,20 +3265,16 @@ function initializeGoalsModals() {
             goalTypeSelect.addEventListener('change', function() {
                 const weightFields = document.getElementById('weight-goal-fields');
                 const measurementFields = document.getElementById('measurement-goal-fields');
-                const customFields = document.getElementById('custom-goal-fields');
                 
                 // Hide all fields first
                 weightFields.classList.add('hidden');
                 measurementFields.classList.add('hidden');
-                customFields.classList.add('hidden');
                 
                 // Show fields based on selection
                 if (this.value === 'weight') {
                     weightFields.classList.remove('hidden');
                 } else if (this.value === 'measurement') {
                     measurementFields.classList.remove('hidden');
-                } else {
-                    customFields.classList.remove('hidden');
                 }
             });
         }
@@ -3331,22 +3318,16 @@ function editGoalModal(goalId) {
                 document.getElementById('edit-goal-title').value = "Lose Weight";
                 document.getElementById('edit-goal-target').value = "10 lbs";
                 document.getElementById('edit-goal-date').value = "2024-06-30";
-                document.getElementById('edit-goal-progress').value = 40;
-                document.getElementById('edit-goal-progress-value').textContent = "40%";
                 break;
             case 2:
                 document.getElementById('edit-goal-title').value = "Run 5K";
                 document.getElementById('edit-goal-target').value = "Under 30 min";
                 document.getElementById('edit-goal-date').value = "2024-05-15";
-                document.getElementById('edit-goal-progress').value = 65;
-                document.getElementById('edit-goal-progress-value').textContent = "65%";
                 break;
             case 3:
                 document.getElementById('edit-goal-title').value = "Strength Training";
                 document.getElementById('edit-goal-target').value = "3x weekly";
                 document.getElementById('edit-goal-date').value = "2024-12-31";
-                document.getElementById('edit-goal-progress').value = 80;
-                document.getElementById('edit-goal-progress-value').textContent = "80%";
                 break;
         }
         

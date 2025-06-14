@@ -589,10 +589,26 @@ a:focus {
     width: 100%;
 }
 
-@media (min-width: 768px) {
+/* For tablet and small desktop */
+@media (min-width: 768px) and (max-width: 1439px) {
     #goals-content .grid {
         display: flex;
         flex-direction: column;
+        gap: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    #goals-content .grid > div {
+        margin-bottom: 0;
+    }
+}
+
+/* For large desktop screens */
+@media (min-width: 1440px) {
+    #goals-content .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 2rem;
     }
     
