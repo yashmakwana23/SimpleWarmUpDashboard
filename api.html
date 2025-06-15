@@ -1,0 +1,534 @@
+// API Manager for InMotion Fitness Dashboard
+// Handles communication with Google Apps Script backend
+
+const API_ENDPOINTS = {
+    // Workout Management
+    GET_TODAY_WORKOUT: 'getTodayWorkout',
+    GET_WORKOUT_HISTORY: 'getWorkoutHistory',
+    COMPLETE_EXERCISE: 'completeExercise',
+    COMPLETE_WORKOUT: 'completeWorkout',
+    SAVE_WORKOUT_NOTES: 'saveWorkoutNotes',
+    
+    // Plans Management
+    GET_ALL_PLANS: 'getAllPlans',
+    GET_PLAN_DETAILS: 'getPlanDetails',
+    UPDATE_PLAN: 'updatePlan',
+    CREATE_PLAN: 'createPlan',
+    
+    // Goals Management
+    GET_GOALS: 'getGoals',
+    ADD_GOAL: 'addGoal',
+    UPDATE_GOAL: 'updateGoal',
+    DELETE_GOAL: 'deleteGoal',
+    
+    // Assessment Management
+    GET_ASSESSMENT_DATA: 'getAssessmentData',
+    UPDATE_WEIGHT: 'updateWeight',
+    UPDATE_MEASUREMENTS: 'updateMeasurements',
+    GET_WEIGHT_HISTORY: 'getWeightHistory',
+    
+    // Notes Management
+    GET_NOTES: 'getNotes',
+    ADD_NOTE: 'addNote',
+    UPDATE_NOTE: 'updateNote',
+    DELETE_NOTE: 'deleteNote',
+    
+    // Progress Tracking
+    GET_PROGRESS: 'getProgress',
+    UPDATE_PROGRESS: 'updateProgress',
+    GET_STATS: 'getStats',
+    
+    // User Management
+    GET_USER_PROFILE: 'getUserProfile',
+    UPDATE_USER_PREFERENCES: 'updateUserPreferences'
+};
+
+// API Configuration
+const API_CONFIG = {
+    TIMEOUT: 30000, // 30 seconds
+    RETRY_COUNT: 3,
+    RETRY_DELAY: 1000, // 1 second
+    CACHE_ENABLED: true
+};
+
+// API Call Wrapper with Error Handling and Caching
+async function apiCall(endpoint, data = {}, options = {}) {
+    const {
+        useCache = API_CONFIG.CACHE_ENABLED,
+        cacheTimeout = CACHE_DURATION.MEDIUM,
+        showLoader = true,
+        retryCount = API_CONFIG.RETRY_COUNT
+    } = options;
+    
+    // Check cache first for GET requests
+    if (useCache && !data.method && Object.keys(data).length === 0) {
+        const cachedResponse = getCachedApiResponse(endpoint);
+        if (cachedResponse) {
+            console.log(`Using cached data for ${endpoint}`);
+            return cachedResponse;
+        }
+    }
+    
+    if (showLoader) {
+        showLoading(`Loading ${endpoint}...`);
+    }
+    
+    try {
+        const response = await makeApiRequest(endpoint, data, retryCount);
+        
+        // Cache successful GET responses
+        if (useCache && response.success && !data.method) {
+            cacheApiResponse(endpoint, response, cacheTimeout);
+        }
+        
+        return response;
+    } catch (error) {
+        console.error(`API Error for ${endpoint}:`, error);
+        throw error;
+    } finally {
+        if (showLoader) {
+            hideLoading();
+        }
+    }
+}
+
+// Core API Request Function
+async function makeApiRequest(endpoint, data = {}, retryCount = 0) {
+    return new Promise((resolve, reject) => {
+        // Add timestamp and user context
+        const requestData = {
+            ...data,
+            timestamp: getCurrentLocalDateTime(),
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
+        
+        // Use Google Apps Script's google.script.run
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+            google.script.run
+                .withSuccessHandler((response) => {
+                    if (response && response.success) {
+                        resolve(response);
+                    } else {
+                        reject(new Error(response?.error || 'Unknown API error'));
+                    }
+                })
+                .withFailureHandler((error) => {
+                    if (retryCount > 0) {
+                        console.log(`Retrying API call ${endpoint}, attempts left: ${retryCount}`);
+                        setTimeout(() => {
+                            makeApiRequest(endpoint, data, retryCount - 1)
+                                .then(resolve)
+                                .catch(reject);
+                        }, API_CONFIG.RETRY_DELAY);
+                    } else {
+                        reject(new Error(error.message || 'API request failed'));
+                    }
+                })
+                [endpoint](requestData);
+        } else {
+            // Fallback for development/testing - use mock data
+            console.warn(`Google Apps Script not available, using mock data for ${endpoint}`);
+            setTimeout(() => {
+                const mockResponse = getMockApiResponse(endpoint, requestData);
+                resolve(mockResponse);
+            }, 500); // Simulate network delay
+        }
+    });
+}
+
+// Mock API Responses for Development
+function getMockApiResponse(endpoint, data) {
+    switch (endpoint) {
+        case API_ENDPOINTS.GET_TODAY_WORKOUT:
+            return {
+                success: true,
+                data: {
+                    day: 1,
+                    title: "Upper Body Strength",
+                    exercises: [
+                        {
+                            name: "Push-ups",
+                            sets: 3,
+                            reps: "10-15",
+                            duration: null,
+                            completed: false,
+                            videoUrl: "https://youtube.com/watch?v=example"
+                        },
+                        {
+                            name: "Planks",
+                            sets: 3,
+                            reps: null,
+                            duration: 30,
+                            completed: false,
+                            videoUrl: "https://youtube.com/watch?v=example2"
+                        }
+                    ]
+                }
+            };
+            
+        case API_ENDPOINTS.GET_WORKOUT_HISTORY:
+            return {
+                success: true,
+                data: [
+                    {
+                        day: 1,
+                        date: "2024-01-15",
+                        title: "Upper Body",
+                        status: "completed",
+                        duration: 45
+                    }
+                ]
+            };
+            
+        case API_ENDPOINTS.GET_GOALS:
+            return {
+                success: true,
+                data: {
+                    active: [
+                        {
+                            id: "1",
+                            title: "Lose 10 pounds",
+                            target: 10,
+                            current: 3,
+                            unit: "lbs",
+                            deadline: "2024-03-01",
+                            progress: 30
+                        }
+                    ],
+                    completed: []
+                }
+            };
+            
+        default:
+            return {
+                success: true,
+                data: {},
+                message: `Mock response for ${endpoint}`
+            };
+    }
+}
+
+// Workout API Functions
+async function getTodayWorkout() {
+    try {
+        const response = await apiCall(API_ENDPOINTS.GET_TODAY_WORKOUT);
+        return response.data;
+    } catch (error) {
+        handleError(error, 'Failed to load today\'s workout');
+        return null;
+    }
+}
+
+async function getWorkoutHistory() {
+    try {
+        const response = await apiCall(API_ENDPOINTS.GET_WORKOUT_HISTORY);
+        return response.data;
+    } catch (error) {
+        handleError(error, 'Failed to load workout history');
+        return [];
+    }
+}
+
+async function completeExercise(exerciseId, workoutDay, notes = '') {
+    try {
+        const response = await apiCall(API_ENDPOINTS.COMPLETE_EXERCISE, {
+            exerciseId,
+            workoutDay,
+            notes,
+            completedAt: getCurrentLocalDateTime()
+        }, { useCache: false });
+        
+        if (response.success) {
+            showSuccess('Exercise completed!');
+            // Invalidate workout cache
+            invalidateCache('workout');
+        }
+        
+        return response.success;
+    } catch (error) {
+        handleError(error, 'Failed to complete exercise');
+        return false;
+    }
+}
+
+async function completeWorkout(workoutDay, stats = {}) {
+    try {
+        const response = await apiCall(API_ENDPOINTS.COMPLETE_WORKOUT, {
+            workoutDay,
+            stats: {
+                duration: stats.duration || 0,
+                exercisesCompleted: stats.exercisesCompleted || 0,
+                totalExercises: stats.totalExercises || 0,
+                ...stats
+            },
+            completedAt: getCurrentLocalDateTime()
+        }, { useCache: false });
+        
+        if (response.success) {
+            showSuccess('Workout completed! Great job! 🎉');
+            // Update local progress
+            markDayComplete(workoutDay, stats);
+            // Invalidate relevant cache
+            invalidateCache();
+        }
+        
+        return response.success;
+    } catch (error) {
+        handleError(error, 'Failed to complete workout');
+        return false;
+    }
+}
+
+// Goals API Functions
+async function getGoalsData() {
+    try {
+        const response = await apiCall(API_ENDPOINTS.GET_GOALS);
+        return response.data;
+    } catch (error) {
+        handleError(error, 'Failed to load goals');
+        return { active: [], completed: [] };
+    }
+}
+
+async function addGoalApi(goalData) {
+    try {
+        const response = await apiCall(API_ENDPOINTS.ADD_GOAL, {
+            ...goalData,
+            createdAt: getCurrentLocalDateTime()
+        }, { useCache: false });
+        
+        if (response.success) {
+            showSuccess('Goal added successfully!');
+            // Update local storage
+            addGoal(goalData);
+            // Invalidate goals cache
+            invalidateCache('goals');
+        }
+        
+        return response.success;
+    } catch (error) {
+        handleError(error, 'Failed to add goal');
+        return false;
+    }
+}
+
+async function updateGoalApi(goalId, updates) {
+    try {
+        const response = await apiCall(API_ENDPOINTS.UPDATE_GOAL, {
+            goalId,
+            updates: {
+                ...updates,
+                updatedAt: getCurrentLocalDateTime()
+            }
+        }, { useCache: false });
+        
+        if (response.success) {
+            showSuccess('Goal updated successfully!');
+            // Update local storage
+            updateGoal(goalId, updates);
+            // Invalidate goals cache
+            invalidateCache('goals');
+        }
+        
+        return response.success;
+    } catch (error) {
+        handleError(error, 'Failed to update goal');
+        return false;
+    }
+}
+
+// Assessment API Functions
+async function getAssessmentDataApi() {
+    try {
+        const response = await apiCall(API_ENDPOINTS.GET_ASSESSMENT_DATA);
+        return response.data;
+    } catch (error) {
+        handleError(error, 'Failed to load assessment data');
+        return null;
+    }
+}
+
+async function updateWeightApi(weight, unit, notes = '') {
+    try {
+        const response = await apiCall(API_ENDPOINTS.UPDATE_WEIGHT, {
+            weight: parseFloat(weight),
+            unit,
+            notes,
+            recordedAt: getCurrentLocalDateTime()
+        }, { useCache: false });
+        
+        if (response.success) {
+            showSuccess('Weight updated successfully!');
+            // Update local storage
+            addWeightEntry(weight, unit, notes);
+            // Invalidate assessment cache
+            invalidateCache('assessment');
+        }
+        
+        return response.success;
+    } catch (error) {
+        handleError(error, 'Failed to update weight');
+        return false;
+    }
+}
+
+async function updateMeasurementsApi(measurements, notes = '') {
+    try {
+        const response = await apiCall(API_ENDPOINTS.UPDATE_MEASUREMENTS, {
+            measurements,
+            notes,
+            recordedAt: getCurrentLocalDateTime()
+        }, { useCache: false });
+        
+        if (response.success) {
+            showSuccess('Measurements updated successfully!');
+            // Update local storage
+            addMeasurementEntry(measurements, notes);
+            // Invalidate assessment cache
+            invalidateCache('assessment');
+        }
+        
+        return response.success;
+    } catch (error) {
+        handleError(error, 'Failed to update measurements');
+        return false;
+    }
+}
+
+// Notes API Functions
+async function getNotesApi() {
+    try {
+        const response = await apiCall(API_ENDPOINTS.GET_NOTES);
+        return response.data;
+    } catch (error) {
+        handleError(error, 'Failed to load notes');
+        return [];
+    }
+}
+
+async function addNoteApi(noteData) {
+    try {
+        const response = await apiCall(API_ENDPOINTS.ADD_NOTE, {
+            ...noteData,
+            createdAt: getCurrentLocalDateTime()
+        }, { useCache: false });
+        
+        if (response.success) {
+            showSuccess('Note saved successfully!');
+            // Update local storage
+            addNote(noteData);
+            // Invalidate notes cache
+            invalidateCache('notes');
+        }
+        
+        return response.success;
+    } catch (error) {
+        handleError(error, 'Failed to save note');
+        return false;
+    }
+}
+
+// Progress API Functions
+async function getProgressApi() {
+    try {
+        const response = await apiCall(API_ENDPOINTS.GET_PROGRESS);
+        return response.data;
+    } catch (error) {
+        handleError(error, 'Failed to load progress data');
+        return null;
+    }
+}
+
+async function syncProgressData() {
+    try {
+        const localProgress = getProgressData();
+        const response = await apiCall(API_ENDPOINTS.UPDATE_PROGRESS, {
+            progress: localProgress,
+            lastSynced: getCurrentLocalDateTime()
+        }, { useCache: false });
+        
+        if (response.success) {
+            updateLastSyncTime();
+            console.log('Progress data synced successfully');
+        }
+        
+        return response.success;
+    } catch (error) {
+        handleError(error, 'Failed to sync progress data');
+        return false;
+    }
+}
+
+// Batch Operations
+async function syncAllData() {
+    showLoading('Syncing data...');
+    
+    try {
+        const promises = [
+            syncProgressData(),
+            // Add other sync operations as needed
+        ];
+        
+        const results = await Promise.allSettled(promises);
+        const successful = results.filter(r => r.status === 'fulfilled' && r.value).length;
+        
+        if (successful === results.length) {
+            showSuccess('All data synced successfully!');
+        } else {
+            showWarning(`${successful}/${results.length} operations synced successfully`);
+        }
+        
+        return successful === results.length;
+    } catch (error) {
+        handleError(error, 'Failed to sync data');
+        return false;
+    } finally {
+        hideLoading();
+    }
+}
+
+// Auto-sync functionality
+function startAutoSync() {
+    // Sync every 5 minutes if needed
+    setInterval(() => {
+        if (needsSync()) {
+            console.log('Auto-syncing data...');
+            syncAllData();
+        }
+    }, 5 * 60 * 1000); // 5 minutes
+}
+
+// Export API functions
+window.ApiManager = {
+    // Core functions
+    apiCall,
+    makeApiRequest,
+    
+    // Workout functions
+    getTodayWorkout,
+    getWorkoutHistory,
+    completeExercise,
+    completeWorkout,
+    
+    // Goals functions
+    getGoalsData,
+    addGoalApi,
+    updateGoalApi,
+    
+    // Assessment functions
+    getAssessmentDataApi,
+    updateWeightApi,
+    updateMeasurementsApi,
+    
+    // Notes functions
+    getNotesApi,
+    addNoteApi,
+    
+    // Progress functions
+    getProgressApi,
+    syncProgressData,
+    
+    // Sync functions
+    syncAllData,
+    startAutoSync
+}; 

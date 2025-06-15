@@ -1,0 +1,21 @@
+<header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8">
+    <div class="flex items-center">
+        <button id="mobile-menu-btn" class="p-2 rounded-lg text-brand-text-secondary hover:bg-gray-100 md:hidden mr-4">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <div>
+            <h1 id="page-title" class="text-lg md:text-xl font-bold text-brand-text-primary">Hello, Wingman! 👋</h1>
+            <p id="page-subtitle" class="text-xs md:text-sm text-brand-text-secondary">Welcome and let's do some workout today!</p>
+        </div>
+    </div>
+    
+    <!-- Desktop Calendar Button -->
+    <div class="hidden md:flex items-center">
+        <button id="calendar-toggle-btn" class="relative flex items-center bg-brand-surface rounded-full px-4 py-3 shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200 hover:border-gray-300 group">
+            <i data-lucide="calendar" class="w-4 h-4 text-brand-text-secondary mr-3"></i>
+            <div class="text-sm">
+                <div id="current-full-date" class="font-semibold text-brand-text-primary leading-none"></div>
+            </div>
+        </button>
+    </div>
+</header> 
