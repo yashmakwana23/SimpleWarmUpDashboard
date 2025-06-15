@@ -67,6 +67,22 @@ We'll organize data using multiple sheets within a single Google Sheets workbook
    - Thighs
    - CustomMeasurements (JSON)
 
+7. **ClientNotes**
+   - NoteID (Primary Key)
+   - Date
+   - Title
+   - Content
+   - Category (injury, general, nutrition, etc.)
+
+8. **Attachments**
+   - AttachmentID (Primary Key)
+   - NoteID (Foreign Key, optional)
+   - FileName
+   - FileType
+   - FileBlob (Base64 encoded)
+   - UploadDate
+   - Description
+
 ## Google Apps Script Implementation
 
 ### Structure
@@ -166,6 +182,16 @@ function doPost(e) {
       return GoalsService.getMeasurements();
     case 'saveMeasurement':
       return GoalsService.saveMeasurement(data);
+    
+    // Notes & Files
+    case 'getNotes':
+      return GoalsService.getNotes(data.category);
+    case 'saveNote':
+      return GoalsService.saveNote(data);
+    case 'getAttachments':
+      return GoalsService.getAttachments(data.noteId);
+    case 'uploadAttachment':
+      return GoalsService.uploadAttachment(data);
     
     default:
       return ContentService.createTextOutput(JSON.stringify({
@@ -406,6 +432,23 @@ var GoalsService = (function() {
     
     updateGoalProgress: function(data) {
       return DataService.updateGoalProgress(data.goalId, data.currentValue);
+    },
+    
+    // Notes & Files related functions
+    getNotes: function(category) {
+      return DataService.getNotes(category);
+    },
+    
+    saveNote: function(data) {
+      return DataService.saveNote(data);
+    },
+    
+    getAttachments: function(noteId) {
+      return DataService.getAttachments(noteId);
+    },
+    
+    uploadAttachment: function(data) {
+      return DataService.uploadAttachment(data);
     }
   };
 })();
@@ -492,6 +535,23 @@ var DataService = (function() {
     
     updateGoalProgress: function(goalId, currentValue) {
       // Implementation...
+    },
+    
+    // Notes & Files related functions
+    getNotes: function(category) {
+      // Implementation...
+    },
+    
+    saveNote: function(data) {
+      // Implementation...
+    },
+    
+    getAttachments: function(noteId) {
+      // Implementation...
+    },
+    
+    uploadAttachment: function(data) {
+      // Implementation...
     }
   };
 })();
@@ -524,10 +584,13 @@ var DataService = (function() {
 4. Implement workout scheduling features
 
 ### Phase 5: Goals & Assessments Integration
-1. Implement goals.html page
+1. Implement goals.html page with tabs for Goals, Measurements, and Notes & Files
 2. Create GoalsService.gs with required functions
 3. Add measurement tracking and visualization
 4. Implement goal progress tracking
+5. Add client notes functionality with categorization
+6. Implement file attachment upload and viewing capabilities
+7. Create UI for managing notes and attached files
 
 ## Testing
 

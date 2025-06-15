@@ -2011,23 +2011,29 @@ function switchPlannerView(viewType) {
 function loadGoalsContent() {
     console.log('Loading goals content...');
     
-    // Get the main content container
+    // Get the main content container and clear it
     const contentContainer = document.querySelector('#goals-content .grid');
     if (contentContainer) {
-        // Clear existing content
         contentContainer.innerHTML = '';
+    }
+    
+    // Get the goals tab content container
+    const goalsTabContent = document.getElementById('goals-tab-content');
+    if (goalsTabContent) {
+        // Clear existing content
+        goalsTabContent.innerHTML = '';
         
         // Add assessment section
         const assessmentContainer = document.createElement('div');
         assessmentContainer.className = 'assessment-section';
         assessmentContainer.innerHTML = createAssessmentContent();
-        contentContainer.appendChild(assessmentContainer);
+        goalsTabContent.appendChild(assessmentContainer);
         
         // Add goals section
         const goalsContainer = document.createElement('div');
         goalsContainer.className = 'goals-section';
         goalsContainer.innerHTML = createGoalsContent();
-        contentContainer.appendChild(goalsContainer);
+        goalsTabContent.appendChild(goalsContainer);
     }
     
     // Initialize icons
@@ -2035,6 +2041,9 @@ function loadGoalsContent() {
     
     // Initialize modals
     initializeGoalsModals();
+    
+    // Initialize Notes & Files tab functionality
+    initializeNotesAndFilesTab();
 }
 
 // Get Mock Goals Data
@@ -3912,3 +3921,790 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressSlider = document.getElementById('edit-goal-progress');
     const progressValue = document.getElementById('edit-goal-progress-value');
 });
+
+// Initialize the Notes & Files tab functionality
+function initializeNotesAndFilesTab() {
+    // Add tab switching functionality
+    const tabButtons = document.querySelectorAll('.goals-tab-btn');
+    if (tabButtons.length > 0) {
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('border-brand-primary', 'text-brand-primary');
+                    btn.classList.add('border-transparent', 'text-brand-text-secondary');
+                });
+                
+                // Add active class to clicked button
+                button.classList.remove('border-transparent', 'text-brand-text-secondary');
+                button.classList.add('border-brand-primary', 'text-brand-primary');
+                
+                // Hide all tab panels
+                document.querySelectorAll('.tab-panel').forEach(panel => {
+                    panel.classList.add('hidden');
+                });
+                
+                // Show the selected tab panel
+                const tabName = button.getAttribute('data-tab');
+                document.getElementById(`${tabName}-tab-content`).classList.remove('hidden');
+                
+                // Load notes data if it's the notes tab
+                if (tabName === 'notes') {
+                    loadNotesData();
+                }
+            });
+        });
+    }
+    
+    // Set up event listeners for notes functionality
+    setupNotesEventListeners();
+}
+
+// Load notes data from mock data (would be replaced with API call)
+function loadNotesData(category = 'all') {
+    const notesData = getMockNotesData();
+    renderNotes(notesData, category);
+}
+
+// Render notes in the list
+function renderNotes(notes, category = 'all') {
+    const notesList = document.getElementById('notes-list');
+    if (!notesList) return;
+    
+    // Clear existing notes
+    notesList.innerHTML = '';
+    
+    // Filter notes by category if needed
+    const filteredNotes = category === 'all' ? 
+        notes : 
+        notes.filter(note => note.category === category);
+    
+    // If no notes, show empty state
+    if (filteredNotes.length === 0) {
+        notesList.innerHTML = `
+            <div class="col-span-full text-center py-8">
+                <div class="flex flex-col items-center">
+                    <i data-lucide="file-text" class="w-12 h-12 text-gray-300 mb-2"></i>
+                    <p class="text-brand-text-secondary">No notes found</p>
+                    <button id="empty-add-note-btn" class="mt-4 px-4 py-2 bg-brand-primary text-white rounded-lg text-sm font-medium">
+                        Add Your First Note
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Initialize the empty state add note button
+        const emptyAddNoteBtn = document.getElementById('empty-add-note-btn');
+        if (emptyAddNoteBtn) {
+            emptyAddNoteBtn.addEventListener('click', showAddNoteModal);
+        }
+        
+        // Initialize icons
+        lucide.createIcons();
+        
+        return;
+    }
+    
+    // Add notes to the list
+    filteredNotes.forEach(note => {
+        const noteCard = document.createElement('div');
+        noteCard.className = 'note-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow';
+        noteCard.setAttribute('data-note-id', note.id);
+        
+        const categoryColor = getCategoryColor(note.category);
+        
+        noteCard.innerHTML = `
+            <div class="flex justify-between items-start mb-2">
+                <div class="bg-${categoryColor}-100 text-${categoryColor}-700 text-xs rounded-full px-2 py-1">${formatCategoryName(note.category)}</div>
+                <div class="text-xs text-brand-text-secondary">${formatDate(note.date)}</div>
+            </div>
+            <h4 class="text-brand-text-primary font-medium">${note.title}</h4>
+            <p class="text-sm text-brand-text-secondary line-clamp-2">${note.content}</p>
+            <div class="mt-3 flex justify-between items-center">
+                <span class="text-xs flex items-center">
+                    <i data-lucide="paperclip" class="w-3 h-3 mr-1"></i>
+                    ${note.attachments.length} file${note.attachments.length !== 1 ? 's' : ''}
+                </span>
+                <button class="view-note-btn text-brand-accent text-xs font-medium">View</button>
+            </div>
+        `;
+        
+        // Add click event to open note details
+        noteCard.addEventListener('click', () => openNoteDetail(note.id));
+        
+        notesList.appendChild(noteCard);
+    });
+    
+    // Initialize icons
+    lucide.createIcons();
+}
+
+// Set up event listeners for notes functionality
+function setupNotesEventListeners() {
+    // Add note button
+    const addNoteBtn = document.getElementById('add-note-btn');
+    if (addNoteBtn) {
+        addNoteBtn.addEventListener('click', showAddNoteModal);
+    }
+    
+    // Direct file upload button
+    const uploadFileBtn = document.getElementById('upload-file-btn');
+    const directFileUpload = document.getElementById('direct-file-upload');
+    if (uploadFileBtn && directFileUpload) {
+        uploadFileBtn.addEventListener('click', () => {
+            directFileUpload.click();
+        });
+        
+        directFileUpload.addEventListener('change', handleDirectFileUpload);
+    }
+    
+    // Add custom category
+    const addCategoryBtn = document.getElementById('add-category-btn');
+    const newCategoryInput = document.getElementById('new-category-input');
+    if (addCategoryBtn && newCategoryInput) {
+        addCategoryBtn.addEventListener('click', addCustomCategory);
+        
+        // Allow pressing Enter to add category
+        newCategoryInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addCustomCategory();
+            }
+        });
+    }
+    
+    // Filter by file type
+    const fileFilterBtns = document.querySelectorAll('.file-filter-btn');
+    if (fileFilterBtns.length > 0) {
+        fileFilterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                fileFilterBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-brand-primary', 'text-white');
+                    b.classList.add('bg-gray-100', 'text-brand-text-secondary');
+                });
+                
+                btn.classList.remove('bg-gray-100', 'text-brand-text-secondary');
+                btn.classList.add('active', 'bg-brand-primary', 'text-white');
+                
+                // Apply filter
+                const filter = btn.getAttribute('data-filter');
+                filterByContentType(filter);
+            });
+        });
+    }
+    
+    // Category filtering
+    const categoryItems = document.querySelectorAll('.category-item');
+    categoryItems.forEach(item => {
+        item.addEventListener('click', () => {
+            // Remove active class from all categories
+            categoryItems.forEach(cat => {
+                cat.classList.remove('active', 'bg-brand-primary', 'text-white');
+                cat.classList.add('hover:bg-gray-100', 'text-brand-text-secondary');
+            });
+            
+            // Add active class to clicked category
+            item.classList.remove('hover:bg-gray-100', 'text-brand-text-secondary');
+            item.classList.add('active', 'bg-brand-primary', 'text-white');
+            
+            // Filter notes
+            const category = item.getAttribute('data-category');
+            loadNotesData(category);
+        });
+    });
+    
+    // Close note detail modal button
+    const closeNoteModalBtn = document.getElementById('close-note-modal');
+    if (closeNoteModalBtn) {
+        closeNoteModalBtn.addEventListener('click', closeNoteDetail);
+    }
+    
+    // Edit note button
+    const editNoteBtn = document.getElementById('edit-note-btn');
+    if (editNoteBtn) {
+        editNoteBtn.addEventListener('click', () => {
+            const noteId = document.querySelector('#note-detail-modal').getAttribute('data-note-id');
+            showEditNoteModal(noteId);
+        });
+    }
+    
+    // Delete note button
+    const deleteNoteBtn = document.getElementById('delete-note-btn');
+    if (deleteNoteBtn) {
+        deleteNoteBtn.addEventListener('click', () => {
+            const noteId = document.querySelector('#note-detail-modal').getAttribute('data-note-id');
+            deleteNote(noteId);
+        });
+    }
+    
+    // Close note edit modal button
+    const closeNoteEditModalBtn = document.getElementById('close-note-edit-modal');
+    if (closeNoteEditModalBtn) {
+        closeNoteEditModalBtn.addEventListener('click', closeNoteEditModal);
+    }
+    
+    // Cancel note button
+    const cancelNoteBtn = document.getElementById('cancel-note-btn');
+    if (cancelNoteBtn) {
+        cancelNoteBtn.addEventListener('click', closeNoteEditModal);
+    }
+    
+    // Save note form submit
+    const noteForm = document.getElementById('note-form');
+    if (noteForm) {
+        noteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            saveNote();
+        });
+    }
+    
+    // Upload attachment button
+    const uploadAttachmentBtn = document.getElementById('upload-attachment-btn');
+    const attachmentUpload = document.getElementById('attachment-upload');
+    if (uploadAttachmentBtn && attachmentUpload) {
+        uploadAttachmentBtn.addEventListener('click', () => {
+            attachmentUpload.click();
+        });
+        
+        attachmentUpload.addEventListener('change', uploadAttachment);
+    }
+}
+
+// Show add note modal
+function showAddNoteModal() {
+    const modal = document.getElementById('note-edit-modal');
+    const modalTitle = document.getElementById('note-edit-modal-title');
+    const form = document.getElementById('note-form');
+    
+    if (modal && modalTitle && form) {
+        // Reset form
+        form.reset();
+        document.getElementById('note-id').value = '';
+        
+        // Clear file selection
+        resetFileSelection();
+        
+        // Clear attachments list
+        const attachmentsList = document.getElementById('note-attachments-list');
+        if (attachmentsList) {
+            attachmentsList.innerHTML = '';
+        }
+        
+        // Hide custom category field
+        const customCategoryContainer = document.getElementById('custom-category-container');
+        if (customCategoryContainer) {
+            customCategoryContainer.classList.add('hidden');
+        }
+        
+        // Set title
+        modalTitle.textContent = 'Add New Note';
+        
+        // Initialize file upload button
+        initNoteFileUpload();
+        
+        // Listen for category change
+        const categorySelect = document.getElementById('note-category');
+        if (categorySelect) {
+            categorySelect.addEventListener('change', handleCategoryChange);
+        }
+        
+        // Show modal
+        modal.classList.remove('hidden');
+    }
+}
+
+// Show edit note modal
+function showEditNoteModal(noteId) {
+    const modal = document.getElementById('note-edit-modal');
+    const modalTitle = document.getElementById('note-edit-modal-title');
+    const form = document.getElementById('note-form');
+    
+    if (modal && modalTitle && form) {
+        // Get note data
+        const note = getMockNotesData().find(n => n.id === parseInt(noteId));
+        if (!note) return;
+        
+        // Fill form
+        document.getElementById('note-id').value = note.id;
+        document.getElementById('note-title').value = note.title;
+        document.getElementById('note-category').value = note.category;
+        document.getElementById('note-content').value = note.content;
+        
+        // Set title
+        modalTitle.textContent = 'Edit Note';
+        
+        // Show modal
+        modal.classList.remove('hidden');
+    }
+}
+
+// Close note edit modal
+function closeNoteEditModal() {
+    const modal = document.getElementById('note-edit-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+// Save note (add or edit)
+function saveNote() {
+    // Get form values
+    const noteId = document.getElementById('note-id').value;
+    const title = document.getElementById('note-title').value;
+    let category = document.getElementById('note-category').value;
+    const content = document.getElementById('note-content').value;
+    const fileInput = document.getElementById('note-file-upload');
+    
+    // Handle custom category
+    if (category === 'custom') {
+        const customCategory = document.getElementById('custom-category').value.trim();
+        if (customCategory) {
+            category = customCategory.toLowerCase();
+            
+            // Add this as a new category (if not in edit mode)
+            if (!noteId) {
+                // Add new category to sidebar and dropdown
+                addCustomCategory();
+            }
+        } else {
+            alert('Please enter a custom category name or select an existing category');
+            return;
+        }
+    }
+    
+    // Validate
+    if (!title || !content) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    
+    // For demo purposes only - here we would submit to API
+    console.log('Saving note:', { noteId, title, category, content });
+    
+    // Process files if any
+    let newAttachments = [];
+    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+        Array.from(fileInput.files).forEach(file => {
+            newAttachments.push({
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                uploadDate: new Date()
+            });
+        });
+        
+        console.log('Uploading attachments:', newAttachments);
+    }
+    
+    // Mock the save operation
+    const notesData = getMockNotesData();
+    
+    if (noteId) {
+        // Edit existing note
+        const noteIndex = notesData.findIndex(note => note.id === parseInt(noteId));
+        if (noteIndex !== -1) {
+            notesData[noteIndex] = {
+                ...notesData[noteIndex],
+                title,
+                category,
+                content,
+            };
+            
+            // Add new attachments if any
+            if (newAttachments.length > 0) {
+                notesData[noteIndex].attachments = [
+                    ...notesData[noteIndex].attachments,
+                    ...newAttachments
+                ];
+            }
+        }
+    } else {
+        // Add new note
+        const newNote = {
+            id: Date.now(),
+            title,
+            category,
+            content,
+            date: new Date(),
+            attachments: newAttachments
+        };
+        
+        notesData.unshift(newNote);
+    }
+    
+    // Close modal
+    closeNoteEditModal();
+    
+    // Refresh notes list
+    loadNotesData();
+    
+    // Show notification
+    showNotification('Note saved successfully', 'success');
+}
+
+// Delete note
+function deleteNote(noteId) {
+    if (confirm('Are you sure you want to delete this note?')) {
+        // For demo purposes only - here we would submit to API
+        console.log('Deleting note:', noteId);
+        
+        // Close detail modal
+        closeNoteDetail();
+        
+        // Refresh notes list
+        loadNotesData();
+        
+        // Show notification
+        showNotification('Note deleted successfully', 'success');
+    }
+}
+
+// Open note detail
+function openNoteDetail(noteId) {
+    const modal = document.getElementById('note-detail-modal');
+    if (!modal) return;
+    
+    // Get note data
+    const note = getMockNotesData().find(n => n.id === parseInt(noteId));
+    if (!note) return;
+    
+    // Set note data
+    document.getElementById('note-modal-title').textContent = note.title;
+    
+    const categoryColor = getCategoryColor(note.category);
+    document.getElementById('note-modal-category').textContent = formatCategoryName(note.category);
+    document.getElementById('note-modal-category').className = `text-xs font-medium rounded-full px-2 py-1 mr-2 bg-${categoryColor}-100 text-${categoryColor}-700`;
+    
+    document.getElementById('note-modal-date').textContent = formatDate(note.date);
+    document.getElementById('note-modal-content').innerHTML = note.content.replace(/\n/g, '<br>');
+    
+    // Set attachments
+    const attachmentsContainer = document.querySelector('#note-modal-attachments .grid');
+    if (attachmentsContainer) {
+        attachmentsContainer.innerHTML = '';
+        
+        if (note.attachments.length === 0) {
+            attachmentsContainer.innerHTML = '<div class="col-span-full text-sm text-brand-text-secondary">No attachments</div>';
+        } else {
+            note.attachments.forEach(attachment => {
+                const attachmentItem = document.createElement('div');
+                attachmentItem.className = 'attachment-item flex items-center justify-between p-2 border border-gray-200 rounded-lg hover:bg-gray-50';
+                
+                const fileIcon = getFileIcon(attachment.type);
+                
+                attachmentItem.innerHTML = `
+                    <div class="flex items-center">
+                        <i data-lucide="${fileIcon}" class="w-4 h-4 mr-2 text-brand-text-secondary"></i>
+                        <span class="text-sm text-brand-text-primary truncate" title="${attachment.name}">${attachment.name}</span>
+                    </div>
+                    <button class="text-brand-accent hover:text-brand-accent/80 p-1" onclick="downloadAttachment(${attachment.id})">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                    </button>
+                `;
+                
+                attachmentsContainer.appendChild(attachmentItem);
+            });
+        }
+        
+        // Initialize icons
+        lucide.createIcons();
+    }
+    
+    // Store noteId in modal
+    modal.setAttribute('data-note-id', noteId);
+    
+    // Show modal
+    modal.classList.remove('hidden');
+}
+
+// Close note detail
+function closeNoteDetail() {
+    const modal = document.getElementById('note-detail-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+// Upload attachment
+function uploadAttachment(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // For demo purposes only - here we would upload file to server
+    console.log('Uploading file:', file);
+    
+    // Get note ID
+    const noteId = document.querySelector('#note-detail-modal').getAttribute('data-note-id');
+    
+    // Mock the upload operation
+    const notesData = getMockNotesData();
+    const noteIndex = notesData.findIndex(note => note.id === parseInt(noteId));
+    
+    if (noteIndex !== -1) {
+        const newAttachment = {
+            id: Date.now(),
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            uploadDate: new Date()
+        };
+        
+        notesData[noteIndex].attachments.push(newAttachment);
+        
+        // Refresh note detail
+        openNoteDetail(noteId);
+        
+        // Show notification
+        showNotification('File uploaded successfully', 'success');
+    }
+    
+    // Reset file input
+    e.target.value = '';
+}
+
+// Download attachment
+function downloadAttachment(attachmentId) {
+    console.log('Downloading attachment:', attachmentId);
+    showNotification('Downloading file...', 'info');
+}
+
+// Get mock notes data
+function getMockNotesData() {
+    return [
+        {
+            id: 1,
+            title: 'Initial Assessment',
+            category: 'general',
+            content: 'Client reports previous shoulder injury that has healed but occasionally causes discomfort during certain movements. Recommended modified push exercises and additional stretching.\n\nGeneral fitness level is moderate with good cardiovascular health but limited strength training experience.',
+            date: new Date(2024, 2, 12),
+            attachments: [
+                { id: 101, name: 'assessment_form.pdf', type: 'application/pdf', size: 2500000, uploadDate: new Date(2024, 2, 12) },
+                { id: 102, name: 'shoulder_exercises.jpg', type: 'image/jpeg', size: 1500000, uploadDate: new Date(2024, 2, 12) }
+            ]
+        },
+        {
+            id: 2,
+            title: 'Knee Pain Follow Up',
+            category: 'injury',
+            content: 'Client\'s knee pain has improved with the prescribed exercises. Continuing with modified workout plan for another week before reassessing. Pain level has decreased from 7/10 to 3/10.\n\nAdditional swimming sessions recommended for low-impact cardio.',
+            date: new Date(2024, 1, 28),
+            attachments: [
+                { id: 103, name: 'knee_rehab.pdf', type: 'application/pdf', size: 1800000, uploadDate: new Date(2024, 1, 28) }
+            ]
+        },
+        {
+            id: 3,
+            title: 'Diet Adjustment',
+            category: 'nutrition',
+            content: 'Increased protein intake to support muscle growth. Client reports feeling less hungry between meals and having more consistent energy levels throughout the day.\n\nNext steps include introducing more complex carbs around workout times.',
+            date: new Date(2024, 1, 15),
+            attachments: []
+        }
+    ];
+}
+
+// Get category color
+function getCategoryColor(category) {
+    const colors = {
+        general: 'blue',
+        injury: 'red',
+        nutrition: 'green',
+        custom: 'purple'
+    };
+    
+    return colors[category] || 'gray';
+}
+
+// Format category name
+function formatCategoryName(category) {
+    return category.charAt(0).toUpperCase() + category.slice(1);
+}
+
+// Get file icon based on type
+function getFileIcon(fileType) {
+    if (fileType.includes('image')) {
+        return 'image';
+    } else if (fileType.includes('pdf')) {
+        return 'file-text';
+    } else if (fileType.includes('video')) {
+        return 'video';
+    } else if (fileType.includes('audio')) {
+        return 'music';
+    } else if (fileType.includes('spreadsheet') || fileType.includes('excel')) {
+        return 'table';
+    } else if (fileType.includes('word') || fileType.includes('document')) {
+        return 'file-text';
+    } else {
+        return 'file';
+    }
+}
+
+// Handle direct file upload without a note
+function handleDirectFileUpload(e) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    // For demo purposes we'll just show a notification
+    showNotification(`Uploading ${files.length} file(s)...`, 'info');
+    
+    // In a real implementation, we would upload each file to the server
+    // For now, just create standalone file entries
+    Array.from(files).forEach(file => {
+        const newAttachment = {
+            id: Date.now() + Math.floor(Math.random() * 1000),
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            uploadDate: new Date(),
+            standalone: true // Mark as standalone file (not attached to a note)
+        };
+        
+        // Add to mock data or make API call here
+        console.log('Uploading standalone file:', newAttachment);
+    });
+    
+    // Show success notification after a short delay
+    setTimeout(() => {
+        showNotification(`${files.length} file(s) uploaded successfully`, 'success');
+        // Refresh the list with the new files
+        loadNotesData();
+    }, 1000);
+    
+    // Reset file input
+    e.target.value = '';
+}
+
+// Add a custom category
+function addCustomCategory() {
+    const newCategoryInput = document.getElementById('new-category-input');
+    if (!newCategoryInput || !newCategoryInput.value.trim()) return;
+    
+    const categoryName = newCategoryInput.value.trim();
+    
+    // Add category to the list
+    const categoryList = document.querySelector('.category-list');
+    if (categoryList) {
+        const categoryItem = document.createElement('li');
+        categoryItem.className = 'category-item px-3 py-2 rounded-lg hover:bg-gray-100';
+        categoryItem.setAttribute('data-category', categoryName.toLowerCase());
+        categoryItem.textContent = formatCategoryName(categoryName);
+        
+        // Add click event
+        categoryItem.addEventListener('click', () => {
+            // Remove active class from all categories
+            document.querySelectorAll('.category-item').forEach(cat => {
+                cat.classList.remove('active', 'bg-brand-primary', 'text-white');
+                cat.classList.add('hover:bg-gray-100', 'text-brand-text-secondary');
+            });
+            
+            // Add active class to this category
+            categoryItem.classList.remove('hover:bg-gray-100', 'text-brand-text-secondary');
+            categoryItem.classList.add('active', 'bg-brand-primary', 'text-white');
+            
+            // Filter notes
+            loadNotesData(categoryName.toLowerCase());
+        });
+        
+        categoryList.appendChild(categoryItem);
+    }
+    
+    // Add to category dropdown in the modal
+    const categoryDropdown = document.getElementById('note-category');
+    if (categoryDropdown) {
+        const option = document.createElement('option');
+        option.value = categoryName.toLowerCase();
+        option.textContent = formatCategoryName(categoryName);
+        categoryDropdown.appendChild(option);
+    }
+    
+    // Clear the input
+    newCategoryInput.value = '';
+    
+    // Show notification
+    showNotification(`Category "${formatCategoryName(categoryName)}" added successfully`, 'success');
+}
+
+// Filter content by type (all, notes, files)
+function filterByContentType(type) {
+    // In a real implementation, this would filter the displayed content by type
+    console.log('Filtering by content type:', type);
+    
+    // For demo purposes, just show a notification
+    const messages = {
+        'all': 'Showing all content',
+        'notes': 'Showing notes only',
+        'files': 'Showing standalone files only'
+    };
+    
+    showNotification(messages[type] || 'Filtering content', 'info');
+}
+
+// Handle the category change in the note form
+function handleCategoryChange() {
+    const categorySelect = document.getElementById('note-category');
+    const customCategoryContainer = document.getElementById('custom-category-container');
+    
+    if (categorySelect && customCategoryContainer) {
+        if (categorySelect.value === 'custom') {
+            customCategoryContainer.classList.remove('hidden');
+        } else {
+            customCategoryContainer.classList.add('hidden');
+        }
+    }
+}
+
+// Initialize file upload for notes
+function initNoteFileUpload() {
+    const fileUploadBtn = document.getElementById('note-attach-files-btn');
+    const fileInput = document.getElementById('note-file-upload');
+    
+    if (fileUploadBtn && fileInput) {
+        // Clear any existing listeners
+        const newFileBtn = fileUploadBtn.cloneNode(true);
+        fileUploadBtn.parentNode.replaceChild(newFileBtn, fileUploadBtn);
+        
+        const newFileInput = fileInput.cloneNode(true);
+        fileInput.parentNode.replaceChild(newFileInput, fileInput);
+        
+        // Add new listeners
+        newFileBtn.addEventListener('click', () => {
+            newFileInput.click();
+        });
+        
+        newFileInput.addEventListener('change', updateSelectedFiles);
+    }
+}
+
+// Update selected files display
+function updateSelectedFiles(e) {
+    const files = e.target.files;
+    const fileCountDisplay = document.getElementById('selected-files-count');
+    
+    if (fileCountDisplay) {
+        if (files && files.length > 0) {
+            fileCountDisplay.textContent = `${files.length} file${files.length !== 1 ? 's' : ''} selected`;
+            fileCountDisplay.classList.add('text-brand-accent');
+            fileCountDisplay.classList.remove('text-brand-text-secondary');
+        } else {
+            resetFileSelection();
+        }
+    }
+}
+
+// Reset file selection display
+function resetFileSelection() {
+    const fileCountDisplay = document.getElementById('selected-files-count');
+    const fileInput = document.getElementById('note-file-upload');
+    
+    if (fileCountDisplay) {
+        fileCountDisplay.textContent = 'No files selected';
+        fileCountDisplay.classList.remove('text-brand-accent');
+        fileCountDisplay.classList.add('text-brand-text-secondary');
+    }
+    
+    if (fileInput) {
+        fileInput.value = '';
+    }
+}

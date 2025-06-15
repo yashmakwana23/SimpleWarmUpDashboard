@@ -5,7 +5,7 @@
 | Color | Hex Code | Usage |
 |-------|----------|-------|
 | **Pink Primary** | `#FF5595` | Main brand color used for primary actions, active navigation, logo background, and progress indicators |
-| **Green Secondary** | `#4CAF50` | Used for success states, completion actions, and active status indicators |
+| **Green Secondary** | `#41C1BA` | Used for success states, completion actions, and active status indicators |
 | **Blue Accent** | `#4B8BFF` | Used for links, focus states, and charts/visualizations |
 
 ## Color Application Guidelines
@@ -18,7 +18,7 @@
 - **Form input focus states**
 - **Icon containers** - Used at 10% opacity as background
 
-### Green Secondary (`#4CAF50`)
+### Green Secondary (`#41C1BA`)
 - **Completion indicators** - "Completed Goals" section icon
 - **Success states** - Completed exercises
 - **Secondary buttons** - Used at 10% opacity with text in full color
@@ -69,7 +69,7 @@ tailwind.config = {
         extend: {
             colors: {
                 'brand-primary': '#FF5595',
-                'brand-secondary': '#4CAF50',
+                'brand-secondary': '#41C1BA',
                 'brand-accent': '#4B8BFF',
                 'brand-lime': '#D4FF4F',
                 'brand-bg': '#F8FAFC',
