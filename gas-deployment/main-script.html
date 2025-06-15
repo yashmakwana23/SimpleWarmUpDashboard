@@ -1,0 +1,1088 @@
+<script>
+// InMotion Fitness Dashboard - Main Script
+// Based on the original v2 functionality with modular architecture
+
+// Global State
+let currentTab = 'today';
+let workoutData = null;
+let userProgress = null;
+
+// Initialize Dashboard on DOM Content Loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('InMotion Dashboard Loading...');
+    
+    // Initialize core systems
+    initializeLucideIcons();
+    initializeStorage();
+    initializeDashboard();
+    initializeNavigation();
+    initializeMobileFeatures();
+    initializeSidebarCollapse();
+    updateDateTime();
+    
+    // Start background processes
+    startAutoSync();
+    
+    // Update date/time every minute
+    setInterval(updateDateTime, 60000);
+    
+    console.log('InMotion Dashboard Loaded Successfully');
+});
+
+// Core Initialization
+function initializeLucideIcons() {
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+function initializeDashboard() {
+    console.log('Initializing Dashboard...');
+    
+    // Load user preferences
+    const preferences = getUserPreferences();
+    currentTab = preferences.dashboard?.activeTab || 'today';
+    
+    // Apply user preferences
+    applyUserPreferences(preferences);
+    
+    // Set initial active tab
+    switchTab(currentTab);
+    
+    // Load initial data
+    loadInitialData();
+}
+
+function applyUserPreferences(preferences) {
+    // Apply sidebar state
+    if (preferences.dashboard?.sidebarCollapsed && isDesktop()) {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.add('collapsed');
+        }
+    }
+    
+    // Apply theme (if implemented)
+    if (preferences.theme) {
+        document.body.classList.add(`theme-${preferences.theme}`);
+    }
+}
+
+async function loadInitialData() {
+    try {
+        showLoading('Loading dashboard...');
+        
+        // Load data in parallel for better performance
+        const [todayWorkout, workoutHistory, goals, assessmentData] = await Promise.allSettled([
+            getTodayWorkout(),
+            getWorkoutHistory(),
+            getGoalsData(),
+            getAssessmentDataApi()
+        ]);
+        
+        // Store data globally
+        workoutData = todayWorkout.status === 'fulfilled' ? todayWorkout.value : null;
+        
+        // Load content for current tab
+        loadTabContent(currentTab);
+        
+    } catch (error) {
+        handleError(error, 'Failed to load dashboard data');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Navigation System
+function initializeNavigation() {
+    const navItems = document.querySelectorAll('.nav-item[data-tab]');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const tabName = this.getAttribute('data-tab');
+            switchTab(tabName);
+            
+            // Close mobile sidebar if open
+            if (isMobile()) {
+                closeMobileSidebar();
+            }
+        });
+    });
+    
+    // Goals tab switching
+    const goalsTabBtns = document.querySelectorAll('.goals-tab-btn');
+    goalsTabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            switchGoalsTab(tabName);
+        });
+    });
+}
+
+function switchTab(tabName) {
+    // Save current tab to preferences
+    updateUserPreference('dashboard.activeTab', tabName);
+    currentTab = tabName;
+    
+    // Update navigation UI
+    updateNavigationState(tabName);
+    
+    // Show selected tab content
+    showTabContent(tabName);
+    
+    // Update page header
+    updatePageHeader(tabName);
+    
+    // Load content for the tab
+    loadTabContent(tabName);
+    
+    console.log(`Switched to tab: ${tabName}`);
+}
+
+function updateNavigationState(activeTab) {
+    const navItems = document.querySelectorAll('.nav-item[data-tab]');
+    
+    navItems.forEach(item => {
+        const tabName = item.getAttribute('data-tab');
+        
+        // Remove all active styles
+        item.classList.remove('bg-brand-primary', 'text-white', 'rounded-full');
+        // Add inactive styles
+        item.classList.add('text-brand-text-secondary', 'hover:bg-gray-100', 'rounded-lg');
+        
+        // Add active styles to current tab
+        if (tabName === activeTab) {
+            item.classList.remove('text-brand-text-secondary', 'hover:bg-gray-100', 'rounded-lg');
+            item.classList.add('bg-brand-primary', 'text-white', 'rounded-full');
+        }
+    });
+}
+
+function showTabContent(tabName) {
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => {
+        content.classList.add('hidden');
+        content.classList.remove('fade-in');
+    });
+    
+    // Show the selected tab content
+    const targetContent = document.getElementById(`${tabName}-content`);
+    if (targetContent) {
+        targetContent.classList.remove('hidden');
+        targetContent.classList.add('fade-in');
+    }
+}
+
+function updatePageHeader(tabName) {
+    const titleEl = document.getElementById('page-title');
+    const subtitleEl = document.getElementById('page-subtitle');
+    
+    if (!titleEl || !subtitleEl) return;
+    
+    const headerConfig = {
+        today: {
+            title: "Today's Workout 💪",
+            subtitle: "Let's crush today's fitness goals!"
+        },
+        calendar: {
+            title: "Workout Calendar 📅", 
+            subtitle: "Track your progress and stay on schedule"
+        },
+        planner: {
+            title: "Workout Planner ✏️",
+            subtitle: "Design and customize your fitness routine"
+        },
+        goals: {
+            title: "Goals & Assessment 🎯",
+            subtitle: "Monitor progress and set new targets"
+        }
+    };
+    
+    const config = headerConfig[tabName] || headerConfig.today;
+    titleEl.textContent = config.title;
+    subtitleEl.textContent = config.subtitle;
+}
+
+// Content Loading Functions
+async function loadTabContent(tabName) {
+    switch(tabName) {
+        case 'today':
+            await loadTodayContent();
+            break;
+        case 'calendar':
+            await loadCalendarContent();
+            break;
+        case 'planner':
+            await loadPlannerContent();
+            break;
+        case 'goals':
+            await loadGoalsContent();
+            break;
+    }
+}
+
+async function loadTodayContent() {
+    const container = document.getElementById('today-workout-cards');
+    if (!container) return;
+    
+    try {
+        // Show skeleton loaders
+        showSkeletonLoaders('today-workout-cards');
+        
+        // Get today's workout data
+        if (!workoutData) {
+            workoutData = await getTodayWorkout();
+        }
+        
+        // Hide skeleton loaders
+        hideSkeletonLoaders('today-workout-cards');
+        
+        if (workoutData) {
+            renderTodayWorkout(workoutData);
+            updateTodayProgress();
+        } else {
+            renderEmptyWorkout();
+        }
+        
+    } catch (error) {
+        hideSkeletonLoaders('today-workout-cards');
+        handleError(error, 'Failed to load today\'s workout');
+    }
+}
+
+function renderTodayWorkout(workout) {
+    const container = document.getElementById('today-workout-cards');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (!workout || !workout.exercises) {
+        renderEmptyWorkout();
+        return;
+    }
+    
+    // Create workout card
+    const workoutCard = createWorkoutCard(workout, 0);
+    container.appendChild(workoutCard);
+    
+    // Initialize event listeners
+    initializeWorkoutCardEvents();
+    
+    // Update progress
+    updateTodayProgress();
+}
+
+function createWorkoutCard(workout, workoutIndex) {
+    const card = document.createElement('div');
+    card.className = 'bg-brand-surface rounded-xl p-6 shadow-sm border border-gray-100 fade-in';
+    
+    card.innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-brand-text-primary">${workout.title || `Day ${workout.day}`}</h3>
+            <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-brand-primary/10 text-brand-primary">
+                    Day ${workout.day}
+                </span>
+            </div>
+        </div>
+        
+        <div class="exercises-list space-y-3">
+            ${workout.exercises.map((exercise, index) => createExerciseRow(exercise, workoutIndex, index)).join('')}
+        </div>
+        
+        <div class="mt-6 pt-4 border-t border-gray-200">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm text-brand-text-secondary">Progress</span>
+                <span class="text-sm font-medium text-brand-text-primary" id="workout-${workoutIndex}-progress">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="workout-${workoutIndex}-progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+function createExerciseRow(exercise, workoutIndex, exerciseIndex) {
+    const exerciseId = `exercise-${workoutIndex}-${exerciseIndex}`;
+    const completedClass = exercise.completed ? 'opacity-60' : '';
+    const checkIcon = exercise.completed ? 'check-circle' : 'circle';
+    
+    return `
+        <div class="exercise-row flex items-center gap-4 p-3 rounded-lg bg-gray-50 ${completedClass}" data-exercise-id="${exerciseId}">
+            <button onclick="toggleExercise('${exerciseId}', ${workoutIndex}, ${exerciseIndex})" 
+                    class="flex-shrink-0 w-6 h-6 text-brand-primary hover:text-brand-accent transition-colors">
+                <i data-lucide="${checkIcon}" class="w-6 h-6"></i>
+            </button>
+            
+            <div class="flex-1">
+                <h4 class="font-medium text-brand-text-primary">${exercise.name}</h4>
+                <p class="text-sm text-brand-text-secondary">
+                    ${exercise.sets ? `${exercise.sets} sets` : ''}
+                    ${exercise.reps ? ` × ${exercise.reps} reps` : ''}
+                    ${exercise.duration ? ` × ${exercise.duration}s` : ''}
+                </p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                ${exercise.videoUrl ? `
+                    <button onclick="openExerciseVideo('${exercise.videoUrl}', '${exercise.name}')" 
+                            class="p-2 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                    </button>
+                ` : ''}
+                
+                <button onclick="openExerciseNotes('${exerciseId}')" 
+                        class="p-2 rounded-lg hover:bg-gray-200 transition-colors">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function renderEmptyWorkout() {
+    const container = document.getElementById('today-workout-cards');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="col-span-full text-center py-12">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                <i data-lucide="calendar-x" class="w-8 h-8 text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-brand-text-primary mb-2">No workout scheduled for today</h3>
+            <p class="text-brand-text-secondary">Check back tomorrow or visit the planner to create a workout.</p>
+        </div>
+    `;
+    
+    lucide.createIcons();
+}
+
+// Exercise Interaction Functions
+function toggleExercise(exerciseId, workoutIndex, exerciseIndex) {
+    const exerciseRow = document.querySelector(`[data-exercise-id="${exerciseId}"]`);
+    if (!exerciseRow) return;
+    
+    const isCompleted = exerciseRow.classList.contains('opacity-60');
+    const icon = exerciseRow.querySelector('i[data-lucide]');
+    
+    if (isCompleted) {
+        // Mark as incomplete
+        exerciseRow.classList.remove('opacity-60');
+        icon.setAttribute('data-lucide', 'circle');
+    } else {
+        // Mark as complete
+        exerciseRow.classList.add('opacity-60');
+        icon.setAttribute('data-lucide', 'check-circle');
+        
+        // Complete exercise on backend
+        completeExercise(exerciseId, workoutData?.day || 1);
+    }
+    
+    // Reinitialize icons
+    lucide.createIcons();
+    
+    // Update progress
+    updateWorkoutProgress(workoutIndex);
+}
+
+function openExerciseVideo(videoUrl, exerciseName) {
+    const modal = document.getElementById('video-modal');
+    const iframe = document.getElementById('video-iframe');
+    const title = document.getElementById('video-modal-title');
+    
+    if (!modal || !iframe || !title) return;
+    
+    title.textContent = exerciseName;
+    
+    // Convert YouTube URL to embed format
+    const embedUrl = getYouTubeEmbedUrl(videoUrl);
+    iframe.src = embedUrl;
+    
+    openModal('video-modal');
+}
+
+function getYouTubeEmbedUrl(url) {
+    const videoId = getYouTubeVideoId(url);
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+}
+
+function getYouTubeVideoId(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+}
+
+function closeVideoModal() {
+    const modal = document.getElementById('video-modal');
+    const iframe = document.getElementById('video-iframe');
+    
+    if (iframe) {
+        iframe.src = '';
+    }
+    
+    closeModal('video-modal');
+}
+
+function openExerciseNotes(exerciseId) {
+    // Implementation for exercise notes
+    showInfo('Exercise notes feature coming soon!');
+}
+
+// Progress Tracking
+function updateWorkoutProgress(workoutIndex) {
+    const exerciseRows = document.querySelectorAll(`[data-exercise-id^="exercise-${workoutIndex}-"]`);
+    const completedExercises = document.querySelectorAll(`[data-exercise-id^="exercise-${workoutIndex}-"].opacity-60`);
+    
+    const totalExercises = exerciseRows.length;
+    const completed = completedExercises.length;
+    const percentage = totalExercises > 0 ? Math.round((completed / totalExercises) * 100) : 0;
+    
+    // Update progress bar
+    const progressBar = document.getElementById(`workout-${workoutIndex}-progress-bar`);
+    const progressText = document.getElementById(`workout-${workoutIndex}-progress`);
+    
+    if (progressBar && progressText) {
+        animateProgressBar(progressBar, percentage);
+        progressText.textContent = `${percentage}%`;
+    }
+    
+    // Update overall progress
+    updateTodayProgress();
+    
+    // Check if workout is complete
+    if (percentage === 100) {
+        setTimeout(() => {
+            showSuccess('Workout completed! 🎉');
+            completeWorkout(workoutData?.day || 1, {
+                duration: 0, // Could be tracked with timer
+                exercisesCompleted: completed,
+                totalExercises: totalExercises
+            });
+        }, 1000);
+    }
+}
+
+function updateTodayProgress() {
+    // Update overall progress statistics
+    const exerciseRows = document.querySelectorAll('[data-exercise-id]');
+    const completedExercises = document.querySelectorAll('[data-exercise-id].opacity-60');
+    
+    const totalExercises = exerciseRows.length;
+    const completed = completedExercises.length;
+    const percentage = totalExercises > 0 ? Math.round((completed / totalExercises) * 100) : 0;
+    
+    // Update summary cards
+    const exerciseCountEl = document.querySelector('.text-2xl.font-bold.text-brand-primary');
+    const progressEl = document.querySelector('.text-2xl.font-bold.text-brand-accent');
+    const overallProgressBar = document.getElementById('overall-progress-fill');
+    const overallProgressText = document.getElementById('overall-progress-text');
+    
+    if (exerciseCountEl) {
+        animateNumber(exerciseCountEl, completed);
+    }
+    
+    if (progressEl) {
+        animateNumber(progressEl, percentage, 1000, '%');
+    }
+    
+    if (overallProgressBar) {
+        animateProgressBar(overallProgressBar, percentage);
+    }
+    
+    if (overallProgressText) {
+        overallProgressText.textContent = `${percentage}%`;
+    }
+}
+
+// Calendar Content Loading
+async function loadCalendarContent() {
+    try {
+        showSkeletonLoaders('calendar-grid');
+        
+        const workoutHistory = await getWorkoutHistory();
+        
+        hideSkeletonLoaders('calendar-grid');
+        
+        if (workoutHistory) {
+            renderCalendar(workoutHistory);
+        }
+        
+    } catch (error) {
+        hideSkeletonLoaders('calendar-grid');
+        handleError(error, 'Failed to load workout history');
+    }
+}
+
+function renderCalendar(workoutHistory) {
+    const container = document.getElementById('calendar-grid');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (!workoutHistory || workoutHistory.length === 0) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-8">
+                <p class="text-brand-text-secondary">No workout history available</p>
+            </div>
+        `;
+        return;
+    }
+    
+    workoutHistory.forEach(workout => {
+        const dayCard = createDayCard(workout);
+        container.appendChild(dayCard);
+    });
+}
+
+function createDayCard(workout) {
+    const card = document.createElement('div');
+    card.className = 'day-card bg-white rounded-lg p-4 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-all';
+    
+    const statusClass = getStatusClass(workout.status);
+    const statusDot = getStatusDot(workout.status);
+    
+    card.innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-medium text-brand-text-primary">Day ${workout.day}</span>
+            <div class="status-dot ${statusDot}"></div>
+        </div>
+        <h4 class="font-medium text-brand-text-primary mb-1">${workout.title}</h4>
+        <p class="text-xs text-brand-text-secondary">${formatLocalDate(workout.date)}</p>
+        ${workout.duration ? `<p class="text-xs text-brand-text-secondary mt-1">${workout.duration} min</p>` : ''}
+    `;
+    
+    card.addEventListener('click', () => openWorkoutModal(workout));
+    
+    return card;
+}
+
+function getStatusClass(status) {
+    const statusMap = {
+        completed: 'border-green-500',
+        pending: 'border-yellow-500',
+        skipped: 'border-red-500'
+    };
+    return statusMap[status] || 'border-gray-300';
+}
+
+function getStatusDot(status) {
+    const statusMap = {
+        completed: 'status-completed',
+        pending: 'status-pending',
+        skipped: 'status-active'
+    };
+    return statusMap[status] || 'status-pending';
+}
+
+// Planner Content Loading
+async function loadPlannerContent() {
+    try {
+        showSkeletonLoaders('plan-cards-grid');
+        
+        // Load plans data (this would come from API)
+        const plans = getMockPlansData();
+        
+        hideSkeletonLoaders('plan-cards-grid');
+        
+        renderPlans(plans);
+        
+    } catch (error) {
+        hideSkeletonLoaders('plan-cards-grid');
+        handleError(error, 'Failed to load workout plans');
+    }
+}
+
+function getMockPlansData() {
+    return [
+        {
+            id: 1,
+            name: 'Beginner Full Body',
+            description: '4-week beginner-friendly full body workout plan',
+            duration: '4 weeks',
+            difficulty: 'Beginner',
+            days: 28,
+            completedDays: 7,
+            exercises: 45
+        },
+        {
+            id: 2,
+            name: 'Intermediate Strength',
+            description: '6-week intermediate strength building program',
+            duration: '6 weeks',
+            difficulty: 'Intermediate', 
+            days: 42,
+            completedDays: 0,
+            exercises: 68
+        }
+    ];
+}
+
+function renderPlans(plans) {
+    const container = document.getElementById('plan-cards-grid');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    plans.forEach(plan => {
+        const planCard = createPlanCard(plan);
+        container.appendChild(planCard);
+    });
+}
+
+function createPlanCard(plan) {
+    const card = document.createElement('div');
+    card.className = 'bg-brand-surface rounded-xl p-6 shadow-sm border border-gray-100';
+    
+    const progressPercentage = Math.round((plan.completedDays / plan.days) * 100);
+    
+    card.innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-brand-text-primary">${plan.name}</h3>
+            <span class="px-2 py-1 rounded-full text-xs font-medium bg-brand-accent/10 text-brand-accent">
+                ${plan.difficulty}
+            </span>
+        </div>
+        
+        <p class="text-brand-text-secondary mb-4">${plan.description}</p>
+        
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="text-center">
+                <div class="text-lg font-bold text-brand-primary">${plan.completedDays}</div>
+                <div class="text-xs text-brand-text-secondary">Completed</div>
+            </div>
+            <div class="text-center">
+                <div class="text-lg font-bold text-brand-secondary">${plan.days}</div>
+                <div class="text-xs text-brand-text-secondary">Total Days</div>
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <div class="flex justify-between text-sm text-brand-text-secondary mb-2">
+                <span>Progress</span>
+                <span>${progressPercentage}%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+            </div>
+        </div>
+        
+        <div class="flex gap-2">
+            <button class="btn btn-primary flex-1">
+                ${plan.completedDays > 0 ? 'Continue' : 'Start'} Plan
+            </button>
+            <button class="btn btn-secondary">
+                View Details
+            </button>
+        </div>
+    `;
+    
+    return card;
+}
+
+// Goals Content Loading
+async function loadGoalsContent() {
+    try {
+        // Load goals content using existing functions from v2
+        createGoalsContent();
+        
+        // Initialize tab switching for goals section
+        initializeGoalsTabSwitching();
+        
+    } catch (error) {
+        handleError(error, 'Failed to load goals content');
+    }
+}
+
+function initializeGoalsTabSwitching() {
+    // This would be implemented based on the goals tab requirements
+}
+
+function switchGoalsTab(tabName) {
+    const tabBtns = document.querySelectorAll('.goals-tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    
+    // Update button states
+    tabBtns.forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabName) {
+            btn.classList.add('border-brand-primary', 'text-brand-primary');
+            btn.classList.remove('border-transparent', 'text-brand-text-secondary');
+        } else {
+            btn.classList.remove('border-brand-primary', 'text-brand-primary');
+            btn.classList.add('border-transparent', 'text-brand-text-secondary');
+        }
+    });
+    
+    // Update panel visibility
+    tabPanels.forEach(panel => {
+        if (panel.id === `${tabName}-tab-content`) {
+            panel.classList.remove('hidden');
+        } else {
+            panel.classList.add('hidden');
+        }
+    });
+    
+    // Load content for specific tab
+    if (tabName === 'notes') {
+        loadNotesAndFiles();
+    }
+}
+
+async function loadNotesAndFiles() {
+    try {
+        const notes = await getNotesApi();
+        renderNotes(notes);
+    } catch (error) {
+        handleError(error, 'Failed to load notes');
+    }
+}
+
+function renderNotes(notes) {
+    const container = document.getElementById('notes-grid');
+    if (!container) return;
+    
+    // Hide skeleton loaders
+    const skeletons = container.querySelectorAll('.animate-pulse');
+    skeletons.forEach(skeleton => skeleton.remove());
+    
+    if (!notes || notes.length === 0) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-8">
+                <p class="text-brand-text-secondary">No notes yet. Create your first note!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = '';
+    notes.forEach(note => {
+        const noteCard = createNoteCard(note);
+        container.appendChild(noteCard);
+    });
+}
+
+function createNoteCard(note) {
+    const card = document.createElement('div');
+    card.className = 'note-card bg-white rounded-lg p-4 shadow-sm border border-gray-100';
+    
+    card.innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+            <span class="px-2 py-1 rounded-full text-xs font-medium bg-brand-primary/10 text-brand-primary">
+                ${formatCategoryName(note.category)}
+            </span>
+            <span class="text-xs text-brand-text-secondary">
+                ${formatLocalDate(note.createdAt)}
+            </span>
+        </div>
+        <h4 class="font-medium text-brand-text-primary mb-2">${note.title}</h4>
+        <p class="text-sm text-brand-text-secondary line-clamp-3">${note.content.substring(0, 100)}...</p>
+    `;
+    
+    card.addEventListener('click', () => openNoteDetail(note.id));
+    
+    return card;
+}
+
+function formatCategoryName(category) {
+    return category.charAt(0).toUpperCase() + category.slice(1);
+}
+
+// Sidebar Functions
+function initializeSidebarCollapse() {
+    const collapseBtn = document.getElementById('left-sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (collapseBtn && sidebar) {
+        collapseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleSidebarCollapse();
+        });
+    }
+}
+
+function toggleSidebarCollapse() {
+    const sidebar = document.getElementById('sidebar');
+    const collapseIcon = document.querySelector('#left-sidebar-toggle svg');
+    
+    if (sidebar && collapseIcon) {
+        sidebar.classList.toggle('collapsed');
+        
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        
+        // Update icon
+        if (isCollapsed) {
+            collapseIcon.setAttribute('data-lucide', 'chevrons-right');
+        } else {
+            collapseIcon.setAttribute('data-lucide', 'chevrons-left');
+        }
+        
+        // Save preference
+        updateUserPreference('dashboard.sidebarCollapsed', isCollapsed);
+        
+        // Reinitialize icons
+        lucide.createIcons();
+    }
+}
+
+// Mobile Features
+function initializeMobileFeatures() {
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+    
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+    }
+    
+    if (mobileOverlay) {
+        mobileOverlay.addEventListener('click', closeMobileSidebar);
+    }
+}
+
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    
+    if (sidebar && overlay) {
+        const isOpen = sidebar.classList.contains('open');
+        
+        if (isOpen) {
+            closeMobileSidebar();
+        } else {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+}
+
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    
+    if (sidebar && overlay) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Date/Time Updates
+function updateDateTime() {
+    const dateElement = document.getElementById('current-full-date');
+    if (dateElement) {
+        const now = new Date();
+        dateElement.textContent = now.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    }
+}
+
+// Event Handlers for Modals and Forms
+function initializeWorkoutCardEvents() {
+    // Add event listeners for workout card interactions
+    // This would include timer functions, note saving, etc.
+}
+
+// Modal Functions
+function openWorkoutModal(workout) {
+    const modal = document.getElementById('workout-modal');
+    const title = document.getElementById('workout-modal-title');
+    const content = document.getElementById('workout-modal-content');
+    
+    if (!modal || !title || !content) return;
+    
+    title.textContent = `${workout.title} - Day ${workout.day}`;
+    content.innerHTML = createWorkoutModalContent(workout);
+    
+    openModal('workout-modal');
+}
+
+function createWorkoutModalContent(workout) {
+    return `
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-lg font-bold text-brand-primary">${workout.day}</div>
+                    <div class="text-sm text-brand-text-secondary">Day</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-lg font-bold text-brand-secondary">${workout.duration || 'N/A'}</div>
+                    <div class="text-sm text-brand-text-secondary">Minutes</div>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-medium text-brand-text-primary mb-2">Status</h4>
+                <span class="px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(workout.status)}">
+                    ${workout.status.charAt(0).toUpperCase() + workout.status.slice(1)}
+                </span>
+            </div>
+            <div>
+                <h4 class="font-medium text-brand-text-primary mb-2">Date Completed</h4>
+                <p class="text-brand-text-secondary">${formatLocalDate(workout.date)}</p>
+            </div>
+        </div>
+    `;
+}
+
+function closeWorkoutModal() {
+    closeModal('workout-modal');
+}
+
+// Goals Modal Functions (from v2)
+function addGoalModal() {
+    openModal('addGoalModal');
+}
+
+function closeAllModals() {
+    const modals = document.querySelectorAll('[id$="Modal"], [id$="-modal"]');
+    modals.forEach(modal => {
+        closeModal(modal.id);
+    });
+}
+
+// Form Handlers
+function saveNewGoal() {
+    const form = document.getElementById('addGoalForm');
+    if (!form || !validateForm('addGoalForm')) return;
+    
+    const formData = new FormData(form);
+    const goalData = {
+        title: formData.get('goalTitle') || document.getElementById('goalTitle').value,
+        target: parseFloat(formData.get('goalTarget') || document.getElementById('goalTarget').value),
+        unit: formData.get('goalUnit') || document.getElementById('goalUnit').value,
+        deadline: formData.get('goalDate') || document.getElementById('goalDate').value
+    };
+    
+    addGoalApi(goalData).then(success => {
+        if (success) {
+            closeAllModals();
+            form.reset();
+            // Reload goals content
+            loadGoalsContent();
+        }
+    });
+}
+
+function saveWeight() {
+    const weight = document.getElementById('newWeight').value;
+    const unit = document.getElementById('weightUnit').value;
+    const notes = document.getElementById('weightNotes').value;
+    
+    if (!weight) {
+        showWarning('Please enter a weight value');
+        return;
+    }
+    
+    updateWeightApi(weight, unit, notes).then(success => {
+        if (success) {
+            closeAllModals();
+            // Reload assessment content
+            loadGoalsContent();
+        }
+    });
+}
+
+function saveMeasurements() {
+    const measurements = {
+        chest: document.getElementById('chestMeasurement').value,
+        waist: document.getElementById('waistMeasurement').value,
+        hip: document.getElementById('hipMeasurement').value,
+        thigh: document.getElementById('thighMeasurement').value,
+        arm: document.getElementById('armMeasurement').value,
+        neck: document.getElementById('neckMeasurement').value
+    };
+    
+    const notes = document.getElementById('measurementNotes').value;
+    
+    updateMeasurementsApi(measurements, notes).then(success => {
+        if (success) {
+            closeAllModals();
+            // Reload assessment content
+            loadGoalsContent();
+        }
+    });
+}
+
+// Note Modal Functions
+function showAddNoteModal() {
+    openModal('addNoteModal');
+}
+
+function closeNoteEditModal() {
+    closeModal('addNoteModal');
+}
+
+function saveNote() {
+    const form = document.getElementById('addNoteForm');
+    if (!form || !validateForm('addNoteForm')) return;
+    
+    const noteData = {
+        title: document.getElementById('noteTitle').value,
+        category: document.getElementById('noteCategory').value,
+        content: document.getElementById('noteContent').value
+    };
+    
+    addNoteApi(noteData).then(success => {
+        if (success) {
+            closeNoteEditModal();
+            form.reset();
+            // Reload notes
+            loadNotesAndFiles();
+        }
+    });
+}
+
+function openNoteDetail(noteId) {
+    showInfo('Note detail view coming soon!');
+}
+
+function closeNoteDetail() {
+    closeModal('noteDetailModal');
+}
+
+// Helper Functions from Original v2 Code
+function createGoalsContent() {
+    // This would implement the full goals content creation from v2
+    // For now, showing placeholder
+    const container = document.querySelector('#goals-content .grid');
+    if (container) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-8">
+                <p class="text-brand-text-secondary">Goals content loading...</p>
+            </div>
+        `;
+    }
+}
+
+// Initialize everything when DOM is loaded
+function initializeWorkoutCardTimers() {
+    // Timer functionality would be implemented here
+}
+
+// Export functions for global use
+window.FitnessDashboard = {
+    switchTab,
+    toggleExercise,
+    openExerciseVideo,
+    closeVideoModal,
+    openWorkoutModal,
+    closeWorkoutModal,
+    addGoalModal,
+    closeAllModals,
+    saveNewGoal,
+    saveWeight,
+    saveMeasurements,
+    showAddNoteModal,
+    closeNoteEditModal,
+    saveNote,
+    openNoteDetail,
+    closeNoteDetail
+};
+</script>

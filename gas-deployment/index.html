@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InMotion Fitness Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <style>
+        <?!= include('styles'); ?>
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-primary': '#FF5595',
+                        'brand-secondary': '#41C1BA',
+                        'brand-accent': '#4B8BFF',
+                        'brand-lime': '#D4FF4F',
+                        'brand-bg': '#F8FAFC',
+                        'brand-surface': '#FFFFFF',
+                        'brand-text-primary': '#1F2937',
+                        'brand-text-secondary': '#6B7280',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-bg font-sans">
+    <div class="flex h-screen p-2 md:p-4 lg:p-6 gap-2 md:gap-4 lg:gap-6">
+        <!-- Sidebar Navigation -->
+        <?!= include('sidebar'); ?>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col min-w-0">
+            <!-- Header -->
+            <?!= include('header'); ?>
+
+            <!-- Content Container -->
+            <div class="flex-1 overflow-y-auto">
+                <!-- Today's Plan Content -->
+                <div id="today-content" class="tab-content p-4 md:p-6">
+                    <?!= include('today-plan'); ?>
+                </div>
+
+                <!-- Workout Logs Content -->
+                <div id="calendar-content" class="tab-content hidden p-4 md:p-6">
+                    <?!= include('workout-logs'); ?>
+                </div>
+
+                <!-- Complete Planner Content -->
+                <div id="planner-content" class="tab-content hidden p-4 md:p-6">
+                    <?!= include('complete-planner'); ?>
+                </div>
+
+                <!-- Goals Content -->
+                <div id="goals-content" class="tab-content hidden p-4 md:p-6">
+                    <?!= include('goals-assessment'); ?>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <?!= include('modals'); ?>
+
+    <!-- Toast Notifications -->
+    <?!= include('toast'); ?>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
+            <span class="text-brand-text-primary">Loading...</span>
+        </div>
+    </div>
+
+    <script>
+        <?!= include('utils'); ?>
+        <?!= include('storage'); ?>
+        <?!= include('api'); ?>
+        <?!= include('main-script'); ?>
+    </script>
+</body>
+</html> 
