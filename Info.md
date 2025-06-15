@@ -1,4 +1,5 @@
 ### 📋 Project Overview: Fitness Dashboard (Google Apps Script Web App)
+
 We're building a **Fitness Dashboard** using **Google Sheets** + **Google Apps Script Web App**, with a clean UI and optimal performance. The original version is built using plain HTML/CSS/JS in a single file—this version breaks it into modular components using `.html` and `.gs` files as per Apps Script limitations.
 
 ### 📁 File & Structure Guidelines
