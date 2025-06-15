@@ -172,13 +172,13 @@
                 </div>
 
                 <!-- Goals Content -->
-                <div id="goals-content" class="content-area hidden tab-content">
+                <div id="goals-content" class="tab-content hidden p-4 md:p-6">
                     <div class="grid">
                         <!-- Assessment and goals content will be loaded dynamically via JavaScript -->
                     </div>
                     
                     <!-- Notes & Files tabs to be added to goals page -->
-                    <div class="tabs-container mt-4 px-4 md:px-6">
+                    <div class="tabs-container mt-4">
                         <div class="flex border-b border-gray-200">
                             <button class="goals-tab-btn py-3 px-4 font-medium border-b-2 border-brand-primary text-brand-primary" data-tab="goals">Goals & Measurements</button>
                             <button class="goals-tab-btn py-3 px-4 font-medium border-b-2 border-transparent text-brand-text-secondary hover:text-brand-text-primary" data-tab="notes">Notes & Files</button>
@@ -190,39 +190,12 @@
                         
                         <div id="notes-tab-content" class="tab-panel hidden">
                             <!-- Notes & Files content -->
-                            <div class="mt-6 bg-brand-surface rounded-xl p-5 shadow-lg border border-gray-100">
-                                <h2 class="text-lg font-semibold text-brand-text-primary mb-4">Client Notes & Files</h2>
+                            <div class="mt-6 bg-brand-surface rounded-xl shadow-lg border border-gray-100">
+                                <h2 class="text-lg font-semibold text-brand-text-primary p-5 pb-0 mb-4">Client Notes & Files</h2>
                                 
-                                <div class="notes-container grid grid-cols-1 lg:grid-cols-4 gap-6">
-                                    <!-- Categories Sidebar -->
-                                    <div class="notes-sidebar lg:col-span-1 bg-gray-50 rounded-xl p-4">
-                                        <h3 class="font-medium text-brand-text-primary mb-3">Categories</h3>
-                                        <ul class="category-list space-y-1">
-                                            <li class="category-item active px-3 py-2 rounded-lg bg-brand-primary text-white" data-category="all">All Notes</li>
-                                            <li class="category-item px-3 py-2 rounded-lg hover:bg-gray-100" data-category="injury">Injuries</li>
-                                            <li class="category-item px-3 py-2 rounded-lg hover:bg-gray-100" data-category="general">General</li>
-                                            <li class="category-item px-3 py-2 rounded-lg hover:bg-gray-100" data-category="nutrition">Nutrition</li>
-                                            <li class="category-item px-3 py-2 rounded-lg hover:bg-gray-100" data-category="custom">Custom</li>
-                                        </ul>
-                                        
-                                        <!-- Add Category Form -->
-                                        <div class="mt-4 pt-4 border-t border-gray-200">
-                                            <div class="flex items-center">
-                                                <input type="text" id="new-category-input" placeholder="New category..." class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary" />
-                                                <button id="add-category-btn" class="ml-2 p-2 bg-brand-primary text-white rounded-lg hover:bg-opacity-90">
-                                                    <i data-lucide="plus" class="w-4 h-4"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        
-                                        <button id="add-note-btn" class="w-full mt-4 py-2 px-4 bg-brand-primary text-white rounded-lg font-medium hover:bg-opacity-90 transition-colors flex items-center justify-center">
-                                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
-                                            Add New Note
-                                        </button>
-                                    </div>
-                                    
+                                <div class="notes-container p-5 pt-0">
                                     <!-- Notes Content -->
-                                    <div class="notes-content lg:col-span-3">
+                                    <div class="notes-content w-full">
                                         <!-- Files Filter and Upload -->
                                         <div class="flex flex-wrap items-center justify-between mb-4 gap-2">
                                             <div class="flex items-center">
@@ -232,16 +205,15 @@
                                                 <button class="file-filter-btn px-3 py-1 text-xs rounded-full bg-gray-100 text-brand-text-secondary" data-filter="files">Files</button>
                                             </div>
                                             <div>
-                                                <input type="file" id="direct-file-upload" class="hidden" multiple>
-                                                <button id="upload-file-btn" class="px-3 py-1.5 text-sm bg-brand-accent text-white rounded-lg flex items-center">
-                                                    <i data-lucide="upload" class="w-4 h-4 mr-1"></i>
-                                                    Upload Files
+                                                <button id="add-note-btn" class="px-3 py-1.5 text-sm bg-brand-accent text-white rounded-lg flex items-center">
+                                                    <i data-lucide="plus" class="w-4 h-4 mr-1"></i>
+                                                    Add
                                                 </button>
                                             </div>
                                         </div>
                                         
                                         <!-- Notes List -->
-                                        <div class="notes-list grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" id="notes-list">
+                                        <div class="notes-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="notes-list">
                                             <!-- Notes will be populated here by JavaScript -->
                                             <div class="note-card bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                                                 <div class="flex justify-between items-start mb-2">
@@ -440,7 +412,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
                             <div>
                                 <label for="note-category" class="block text-sm font-medium text-brand-text-primary mb-2">Category</label>
-                                <select id="note-category" name="category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                <select id="note-category" name="category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary" onchange="handleCategoryChange()">
                                     <option value="general">General</option>
                                     <option value="injury">Injury</option>
                                     <option value="nutrition">Nutrition</option>
@@ -452,6 +424,11 @@
                             <div id="custom-category-container" class="hidden">
                                 <label for="custom-category" class="block text-sm font-medium text-brand-text-primary mb-2">Custom Category Name</label>
                                 <input type="text" id="custom-category" name="customCategory" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder="Enter category name">
+                            </div>
+                            
+                            <div id="custom-title-container" class="hidden">
+                                <label for="custom-title" class="block text-sm font-medium text-brand-text-primary mb-2">Custom Title</label>
+                                <input type="text" id="custom-title" name="customTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder="Enter custom title">
                             </div>
                         </div>
                         

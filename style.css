@@ -601,10 +601,10 @@ select:focus {
 /* For tablet and small desktop */
 @media (min-width: 768px) and (max-width: 1439px) {
     #goals-content .grid {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr;
         gap: 2rem;
-        max-width: 800px;
+        max-width: 900px;
         margin: 0 auto;
     }
     
@@ -642,4 +642,95 @@ select:focus {
     .content-area {
         padding: 1rem;
     }
+}
+
+/* Note Card Styles */
+.note-card {
+    transition: all 0.2s ease;
+    height: 100%;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.note-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: #e2e8f0;
+}
+
+/* Responsive Layout for Notes Grid */
+@media (max-width: 639px) {
+    .notes-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+    .notes-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .notes-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* File Card Styles */
+.file-card {
+    display: flex;
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.file-card:hover {
+    background-color: #f3f4f6;
+    transform: translateX(4px);
+}
+
+.file-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    margin-right: 0.75rem;
+    background-color: #e5e7eb;
+}
+
+.file-info {
+    flex: 1;
+}
+
+.file-name {
+    font-weight: 500;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+.file-meta {
+    display: flex;
+    color: #6b7280;
+    font-size: 0.75rem;
+}
+
+.file-size {
+    margin-right: 0.75rem;
+}
+
+.file-date {
+    color: #9ca3af;
 } 

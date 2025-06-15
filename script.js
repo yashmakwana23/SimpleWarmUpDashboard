@@ -2014,26 +2014,34 @@ function loadGoalsContent() {
     // Get the main content container and clear it
     const contentContainer = document.querySelector('#goals-content .grid');
     if (contentContainer) {
+        // Update the grid layout to be side by side for large screens
+        contentContainer.className = 'grid grid-cols-1 lg:grid-cols-2 gap-6 w-full';
         contentContainer.innerHTML = '';
     }
     
     // Get the goals tab content container
     const goalsTabContent = document.getElementById('goals-tab-content');
     if (goalsTabContent) {
-        // Clear existing content
+        // Clear existing content and apply proper padding
+        goalsTabContent.className = 'tab-panel p-4 md:p-6';
         goalsTabContent.innerHTML = '';
         
-        // Add assessment section
-        const assessmentContainer = document.createElement('div');
-        assessmentContainer.className = 'assessment-section';
-        assessmentContainer.innerHTML = createAssessmentContent();
-        goalsTabContent.appendChild(assessmentContainer);
+        // Create a grid container to hold both sections
+        const gridContainer = document.createElement('div');
+        gridContainer.className = 'grid grid-cols-1 lg:grid-cols-2 gap-6';
+        goalsTabContent.appendChild(gridContainer);
         
-        // Add goals section
+        // Add assessment section - will be the first column in the grid
+        const assessmentContainer = document.createElement('div');
+        assessmentContainer.className = 'assessment-section bg-brand-surface rounded-xl p-5 shadow-lg border border-gray-100';
+        assessmentContainer.innerHTML = createAssessmentContent();
+        gridContainer.appendChild(assessmentContainer);
+        
+        // Add goals section - will be the second column in the grid
         const goalsContainer = document.createElement('div');
-        goalsContainer.className = 'goals-section';
+        goalsContainer.className = 'goals-section bg-brand-surface rounded-xl p-5 shadow-lg border border-gray-100';
         goalsContainer.innerHTML = createGoalsContent();
-        goalsTabContent.appendChild(goalsContainer);
+        gridContainer.appendChild(goalsContainer);
     }
     
     // Initialize icons
@@ -2115,7 +2123,7 @@ function getMockAssessmentData() {
 
 // Render Goals Section
 function renderGoalsSection(goalsData) {
-    const goalsContainer = document.querySelector('#goals-content .grid > div:first-child');
+    const goalsContainer = document.querySelector('.goals-section');
     if (!goalsContainer) return;
     
     goalsContainer.innerHTML = `
@@ -2202,7 +2210,7 @@ function createCompletedGoalItem(goal) {
 
 // Render Assessment Section
 function renderAssessmentSection(assessmentData) {
-    const assessmentContainer = document.querySelector('#goals-content .grid > div:last-child');
+    const assessmentContainer = document.querySelector('.assessment-section');
     if (!assessmentContainer) return;
     
     assessmentContainer.innerHTML = `
@@ -4008,29 +4016,54 @@ function renderNotes(notes, category = 'all') {
     // Add notes to the list
     filteredNotes.forEach(note => {
         const noteCard = document.createElement('div');
-        noteCard.className = 'note-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow';
+        noteCard.className = 'note-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 cursor-pointer';
         noteCard.setAttribute('data-note-id', note.id);
         
         const categoryColor = getCategoryColor(note.category);
         
-        noteCard.innerHTML = `
-            <div class="flex justify-between items-start mb-2">
-                <div class="bg-${categoryColor}-100 text-${categoryColor}-700 text-xs rounded-full px-2 py-1">${formatCategoryName(note.category)}</div>
-                <div class="text-xs text-brand-text-secondary">${formatDate(note.date)}</div>
-            </div>
-            <h4 class="text-brand-text-primary font-medium">${note.title}</h4>
-            <p class="text-sm text-brand-text-secondary line-clamp-2">${note.content}</p>
-            <div class="mt-3 flex justify-between items-center">
-                <span class="text-xs flex items-center">
-                    <i data-lucide="paperclip" class="w-3 h-3 mr-1"></i>
-                    ${note.attachments.length} file${note.attachments.length !== 1 ? 's' : ''}
-                </span>
-                <button class="view-note-btn text-brand-accent text-xs font-medium">View</button>
-            </div>
-        `;
+        // Check if it's just a PDF attachment with title (standalone file)
+        const isPdfOnly = note.standalone && note.type === 'application/pdf';
         
-        // Add click event to open note details
-        noteCard.addEventListener('click', () => openNoteDetail(note.id));
+        if (isPdfOnly) {
+            // Render a special PDF card with preview option
+            noteCard.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <div class="bg-gray-100 text-gray-700 text-xs rounded-full px-2 py-1">PDF Document</div>
+                    <div class="text-xs text-brand-text-secondary">${formatDate(note.date)}</div>
+                </div>
+                <h4 class="text-brand-text-primary font-medium mb-2">${note.title}</h4>
+                <div class="bg-gray-50 rounded-lg p-3 flex items-center justify-center mb-2">
+                    <i data-lucide="file-text" class="w-10 h-10 text-gray-400"></i>
+                </div>
+                <div class="mt-auto pt-3 flex justify-between items-center">
+                    <span class="text-xs text-gray-500">${Math.round(note.size / 1024)} KB</span>
+                    <button class="view-pdf-btn text-brand-accent text-xs font-medium hover:text-brand-primary transition-colors">Preview</button>
+                </div>
+            `;
+            
+            // Add click event to preview PDF
+            noteCard.addEventListener('click', () => openPdfPreview(note.id, note.title));
+        } else {
+            // Regular note card
+            noteCard.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <div class="bg-${categoryColor}-100 text-${categoryColor}-700 text-xs rounded-full px-2 py-1">${formatCategoryName(note.category)}</div>
+                    <div class="text-xs text-brand-text-secondary">${formatDate(note.date)}</div>
+                </div>
+                <h4 class="text-brand-text-primary font-medium mb-2">${note.title}</h4>
+                <p class="text-sm text-brand-text-secondary line-clamp-3 min-h-[3em]">${note.content}</p>
+                <div class="mt-auto pt-3 flex justify-between items-center">
+                    <span class="text-xs flex items-center">
+                        <i data-lucide="paperclip" class="w-3 h-3 mr-1"></i>
+                        ${note.attachments ? note.attachments.length : 0} file${!note.attachments || note.attachments.length !== 1 ? 's' : ''}
+                    </span>
+                    <button class="view-note-btn text-brand-accent text-xs font-medium hover:text-brand-primary transition-colors">View</button>
+                </div>
+            `;
+            
+            // Add click event to open note details
+            noteCard.addEventListener('click', () => openNoteDetail(note.id));
+        }
         
         notesList.appendChild(noteCard);
     });
@@ -4047,31 +4080,9 @@ function setupNotesEventListeners() {
         addNoteBtn.addEventListener('click', showAddNoteModal);
     }
     
-    // Direct file upload button
-    const uploadFileBtn = document.getElementById('upload-file-btn');
-    const directFileUpload = document.getElementById('direct-file-upload');
-    if (uploadFileBtn && directFileUpload) {
-        uploadFileBtn.addEventListener('click', () => {
-            directFileUpload.click();
-        });
-        
-        directFileUpload.addEventListener('change', handleDirectFileUpload);
-    }
+    // Direct file upload button is no longer needed as we're using Add button for both notes and files
     
-    // Add custom category
-    const addCategoryBtn = document.getElementById('add-category-btn');
-    const newCategoryInput = document.getElementById('new-category-input');
-    if (addCategoryBtn && newCategoryInput) {
-        addCategoryBtn.addEventListener('click', addCustomCategory);
-        
-        // Allow pressing Enter to add category
-        newCategoryInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addCustomCategory();
-            }
-        });
-    }
+    // Category filtering - no longer needed as we removed the category sidebar
     
     // Filter by file type
     const fileFilterBtns = document.querySelectorAll('.file-filter-btn');
@@ -4095,24 +4106,7 @@ function setupNotesEventListeners() {
     }
     
     // Category filtering
-    const categoryItems = document.querySelectorAll('.category-item');
-    categoryItems.forEach(item => {
-        item.addEventListener('click', () => {
-            // Remove active class from all categories
-            categoryItems.forEach(cat => {
-                cat.classList.remove('active', 'bg-brand-primary', 'text-white');
-                cat.classList.add('hover:bg-gray-100', 'text-brand-text-secondary');
-            });
-            
-            // Add active class to clicked category
-            item.classList.remove('hover:bg-gray-100', 'text-brand-text-secondary');
-            item.classList.add('active', 'bg-brand-primary', 'text-white');
-            
-            // Filter notes
-            const category = item.getAttribute('data-category');
-            loadNotesData(category);
-        });
-    });
+    // Category item filtering removed as we no longer have the sidebar
     
     // Close note detail modal button
     const closeNoteModalBtn = document.getElementById('close-note-modal');
@@ -4174,44 +4168,31 @@ function setupNotesEventListeners() {
 // Show add note modal
 function showAddNoteModal() {
     const modal = document.getElementById('note-edit-modal');
-    const modalTitle = document.getElementById('note-edit-modal-title');
-    const form = document.getElementById('note-form');
+    if (!modal) return;
     
-    if (modal && modalTitle && form) {
-        // Reset form
-        form.reset();
-        document.getElementById('note-id').value = '';
-        
-        // Clear file selection
-        resetFileSelection();
-        
-        // Clear attachments list
-        const attachmentsList = document.getElementById('note-attachments-list');
-        if (attachmentsList) {
-            attachmentsList.innerHTML = '';
-        }
-        
-        // Hide custom category field
-        const customCategoryContainer = document.getElementById('custom-category-container');
-        if (customCategoryContainer) {
-            customCategoryContainer.classList.add('hidden');
-        }
-        
-        // Set title
-        modalTitle.textContent = 'Add New Note';
-        
-        // Initialize file upload button
-        initNoteFileUpload();
-        
-        // Listen for category change
-        const categorySelect = document.getElementById('note-category');
-        if (categorySelect) {
-            categorySelect.addEventListener('change', handleCategoryChange);
-        }
-        
-        // Show modal
-        modal.classList.remove('hidden');
+    // Reset form
+    const noteForm = document.getElementById('note-form');
+    if (noteForm) {
+        noteForm.reset();
     }
+    
+    // Set title
+    document.getElementById('note-edit-modal-title').textContent = 'Add New Item';
+    
+    // Clear ID (for new note)
+    document.getElementById('note-id').value = '';
+    
+    // Initialize file uploads
+    initNoteFileUpload();
+    resetFileSelection();
+    
+    // Show modal
+    modal.classList.remove('hidden');
+    
+    // Focus title input
+    setTimeout(() => {
+        document.getElementById('note-title')?.focus();
+    }, 100);
 }
 
 // Show edit note modal
@@ -4255,10 +4236,13 @@ function saveNote() {
     let category = document.getElementById('note-category').value;
     const content = document.getElementById('note-content').value;
     const fileInput = document.getElementById('note-file-upload');
+    let customTitle = '';
     
     // Handle custom category
     if (category === 'custom') {
         const customCategory = document.getElementById('custom-category').value.trim();
+        customTitle = document.getElementById('custom-title').value.trim();
+        
         if (customCategory) {
             category = customCategory.toLowerCase();
             
@@ -4270,6 +4254,11 @@ function saveNote() {
         } else {
             alert('Please enter a custom category name or select an existing category');
             return;
+        }
+        
+        // Use custom title if provided
+        if (customTitle) {
+            // We'll use this later when saving the note
         }
     }
     
@@ -4324,7 +4313,7 @@ function saveNote() {
         // Add new note
         const newNote = {
             id: Date.now(),
-            title,
+            title: category === 'custom' && customTitle ? customTitle : title,
             category,
             content,
             date: new Date(),
@@ -4359,6 +4348,48 @@ function deleteNote(noteId) {
         // Show notification
         showNotification('Note deleted successfully', 'success');
     }
+}
+
+// Function to preview PDF files
+function openPdfPreview(fileId, fileName) {
+    // In a real implementation, this would open a PDF viewer with the file
+    // For demo purposes, show a notification
+    showNotification(`Opening PDF preview for: ${fileName}`, 'info');
+    
+    // Here you would typically open a modal with an embedded PDF viewer
+    // For example using PDF.js or an iframe embedding the PDF URL
+    console.log(`Preview PDF with ID: ${fileId}`);
+    
+    // Create a mock PDF preview modal (in real implementation, you'd have a proper PDF viewer)
+    const mockPdfViewer = document.createElement('div');
+    mockPdfViewer.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75';
+    mockPdfViewer.innerHTML = `
+        <div class="bg-brand-surface rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-brand-text-primary">${fileName}</h3>
+                <button class="p-2 hover:bg-gray-100 rounded-lg" id="close-pdf-preview">
+                    <i data-lucide="x" class="w-5 h-5 text-brand-text-secondary"></i>
+                </button>
+            </div>
+            <div class="p-6 flex flex-col items-center">
+                <div class="bg-gray-100 rounded-lg p-10 mb-6 w-full h-64 flex items-center justify-center">
+                    <i data-lucide="file-text" class="w-20 h-20 text-gray-400 mb-2"></i>
+                </div>
+                <p class="text-sm text-brand-text-secondary mb-4">PDF Preview (demo only)</p>
+                <button class="px-4 py-2 bg-brand-accent text-white rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors">
+                    Download PDF
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(mockPdfViewer);
+    lucide.createIcons();
+    
+    // Add close button functionality
+    document.getElementById('close-pdf-preview').addEventListener('click', () => {
+        document.body.removeChild(mockPdfViewer);
+    });
 }
 
 // Open note detail
@@ -4501,6 +4532,40 @@ function getMockNotesData() {
             content: 'Increased protein intake to support muscle growth. Client reports feeling less hungry between meals and having more consistent energy levels throughout the day.\n\nNext steps include introducing more complex carbs around workout times.',
             date: new Date(2024, 1, 15),
             attachments: []
+        },
+        // Standalone files (not attached to notes)
+        {
+            id: 4,
+            title: 'Workout Plan PDF',
+            name: 'workout_plan_2024.pdf',
+            category: 'general',
+            type: 'application/pdf',
+            size: 3500000,
+            date: new Date(2024, 3, 1),
+            standalone: true,
+            attachments: []
+        },
+        {
+            id: 5,
+            title: 'Progress Photos',
+            name: 'progress_march.jpg',
+            category: 'general',
+            type: 'image/jpeg',
+            size: 2800000,
+            date: new Date(2024, 2, 25),
+            standalone: true,
+            attachments: []
+        },
+        {
+            id: 6,
+            title: 'Nutrition Guide',
+            name: 'nutrition_guide_v2.docx',
+            category: 'nutrition',
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            size: 1250000,
+            date: new Date(2024, 2, 10),
+            standalone: true,
+            attachments: []
         }
     ];
 }
@@ -4628,10 +4693,82 @@ function addCustomCategory() {
 
 // Filter content by type (all, notes, files)
 function filterByContentType(type) {
-    // In a real implementation, this would filter the displayed content by type
-    console.log('Filtering by content type:', type);
+    // Get all notes and files in the display
+    const notesList = document.getElementById('notes-list');
+    if (!notesList) return;
     
-    // For demo purposes, just show a notification
+    // Get the mock data
+    const notesData = getMockNotesData();
+    
+    if (type === 'all') {
+        // Show all notes and files
+        renderNotes(notesData);
+    } else if (type === 'notes') {
+        // Show only notes (not standalone files)
+        const onlyNotes = notesData.filter(note => !note.standalone);
+        renderNotes(onlyNotes);
+    } else if (type === 'files') {
+        // Show only standalone files
+        const onlyFiles = notesData.filter(note => note.standalone);
+        
+        // Clear notes list
+        notesList.innerHTML = '';
+        
+        if (onlyFiles.length === 0) {
+            notesList.innerHTML = `
+                <div class="col-span-full text-center py-8">
+                    <div class="flex flex-col items-center">
+                        <i data-lucide="file" class="w-12 h-12 text-gray-300 mb-2"></i>
+                        <p class="text-brand-text-secondary">No standalone files found</p>
+                    </div>
+                </div>
+            `;
+            
+            // Initialize icons
+            lucide.createIcons();
+            return;
+        }
+        
+        // Create file cards
+        onlyFiles.forEach(file => {
+            const fileCard = document.createElement('div');
+            fileCard.className = 'file-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow';
+            
+            const fileIcon = getFileIcon(file.type);
+            const fileSize = Math.round(file.size / 1024) + ' KB';
+            
+            fileCard.innerHTML = `
+                <div class="file-icon bg-${getCategoryColor('file')}-100 text-${getCategoryColor('file')}-600">
+                    <i data-lucide="${fileIcon}" class="w-5 h-5"></i>
+                </div>
+                <div class="file-info">
+                    <div class="file-name text-sm font-medium">${file.title || file.name}</div>
+                    <div class="file-meta">
+                        <span class="file-size">${fileSize}</span>
+                        <span class="file-date">${formatDate(file.date)}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Add click event to preview PDF or download other files
+            fileCard.addEventListener('click', () => {
+                if (file.type === 'application/pdf') {
+                    // For PDFs, show preview
+                    openPdfPreview(file.id, file.title || file.name);
+                } else {
+                    // For other files, download
+                    downloadAttachment(file.id);
+                }
+            });
+            
+            notesList.appendChild(fileCard);
+        });
+        
+        // Initialize icons
+        lucide.createIcons();
+    }
+    
+    // Show notification feedback
     const messages = {
         'all': 'Showing all content',
         'notes': 'Showing notes only',
@@ -4645,12 +4782,19 @@ function filterByContentType(type) {
 function handleCategoryChange() {
     const categorySelect = document.getElementById('note-category');
     const customCategoryContainer = document.getElementById('custom-category-container');
+    const customTitleContainer = document.getElementById('custom-title-container');
     
-    if (categorySelect && customCategoryContainer) {
-        if (categorySelect.value === 'custom') {
-            customCategoryContainer.classList.remove('hidden');
-        } else {
-            customCategoryContainer.classList.add('hidden');
+    if (categorySelect) {
+        const isCustomCategory = categorySelect.value === 'custom';
+        
+        // Show/hide custom category field
+        if (customCategoryContainer) {
+            customCategoryContainer.classList.toggle('hidden', !isCustomCategory);
+        }
+        
+        // Show/hide custom title field
+        if (customTitleContainer) {
+            customTitleContainer.classList.toggle('hidden', !isCustomCategory);
         }
     }
 }
